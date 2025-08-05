@@ -62,7 +62,7 @@ class Person:
         self.mp -= cost
 
     def choose_action(self):
-        print("Choose an action:")
+        print(bcolors.OKBLUE + "Choose an action:" + bcolors.ENDC)
         for i in range(len(self.actions)):
             print(f"{i+1}. {self.actions[i]}")
 
@@ -71,8 +71,7 @@ class Person:
             return self.actions[choice]
 
     def choose_magic(self):
-        print("Choose a spell:"
-              "\n(dmg, cost)")
+        print(bcolors.OKBLUE +  "Choose a spell: \n(dmg, cost)" + bcolors.ENDC)
         for i in range(len(self.magic)):
             dmg = self.magic[i]["dmg"]
             print(f"{i + 1}. [{self.magic[i]["name"]}]\t ({dmg-5}-{dmg+5}, {self.magic[i]["cost"]})")

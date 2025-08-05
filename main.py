@@ -12,8 +12,8 @@ running = True
 print(bcolors.FAIL + bcolors.BOLD + "AN ENEMY ATTACKS!" + bcolors.ENDC)
 
 while running:
-    print("========================================")
-    print(f"=== Enemy: ")
+    print("================================================================================")
+    print(bcolors.OKBLUE + "=== Enemy: " + bcolors.ENDC)
     if enemy.hp_critical >= enemy.hp:
         print(f"{bcolors.FAIL}{enemy.get_hp()}{bcolors.ENDC}/{enemy.get_hp_max()}HP, ")
     else:
@@ -24,8 +24,7 @@ while running:
     else:
         print(f"{enemy.get_mp()}/{enemy.get_mp_max()}MP")
 
-
-    print(f"=== Player: ")
+    print(bcolors.OKBLUE + "=== Player: " + bcolors.ENDC)
     if player.hp_critical >= player.hp:
         print(f"{bcolors.FAIL}{player.get_hp()}{bcolors.ENDC}/{player.get_hp_max()}HP, ")
     else:
