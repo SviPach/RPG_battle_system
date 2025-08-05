@@ -24,7 +24,7 @@ class Person:
         self.atk_high = atk+10
         self.df = df
         self.magic = magic
-        self.actions = ["Attack", "Magic"]
+        self.actions = ["Attack", "Magic", "Leave"]
 
     def generate_damage(self):
         return random.randrange(self.atk_low, self.atk_high)
@@ -71,20 +71,25 @@ class Person:
             return self.actions[choice]
 
     def choose_magic(self):
-        print(bcolors.OKBLUE +  "Choose a spell: \n(dmg, cost)" + bcolors.ENDC)
-        for i in range(len(self.magic)):
-            dmg = self.magic[i]["dmg"]
-            print(f"{i + 1}. [{self.magic[i]["name"]}]\t ({dmg-5}-{dmg+5}, {self.magic[i]["cost"]})")
+        while True:
+            print(bcolors.OKBLUE +  "Choose a spell: \n(dmg, cost)" + bcolors.ENDC)
+            for i in range(len(self.magic)):
+                dmg = self.magic[i]["dmg"]
+                print(f"{i + 1}. [{self.magic[i]["name"]}]\t ({dmg-5}-{dmg+5}, {self.magic[i]["cost"]})")
 
-        print("0 - Attack with physical damage instead.")
+            print("0 - Attack with physical damage instead.")
 
-        choice = int(input("Your choice: ")) - 1
+            choice = int(input("Your choice: ")) - 1
 
-        if choice == -1:
-            return "Physical attack"
+            if choice == -1:
+                return "Physical attack"
 
-        if choice in range(len(self.magic)):
-            return self.magic[choice]["name"]
+            if choice in range(len(self.magic)):
+                return self.magic[choice]["name"]
+            else:
+                print(bcolors.FAIL + bcolors.UNDERLINE + "There is no such a spell!" + bcolors.ENDC)
+                continue
+
 
     def info(self):
         print("Info:")
