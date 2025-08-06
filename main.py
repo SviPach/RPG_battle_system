@@ -1,8 +1,13 @@
 from classes.game import Person, bcolors
+from classes.magic import Spell
 
-magic = [{"name": "Fire", "cost": 10, "dmg": 60},
-         {"name": "Thunder", "cost": 20, "dmg": 100},
-         {"name": "Ice", "cost": 6, "dmg": 40}]
+
+spell_Fire = Spell("Fire", 10, 60, "Elemental")
+spell_Thunder = Spell("Thunder", 20, 100, "Elemental")
+spell_Ice = Spell("Ice", 6, 40, "Elemental")
+spell_Cure = Spell("Cure", 5, 80, "Holy")
+
+magic = [spell_Fire, spell_Thunder, spell_Ice, spell_Cure]
 
 player = Person(460, 65, 60, 34, magic)
 enemy = Person(1200, 65, 45, 25, magic)
@@ -20,23 +25,10 @@ while True:
 
     choice = player.choose_action()
     if choice == "Attack":
-        dmg = player.generate_damage()
-        enemy_hp_old = enemy.hp
-        enemy.take_damage(dmg)
-        enemy_hp_new = enemy.hp
-        print(f"You are attacking for {dmg}HP with {bcolors.WARNING}Physical attack{bcolors.ENDC}.")
-        print(f"Enemy took damage: {bcolors.WARNING}-{enemy_hp_old - enemy_hp_new}HP.{bcolors.ENDC}")
+        player.perform_attack(enemy)
     elif choice == "Magic":
         spell = player.choose_magic()
-        spell_cost = player.get_spell_cost(spell)
-        player.reduce_mp(spell_cost)
-        dmg = player.generate_damage(spell)
-        enemy_hp_old = enemy.hp
-        enemy.take_damage(dmg)
-        enemy_hp_new = enemy.hp
-        if spell == 0: spell = "Physical attack"
-        print(f"You are attacking for {dmg}HP with {bcolors.WARNING}{spell}{bcolors.ENDC}.")
-        print(f"Enemy took damage: {bcolors.WARNING}-{enemy_hp_old - enemy_hp_new}HP.{bcolors.ENDC}")
+        player.perform_attack(enemy, spell)
     elif choice == "Leave":
         print(bcolors.FAIL + bcolors.BOLD + "You've left the battlefield!" + bcolors.ENDC)
         break
