@@ -11,27 +11,34 @@ print(bcolors.FAIL + bcolors.BOLD + "AN ENEMY ATTACKS!" + bcolors.ENDC)
 
 while True:
     print("================================================================================")
-    print(bcolors.OKBLUE + "=== Enemy: " + bcolors.ENDC)
-    if enemy.hp_critical >= enemy.hp:
-        print(f"{bcolors.FAIL}{enemy.get_hp()}{bcolors.ENDC}/{enemy.get_hp_max()}HP, ")
-    else:
-        print(f"{enemy.get_hp()}/{enemy.get_hp_max()}HP, ")
 
-    if enemy.mp_critical >= enemy.mp:
-        print(f"{bcolors.FAIL}{enemy.get_mp()}{bcolors.ENDC}/{enemy.get_mp_max()}MP")
+    print(bcolors.OKBLUE + "=== Enemy: " + bcolors.ENDC)
+    info_enemy = f""
+    if enemy.health_critical():
+        info_enemy += f"{bcolors.FAIL}{enemy.get_hp()}{bcolors.ENDC}/{enemy.get_hp_max()}HP, "
     else:
-        print(f"{enemy.get_mp()}/{enemy.get_mp_max()}MP")
+        info_enemy += f"{enemy.get_hp()}/{enemy.get_hp_max()}HP, "
+
+    if enemy.mana_critical():
+        info_enemy += f"{bcolors.FAIL}{enemy.get_mp()}{bcolors.ENDC}/{enemy.get_mp_max()}MP"
+    else:
+        info_enemy += f"{enemy.get_mp()}/{enemy.get_mp_max()}MP"
+    print(info_enemy)
+
 
     print(bcolors.OKBLUE + "=== Player: " + bcolors.ENDC)
-    if player.hp_critical >= player.hp:
-        print(f"{bcolors.FAIL}{player.get_hp()}{bcolors.ENDC}/{player.get_hp_max()}HP, ")
-    else:
-        print(f"{player.get_hp()}/{player.get_hp_max()}HP, ")
 
-    if player.mp_critical >= player.mp:
-        print(f"{bcolors.FAIL}{player.get_mp()}{bcolors.ENDC}/{player.get_mp_max()}MP")
+    info_player = f""
+    if player.health_critical():
+        info_player += f"{bcolors.FAIL}{player.get_hp()}{bcolors.ENDC}/{player.get_hp_max()}HP, "
     else:
-        print(f"{player.get_mp()}/{player.get_mp_max()}MP")
+        info_player += f"{player.get_hp()}/{player.get_hp_max()}HP, "
+
+    if player.mana_critical():
+        info_player += f"{bcolors.FAIL}{player.get_mp()}{bcolors.ENDC}/{player.get_mp_max()}MP"
+    else:
+        info_player += f"{player.get_mp()}/{player.get_mp_max()}MP"
+    print(info_player)
 
 
     choice = player.choose_action()

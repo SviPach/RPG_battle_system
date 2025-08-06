@@ -52,14 +52,31 @@ class Person:
     def get_hp_max(self):
         return self.hp_max
 
+    def health_critical(self):
+        if self.hp_critical >= self.hp:
+            return True
+        else:
+            return False
+
     def get_mp(self):
         return self.mp
 
     def get_mp_max(self):
         return self.mp_max
 
+    def mana_critical(self):
+        if self.mp_critical >= self.mp:
+            return True
+        else:
+            return False
+
     def reduce_mp(self, cost):
         self.mp -= cost
+
+    def get_spell_cost(self, spell):
+        for item in self.magic:
+            if item["name"] == spell:
+                return item["cost"]
 
     def choose_action(self):
         print(bcolors.OKBLUE + "Choose an action:" + bcolors.ENDC)
@@ -85,7 +102,12 @@ class Person:
                 return "Physical attack"
 
             if choice in range(len(self.magic)):
-                return self.magic[choice]["name"]
+                spell_name = self.magic[choice]["name"]
+                if self.get_spell_cost(spell_name) > self.get_mp():
+                    print(f"{bcolors.FAIL}{bcolors.UNDERLINE}Not enough MP!{bcolors.ENDC}")
+                    continue
+                else:
+                    return spell_name
             else:
                 print(bcolors.FAIL + bcolors.UNDERLINE + "There is no such a spell!" + bcolors.ENDC)
                 continue
