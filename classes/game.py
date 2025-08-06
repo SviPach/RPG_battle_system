@@ -14,30 +14,27 @@ class bcolors:
 
 class Person:
     def __init__(self, hp, mp, atk, df, magic):
-        self.hp_max = hp
-        self.hp = hp
-        self.hp_critical = hp*0.2
-        self.mp_max = mp
-        self.mp = mp
-        self.mp_critical = mp * 0.2
-        self.atk_low = atk-10
-        self.atk_high = atk+10
-        self.df = df
-        self.magic = magic
+        self.hp_max = hp                # Maximum value of health points
+        self.hp = hp                    # Current health points
+        self.hp_critical = hp*0.2       # Critical value of health points
+        self.mp_max = mp                # Maximum value of mana points
+        self.mp = mp                    # Current mana points
+        self.mp_critical = mp * 0.2     # Critical value of health points
+        self.atk_low = atk-10           # Weakest physical damage
+        self.atk_high = atk+10          # Strongest physical damage
+        self.df = df                    # Defence
+        self.magic = magic              # List of magic spells
+        # Possible actions ->
         self.actions = ["Attack", "Magic", "Leave"]
 
-    def generate_damage(self):
-        return random.randrange(self.atk_low, self.atk_high)
-
-    def generate_spell_damage(self, spell):
-        if spell == "Physical attack":
-            return self.generate_damage()
-
-        for item in self.magic:
-            if item["name"] == spell:
-                self.reduce_mp(item["cost"])
-
-                return random.randrange(item["dmg"] - 5, item["dmg"] + 5)
+    def generate_damage(self, spell = 0):
+        if spell == 0:
+            return random.randrange(self.atk_low, self.atk_high)
+        else:
+            for item in self.magic:
+                if item["name"] == spell:
+                    dmg = item["dmg"]
+                    return random.randrange(dmg - 5, dmg + 5)
 
     def take_damage(self, dmg):
         dmg_taken = math.ceil(dmg * (1 - self.df/100))
@@ -53,10 +50,7 @@ class Person:
         return self.hp_max
 
     def health_critical(self):
-        if self.hp_critical >= self.hp:
-            return True
-        else:
-            return False
+        return True if self.hp_critical >= self.hp else False
 
     def get_mp(self):
         return self.mp
@@ -65,27 +59,30 @@ class Person:
         return self.mp_max
 
     def mana_critical(self):
-        if self.mp_critical >= self.mp:
-            return True
-        else:
-            return False
+        return True if self.mp_critical >= self.mp else False
 
     def reduce_mp(self, cost):
         self.mp -= cost
 
-    def get_spell_cost(self, spell):
+    def get_spell_cost(self, spell = 0):
+        if spell == 0:
+            return 0
+
         for item in self.magic:
             if item["name"] == spell:
                 return item["cost"]
 
     def choose_action(self):
-        print(bcolors.OKBLUE + "Choose an action:" + bcolors.ENDC)
-        for i in range(len(self.actions)):
-            print(f"{i+1}. {self.actions[i]}")
+        while True:
+            print(bcolors.OKBLUE + "Choose an action:" + bcolors.ENDC)
+            for i in range(len(self.actions)):
+                print(f"{i+1}. {self.actions[i]}")
 
-        choice = int(input("Your choice: ")) - 1
-        if choice in range(len(self.actions)):
-            return self.actions[choice]
+            choice = int(input(f"{bcolors.UNDERLINE}Your choice:{bcolors.ENDC} ")) - 1
+            if choice in range(len(self.actions)):
+                return self.actions[choice]
+            else:
+                print(f"{bcolors.FAIL}{bcolors.UNDERLINE}There is no such an action!{bcolors.ENDC}")
 
     def choose_magic(self):
         while True:
@@ -96,10 +93,10 @@ class Person:
 
             print("0 - Attack with physical damage instead.")
 
-            choice = int(input("Your choice: ")) - 1
+            choice = int(input(f"{bcolors.UNDERLINE}Your choice:{bcolors.ENDC} ")) - 1
 
             if choice == -1:
-                return "Physical attack"
+                return 0
 
             if choice in range(len(self.magic)):
                 spell_name = self.magic[choice]["name"]
@@ -112,10 +109,22 @@ class Person:
                 print(bcolors.FAIL + bcolors.UNDERLINE + "There is no such a spell!" + bcolors.ENDC)
                 continue
 
-
     def info(self):
         print("Info:")
         print(f"HP: {self.hp}/{self.hp_max}")
         print(f"MP: {self.mp}/{self.mp_max}")
         print(f"Atk: {self.atk_low}-{self.atk_high}")
         print(f"Def: {self.df}")
+
+    def info_short(self):
+        info = f""
+        if self.health_critical():
+            info += f"{bcolors.FAIL}{self.get_hp()}{bcolors.ENDC}/{self.get_hp_max()}HP, "
+        else:
+            info += f"{self.get_hp()}/{self.get_hp_max()}HP, "
+
+        if self.mana_critical():
+            info += f"{bcolors.FAIL}{self.get_mp()}{bcolors.ENDC}/{self.get_mp_max()}MP"
+        else:
+            info += f"{self.get_mp()}/{self.get_mp_max()}MP"
+        print(info)

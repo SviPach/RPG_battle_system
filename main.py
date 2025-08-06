@@ -13,33 +13,10 @@ while True:
     print("================================================================================")
 
     print(bcolors.OKBLUE + "=== Enemy: " + bcolors.ENDC)
-    info_enemy = f""
-    if enemy.health_critical():
-        info_enemy += f"{bcolors.FAIL}{enemy.get_hp()}{bcolors.ENDC}/{enemy.get_hp_max()}HP, "
-    else:
-        info_enemy += f"{enemy.get_hp()}/{enemy.get_hp_max()}HP, "
-
-    if enemy.mana_critical():
-        info_enemy += f"{bcolors.FAIL}{enemy.get_mp()}{bcolors.ENDC}/{enemy.get_mp_max()}MP"
-    else:
-        info_enemy += f"{enemy.get_mp()}/{enemy.get_mp_max()}MP"
-    print(info_enemy)
-
+    enemy.info_short()
 
     print(bcolors.OKBLUE + "=== Player: " + bcolors.ENDC)
-
-    info_player = f""
-    if player.health_critical():
-        info_player += f"{bcolors.FAIL}{player.get_hp()}{bcolors.ENDC}/{player.get_hp_max()}HP, "
-    else:
-        info_player += f"{player.get_hp()}/{player.get_hp_max()}HP, "
-
-    if player.mana_critical():
-        info_player += f"{bcolors.FAIL}{player.get_mp()}{bcolors.ENDC}/{player.get_mp_max()}MP"
-    else:
-        info_player += f"{player.get_mp()}/{player.get_mp_max()}MP"
-    print(info_player)
-
+    player.info_short()
 
     choice = player.choose_action()
     if choice == "Attack":
@@ -51,10 +28,13 @@ while True:
         print(f"Enemy took damage: {bcolors.WARNING}-{enemy_hp_old - enemy_hp_new}HP.{bcolors.ENDC}")
     elif choice == "Magic":
         spell = player.choose_magic()
-        dmg = player.generate_spell_damage(spell)
+        spell_cost = player.get_spell_cost(spell)
+        player.reduce_mp(spell_cost)
+        dmg = player.generate_damage(spell)
         enemy_hp_old = enemy.hp
         enemy.take_damage(dmg)
         enemy_hp_new = enemy.hp
+        if spell == 0: spell = "Physical attack"
         print(f"You are attacking for {dmg}HP with {bcolors.WARNING}{spell}{bcolors.ENDC}.")
         print(f"Enemy took damage: {bcolors.WARNING}-{enemy_hp_old - enemy_hp_new}HP.{bcolors.ENDC}")
     elif choice == "Leave":
