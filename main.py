@@ -2,15 +2,15 @@ from classes.game import Person, bcolors
 from classes.magic import Spell
 
 
-spell_Fire = Spell("Fire", 10, 60, "Elemental")
-spell_Thunder = Spell("Thunder", 20, 100, "Elemental")
-spell_Ice = Spell("Ice", 6, 40, "Elemental")
-spell_Cure = Spell("Cure", 5, 80, "Holy")
+spell_Fire = Spell("Fire", 8, 16, "Elemental")
+spell_Thunder = Spell("Thunder", 10, 20, "Elemental")
+spell_Ice = Spell("Ice", 5, 10, "Elemental")
+spell_Cure = Spell("Cure", 5, 20, "Holy")
 
 magic = [spell_Fire, spell_Thunder, spell_Ice, spell_Cure]
 
-player = Person(460, 65, 60, 34, magic)
-enemy = Person(1200, 65, 45, 25, magic)
+player = Person("Player", 100, 20, 10, 20, magic, 20)
+enemy = Person("Enemy", 100, 0, 8, 15, magic, 15)
 
 print(bcolors.FAIL + bcolors.BOLD + "AN ENEMY ATTACKS!" + bcolors.ENDC)
 
@@ -29,6 +29,8 @@ while True:
     elif choice == "Magic":
         spell = player.choose_magic()
         player.perform_attack(enemy, spell)
+    elif choice == "Dodge":
+        player.try_dodge()
     elif choice == "Leave":
         print(bcolors.FAIL + bcolors.BOLD + "You've left the battlefield!" + bcolors.ENDC)
         break
@@ -38,9 +40,10 @@ while True:
         break
 
     player_hp_old = player.get_hp()
-    player.take_damage(enemy.generate_damage())
+    enemy.perform_attack(player)
+    # player.take_damage(enemy.generate_damage())
     player_hp_new = player.get_hp()
-    print(f"You got hit by enemy: {bcolors.WARNING}-{player_hp_old - player_hp_new}HP.{bcolors.ENDC}")
+    # print(f"You got hit by enemy: {bcolors.WARNING}-{player_hp_old - player_hp_new}HP.{bcolors.ENDC}")
 
     if player.get_hp() == 0:
         print(bcolors.FAIL + bcolors.BOLD + "You lost!" + bcolors.ENDC)

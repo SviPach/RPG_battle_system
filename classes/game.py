@@ -1,6 +1,5 @@
 import random
 import math
-from  classes.magic import Spell
 
 
 class bcolors:
@@ -14,32 +13,46 @@ class bcolors:
     UNDERLINE = '\033[4m'
 
 class Person:
-    def __init__(self, hp, mp, atk, df, magic):
+    def __init__(self, name, hp, mp, atk, df, magic, dodge):
+        self.name = name                # Name
         self.hp_max = hp                # Maximum value of health points
         self.hp = hp                    # Current health points
         self.hp_critical = hp*0.2       # Critical value of health points
         self.mp_max = mp                # Maximum value of mana points
         self.mp = mp                    # Current mana points
-        self.mp_critical = mp * 0.2     # Critical value of health points
-        self.atk_low = atk-10           # Weakest physical damage
-        self.atk_high = atk+10          # Strongest physical damage
-        self.df = df                    # Defence
-        self.magic = magic              # List of magic spells
+        self.mp_critical = mp * 0.2                 # Critical value of health points
+        self.atk_low = math.ceil(atk - atk*0.4)     # Weakest physical damage
+        self.atk_high = math.ceil(atk + atk*0.4)    # Strongest physical damage
+        self.df = df                                # Defence
+        self.magic = magic                          # List of magic spells
+        self.dodge = dodge              # Dodge chance
+        self.dodge_active = False       # If dodge action is active
         # Possible actions ->
-        self.actions = ["Attack", "Magic", "Leave"]
+        self.actions = ["Attack", "Magic", "Dodge", "Leave"]
 
     def generate_damage(self, spell = None):
         if spell is None:
             return random.randrange(self.atk_low, self.atk_high)
         else:
-            dmg = spell.get_spell_damage()
-            return random.randrange(dmg - 5, dmg + 5)
+            dmg_low = spell.get_spell_damage()[0]
+            dmg_high = spell.get_spell_damage()[1]
+            return random.randrange(dmg_low, dmg_high)
 
     def take_damage(self, dmg):
-        dmg_taken = math.ceil(dmg * (1 - self.df/100))
+        if random.randrange(100) in range(self.dodge):
+            print(f"{bcolors.WARNING}{bcolors.UNDERLINE}{self.name} dodged!{bcolors.ENDC}")
+            if self.dodge_active:
+                self.dodge -= 30
+            return self.hp
+
+        dmg_taken = math.ceil(dmg * (100 - self.df)/100)
         self.hp -= dmg_taken
         if self.hp < 0:
             self.hp = 0
+
+        if self.dodge_active:
+            self.dodge -= 30
+
         return self.hp
 
     def get_hp(self):
@@ -75,12 +88,16 @@ class Person:
             else:
                 print(f"{bcolors.FAIL}{bcolors.UNDERLINE}There is no such an action!{bcolors.ENDC}")
 
+    def get_name(self):
+        return self.name
+
     def choose_magic(self):
         while True:
             print(bcolors.OKBLUE +  "Choose a spell: \n(dmg, cost)" + bcolors.ENDC)
             for i in range(len(self.magic)):
-                dmg = self.magic[i].get_spell_damage()
-                print(f"{i + 1}. [{self.magic[i].get_spell_name()}]\t ({dmg-5}-{dmg+5}, {self.magic[i].get_spell_cost()})")
+                dmg_low = self.magic[i].get_spell_damage()[0]
+                dmg_high = self.magic[i].get_spell_damage()[1]
+                print(f"{i + 1}. [{self.magic[i].get_spell_name()}]\t ({dmg_low}-{dmg_high}, {self.magic[i].get_spell_cost()})")
 
             print("0 - Attack with physical damage instead.")
 
@@ -106,7 +123,7 @@ class Person:
             self.reduce_mp(spell_cost)
 
             if spell.get_spell_type() == "Holy":
-                heal = spell.get_spell_damage()
+                heal = spell.get_spell_damage()[2]
                 self.hp += heal
                 print(f"You've healed yourself by {bcolors.OKGREEN}{heal}{bcolors.ENDC}HP with {bcolors.WARNING}Physical attack{bcolors.ENDC}.")
                 return
@@ -115,17 +132,24 @@ class Person:
         else:
             dmg = self.generate_damage()
 
-        enemy_hp_old = enemy.hp
-        enemy.take_damage(dmg)
-        enemy_hp_new = enemy.hp
-
         if spell is None:
             spell_name = "Physical attack"
         else:
             spell_name = spell.get_spell_name()
+        print(f"{bcolors.OKBLUE}{self.name}{bcolors.ENDC} attacking for {dmg}HP with {bcolors.WARNING}{spell_name}{bcolors.ENDC}.")
 
-        print(f"You are attacking for {dmg}HP with {bcolors.WARNING}{spell_name}{bcolors.ENDC}.")
-        print(f"Enemy took damage: {bcolors.WARNING}-{enemy_hp_old - enemy_hp_new}HP.{bcolors.ENDC}")
+        enemy_hp_old = enemy.hp
+        enemy.take_damage(dmg)
+        enemy_hp_new = enemy.hp
+
+        # print(f"atk_low: {self.atk_low}, atk_high: {self.atk_high}")
+        print(f"--> {bcolors.OKBLUE}{enemy.get_name()}{bcolors.ENDC} took damage: {bcolors.WARNING}-{enemy_hp_old - enemy_hp_new}HP.{bcolors.ENDC}")
+
+    def try_dodge(self):
+        self.dodge += 30
+        self.dodge_active = True
+        # print(self.dodge)
+        print(f"{bcolors.OKBLUE}{self.name}{bcolors.ENDC} tries to dodge!")
 
     def info(self):
         print("Info:")
