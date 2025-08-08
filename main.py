@@ -1,5 +1,5 @@
-from classes.game import Person, bcolors
-from classes.magic import Spell
+from classes import Person, bcolors
+from classes import Spell
 
 
 spell_Fire = Spell("Fire", 8, 16, "Elemental")
@@ -9,13 +9,13 @@ spell_Cure = Spell("Cure", 5, 20, "Holy")
 
 magic = [spell_Fire, spell_Thunder, spell_Ice, spell_Cure]
 
-player = Person("Player", 100, 20, 10, 20, magic, 20)
-enemy = Person("Enemy", 100, 0, 8, 15, magic, 15)
+player = Person("Player", 100, 20, 10, 20, magic, 20, 10, 1.4)
+enemy = Person("Enemy", 100, 0, 8, 15, magic, 15, 10, 1.4)
 
 print(bcolors.FAIL + bcolors.BOLD + "AN ENEMY ATTACKS!" + bcolors.ENDC)
 
 while True:
-    print("================================================================================")
+    print(bcolors.HEADER + bcolors.BOLD + "================================================================================" + bcolors.ENDC)
 
     print(bcolors.OKBLUE + "=== Enemy: " + bcolors.ENDC)
     enemy.info_short()
@@ -24,6 +24,7 @@ while True:
     player.info_short()
 
     choice = player.choose_action()
+    print(bcolors.FAIL + "==================================================" + bcolors.ENDC)
     if choice == "Attack":
         player.perform_attack(enemy)
     elif choice == "Magic":
@@ -33,18 +34,20 @@ while True:
         player.try_dodge()
     elif choice == "Leave":
         print(bcolors.FAIL + bcolors.BOLD + "You've left the battlefield!" + bcolors.ENDC)
+        print(bcolors.FAIL + "==================================================" + bcolors.ENDC)
         break
 
     if enemy.get_hp() == 0:
         print(bcolors.OKGREEN + bcolors.BOLD + "You won!" + bcolors.ENDC)
+        print(bcolors.FAIL + "==================================================" + bcolors.ENDC)
         break
 
-    player_hp_old = player.get_hp()
+    print(bcolors.FAIL + "==============================" + bcolors.ENDC)
     enemy.perform_attack(player)
-    # player.take_damage(enemy.generate_damage())
-    player_hp_new = player.get_hp()
-    # print(f"You got hit by enemy: {bcolors.WARNING}-{player_hp_old - player_hp_new}HP.{bcolors.ENDC}")
 
     if player.get_hp() == 0:
         print(bcolors.FAIL + bcolors.BOLD + "You lost!" + bcolors.ENDC)
+        print(bcolors.FAIL + "==================================================" + bcolors.ENDC)
         break
+    else:
+        print(bcolors.FAIL + "==================================================" + bcolors.ENDC)

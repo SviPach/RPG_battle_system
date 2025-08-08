@@ -13,7 +13,7 @@ class bcolors:
     UNDERLINE = '\033[4m'
 
 class Person:
-    def __init__(self, name, hp, mp, atk, df, magic, dodge):
+    def __init__(self, name, hp, mp, atk, df, magic, dodge, crit_chance, crit_multiplier):
         self.name = name                # Name
         self.hp_max = hp                # Maximum value of health points
         self.hp = hp                    # Current health points
@@ -25,24 +25,36 @@ class Person:
         self.atk_high = math.ceil(atk + atk*0.4)    # Strongest physical damage
         self.df = df                                # Defence
         self.magic = magic                          # List of magic spells
-        self.dodge = dodge              # Dodge chance
-        self.dodge_active = False       # If dodge action is active
+        self.dodge = dodge                          # Dodge chance
+        self.dodge_active = False                   # If dodge action is active
+        self.critical_chance = crit_chance          # Critical hit chance
+        self.critical_multiplier = crit_multiplier  # Critical hit damage multiplier
+        self.counterattack_active = False           # If counterattack is active
         # Possible actions ->
         self.actions = ["Attack", "Magic", "Dodge", "Leave"]
 
     def generate_damage(self, spell = None):
         if spell is None:
-            return random.randrange(self.atk_low, self.atk_high)
+            dmg = random.randrange(self.atk_low, self.atk_high)
         else:
-            dmg_low = spell.get_spell_damage()[0]
-            dmg_high = spell.get_spell_damage()[1]
-            return random.randrange(dmg_low, dmg_high)
+            dmg = random.randrange(spell.get_spell_damage()[0], spell.get_spell_damage()[1])
+
+        if random.randrange(100) in range(self.critical_chance) or self.counterattack_active is True:
+            dmg = math.ceil(dmg * self.critical_multiplier)
+            print(f"{bcolors.WARNING}{bcolors.UNDERLINE}{self.name} makes a critical hit!{bcolors.ENDC}")
+            self.counterattack_active = False
+            return dmg
+
+        self.counterattack_active = False
+        return dmg
 
     def take_damage(self, dmg):
         if random.randrange(100) in range(self.dodge):
             print(f"{bcolors.WARNING}{bcolors.UNDERLINE}{self.name} dodged!{bcolors.ENDC}")
             if self.dodge_active:
                 self.dodge -= 30
+                self.counterattack_active = True
+                print(f"{bcolors.WARNING}{bcolors.UNDERLINE}{self.name} is about to perform a counterattack!{bcolors.ENDC}")
             return self.hp
 
         dmg_taken = math.ceil(dmg * (100 - self.df)/100)
@@ -107,7 +119,7 @@ class Person:
                 return None
 
             if choice in range(len(self.magic)):
-                spell_name = self.magic[choice].get_spell_name()
+                # spell_name = self.magic[choice].get_spell_name()
                 if self.magic[choice].get_spell_cost() > self.mp:
                     print(f"{bcolors.FAIL}{bcolors.UNDERLINE}Not enough MP!{bcolors.ENDC}")
                     continue
@@ -125,7 +137,7 @@ class Person:
             if spell.get_spell_type() == "Holy":
                 heal = spell.get_spell_damage()[2]
                 self.hp += heal
-                print(f"You've healed yourself by {bcolors.OKGREEN}{heal}{bcolors.ENDC}HP with {bcolors.WARNING}Physical attack{bcolors.ENDC}.")
+                print(f"You've healed yourself by {bcolors.OKGREEN}{heal}{bcolors.ENDC}HP with {bcolors.WARNING}{spell.get_spell_name()}{bcolors.ENDC}.")
                 return
             else:
                 dmg = self.generate_damage(spell)
@@ -142,13 +154,11 @@ class Person:
         enemy.take_damage(dmg)
         enemy_hp_new = enemy.hp
 
-        # print(f"atk_low: {self.atk_low}, atk_high: {self.atk_high}")
         print(f"--> {bcolors.OKBLUE}{enemy.get_name()}{bcolors.ENDC} took damage: {bcolors.WARNING}-{enemy_hp_old - enemy_hp_new}HP.{bcolors.ENDC}")
 
     def try_dodge(self):
         self.dodge += 30
         self.dodge_active = True
-        # print(self.dodge)
         print(f"{bcolors.OKBLUE}{self.name}{bcolors.ENDC} tries to dodge!")
 
     def info(self):
