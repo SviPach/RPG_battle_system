@@ -3,4 +3,4 @@ from classes.magic import Spell
 
 __all__ = [Person, bcolors, Spell]
 
-__version__ = "0.1a"
+__version__ = "0.1b"
