@@ -14,7 +14,7 @@ class bcolors:
 
 class Person:
     def __init__(self, name, hp, mp, atk, df, magic, dodge, crit_chance, crit_multiplier):
-        self.name = name                # Mame.
+        self.name = name                # Name.
         self.hp_max = hp                # Maximum value of health points.
         self.hp = hp                    # Current health points.
         self.hp_critical = hp*0.2       # Critical value of health points.
@@ -30,8 +30,9 @@ class Person:
         self.critical_chance = crit_chance          # Critical hit chance.
         self.critical_multiplier = crit_multiplier  # Critical hit damage multiplier.
         self.counterattack_active = False           # If counterattack is active.
+        self.inventory = []                         # Inventory of the player.
         # Possible actions ->
-        self.actions = ["Attack", "Magic", "Dodge", "Leave"]
+        self.actions = ["Attack", "Magic", "Dodge", "Use potion", "Leave"]
 
     def generate_damage(self, spell = None):
         """
@@ -127,14 +128,46 @@ class Person:
         """ Reduce player's MP. """
         self.mp -= cost
 
+    def potion_obtain(self, potion):
+        """ Get the potion. """
+        print(f"You have obtained: {bcolors.WARNING}{potion.get_name()}{bcolors.ENDC}.")
+        self.inventory.append(potion)
+
+    def potion_choose(self):
+        """ Choose a potion. """
+        while True:
+            # List of potions ->
+            print(bcolors.OKBLUE + "Choose the potion to use:" + bcolors.ENDC)
+            for i in range(len(self.inventory)):
+                print(f"{i+1}. {self.inventory[i].get_name()} - {self.inventory[i].get_description()}.")
+            # Choosing the potion ->
+            choice = int(input(f"{bcolors.UNDERLINE}Your choice:{bcolors.ENDC} ")) - 1
+            # Checking if there is such a potion ->
+            if choice in range(len(self.inventory)):
+                self.potion_use(self.inventory[choice])
+                break
+            else:
+                print(f"{bcolors.FAIL}{bcolors.UNDERLINE}There is no such a potion!{bcolors.ENDC}")
+
+    def potion_use(self, potion):
+        """ Use the potion. """
+        if potion.get_type() == "health":
+            self.heal(potion.get_prop())
+            print(f"You have healed yourself by {bcolors.OKGREEN}{potion.get_prop()}{bcolors.ENDC}HP "
+                  f"with {bcolors.WARNING}{potion.get_name()}{bcolors.ENDC}.")
+            if self.hp > self.hp_max:
+                self.hp = self.hp_max
+            self.inventory.remove(potion)
+
+
     def choose_action(self):
         """ Chooses an action. """
         while True:
-            # Choosing an action ->
+            # List of actions ->
             print(bcolors.OKBLUE + "Choose an action:" + bcolors.ENDC)
             for i in range(len(self.actions)):
                 print(f"{i+1}. {self.actions[i]}")
-
+            # Choosing an action ->
             choice = int(input(f"{bcolors.UNDERLINE}Your choice:{bcolors.ENDC} ")) - 1
             # Checking if there is such a choice ->
             if choice in range(len(self.actions)):
