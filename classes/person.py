@@ -154,7 +154,7 @@ class Person:
             print(bc.OKBLUE + "Choose the potion to use:" + bc.ENDC)
             # List of potions ->
             for i in range(len(self.inventory)):
-                print(f"{i+1}. {self.inventory[i].get_name()} - {self.inventory[i].get_description()}.")
+                print(f"{i+1}. {bc.WARNING}{self.inventory[i].get_name()}{bc.ENDC} - {self.inventory[i].get_description()}.")
             # If player don't wat to choose a potion ->
             print("0 - Cancel.")
             # Choosing the potion ->
@@ -175,6 +175,11 @@ class Person:
             print(f"You have healed yourself by {bc.OKGREEN}{potion.get_prop()}{bc.ENDC}HP "
                   f"with {bc.WARNING}{potion.get_name()}{bc.ENDC}.")
             self.heal(potion.get_prop())
+            self.inventory.remove(potion)
+        elif potion.get_type() == "mana":
+            print(f"You have restored your MP by {bc.OKBLUE}{potion.get_prop()}{bc.ENDC}MP "
+                  f"with {bc.WARNING}{potion.get_name()}{bc.ENDC}.")
+            self.restore_mana(potion.get_prop())
             self.inventory.remove(potion)
 
 
@@ -213,15 +218,15 @@ class Person:
         self.hp = self.hp_max
 
     def restore_mana(self, mp):
-        """ Restore the mana of the player. """
+        """ Restore mana of the player. """
         print(f"{bc.UNDERLINE}{bc.OKBLUE}{self.name}{bc.ENDC}: {bc.OKBLUE}+{mp}MP{bc.ENDC}")
         self.mp += mp
         if self.mp > self.mp_max:
             self.mp = self.mp_max
-        print(f"{bc.UNDERLINE}{bc.OKBLUE}{self.name}{bc.ENDC}: {self.info_short()}")
+        print(self.info_short())
 
     def restore_mana_full(self):
-        """ Fully restore the mana of the player. """
+        """ Fully restore mana of the player. """
         mp_gain = self.mp_max - self.mp
         print(f"{bc.UNDERLINE}{bc.OKBLUE}{self.name}{bc.ENDC}: {bc.OKGREEN}+{mp_gain}MP{bc.ENDC}")
         self.mp = self.mp_max
@@ -235,7 +240,8 @@ class Person:
             for i in range(len(self.magic)):
                 dmg_low = self.magic[i].get_spell_damage()[0]
                 dmg_high = self.magic[i].get_spell_damage()[1]
-                print(f"{i + 1}. [{self.magic[i].get_spell_name()}]\t ({dmg_low}-{dmg_high}, {self.magic[i].get_spell_cost()})")
+                print(f"{i + 1}. [{bc.WARNING}{self.magic[i].get_spell_name()}{bc.ENDC}]\t "
+                      f"({bc.FAIL}{dmg_low}-{dmg_high}{bc.ENDC}, {bc.OKBLUE}{self.magic[i].get_spell_cost()}{bc.ENDC})")
 
             # In case if player doesn't want to attack with magic ->
             print("0 - Attack with physical damage instead.")
@@ -293,7 +299,7 @@ class Person:
             spell_name = "Physical attack"
         else:
             spell_name = spell.get_spell_name()
-        print(f"{bc.OKBLUE}{self.name}{bc.ENDC} attacking for {dmg}HP with {bc.WARNING}{spell_name}{bc.ENDC}.")
+        print(f"{bc.OKBLUE}{self.name}{bc.ENDC} attacking for {bc.WARNING}{dmg}{bc.ENDC}HP with {bc.WARNING}{spell_name}{bc.ENDC}.")
 
         # Dealing damage to the enemy and printing out the result ->
         enemy_hp_old = enemy.hp
@@ -305,7 +311,7 @@ class Person:
         """ Try to dodge the next attack. """
         self.dodge += 30
         self.dodge_active = True
-        print(f"{bc.OKBLUE}{self.name}{bc.ENDC} tries to dodge!")
+        print(f"{bc.OKBLUE}{self.name}{bc.ENDC} tries to {bc.WARNING}dodge{bc.ENDC}!")
 
     def inspect(self, enemy):
         """ Inspect yourself or the enemy. """
@@ -346,12 +352,12 @@ class Person:
         print(bc.HEADER + f"===== {self.get_name()}: " + bc.ENDC)
         info = f""
         if self.health_critical():
-            info += f"{bc.FAIL}{self.get_hp()}{bc.ENDC}/{self.get_hp_max()}HP, "
+            info += f"{bc.FAIL}{self.get_hp()}{bc.ENDC}{bc.OKGREEN}/{self.get_hp_max()}{bc.ENDC}HP, "
         else:
-            info += f"{self.get_hp()}/{self.get_hp_max()}HP, "
+            info += f"{bc.OKGREEN}{self.get_hp()}/{self.get_hp_max()}{bc.ENDC}HP, "
 
         if self.mana_critical():
-            info += f"{bc.FAIL}{self.get_mp()}{bc.ENDC}/{self.get_mp_max()}MP"
+            info += f"{bc.FAIL}{self.get_mp()}{bc.ENDC}{bc.OKBLUE}/{self.get_mp_max()}{bc.ENDC}MP"
         else:
-            info += f"{self.get_mp()}/{self.get_mp_max()}MP"
+            info += f"{bc.OKBLUE}{self.get_mp()}/{self.get_mp_max()}{bc.ENDC}MP"
         return info

@@ -5,4 +5,4 @@ from classes.potion import Potion
 
 # __all__ = [Person, bcolors, Spell, Potion]
 
-__version__ = "0.2c"
+__version__ = "0.2d"

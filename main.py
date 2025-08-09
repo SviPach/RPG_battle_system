@@ -14,11 +14,14 @@ player = Person("Player", 100, 20, 10, 20, magic, 20, 10, 1.4)
 enemy = Person("Enemy", 100, 0, 8, 15, None, 15, 10, 1.4)
 
 # Creating a health potion ->
-health_potion = Potion("Health potion", "health", "Heals a player by 50HP", 50)
+health_potion = Potion("Health potion", "health", f"Heals a player by {bc.OKGREEN}50HP{bc.ENDC}", 50)
+mana_potion = Potion("Mana potion", "mana", f"Restores player's MP by {bc.OKBLUE}20MP{bc.ENDC}", 20)
 
-# Adding 3 potions to the player's inventory.
+# Adding potions to the player's inventory.
 for i in range(3):
     player.potion_obtain(health_potion)
+for i in range(3):
+    player.potion_obtain(mana_potion)
 
 # Our battlefield ->
 print(bc.FAIL + bc.BOLD + "AN ENEMY ATTACKS!" + bc.ENDC)
