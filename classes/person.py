@@ -22,9 +22,10 @@ class Person:
         self.crit_chance = crit_chance              # Critical hit chance.
         self.crit_multiplier = crit_multiplier      # Critical hit damage multiplier.
         self.counterattack_active = False           # If counterattack is active.
+        self.guard_active = False                   # If defensive stance is active
         self.inventory = []                         # Inventory of the player.
         # Possible actions ->
-        self.actions = ["Attack", "Magic", "Dodge", "Use potion", "Inspect", "Leave"]
+        self.actions = ["Attack", "Magic", "Dodge", "Use potion", "Inspect", "Guard", "Leave"]
 
     def generate_damage(self, spell = None):
         """
@@ -142,6 +143,10 @@ class Person:
         """ Reduce player's MP. """
         self.mp -= cost
 
+    def is_guard_active(self):
+        """ Check if the guard is active. """
+        return self.guard_active
+
     def potion_obtain(self, potion):
         """ Get the potion. """
         print(f"You have obtained: {bc.WARNING}{potion.get_name()}{bc.ENDC}.")
@@ -204,9 +209,9 @@ class Person:
             # Choosing an action ->
             try:
                 choice = int(input(f"{bc.UNDERLINE}Your choice:{bc.ENDC} ")) - 1
-                erase_lines(7)
+                erase_lines(len(self.actions) + 1)
             except ValueError:
-                erase_lines(7)
+                erase_lines(len(self.actions) + 1)
                 print(f"{bc.FAIL}{bc.UNDERLINE}Please enter the number!{bc.ENDC}")
                 continue
             # Checking if there is such a choice ->
@@ -334,6 +339,17 @@ class Person:
         self.dodge += 30
         self.dodge_active = True
         print(f"{bc.OKBLUE}{self.name}{bc.ENDC} tries to {bc.WARNING}dodge{bc.ENDC}!")
+
+    def guard_activate(self):
+        """ Enter the defensive stance to reduce incoming damage. """
+        self.df += 50
+        self.guard_active = True
+        print(f"{bc.OKBLUE}{self.name}{bc.ENDC} enters a {bc.WARNING}defensive state{bc.ENDC}!")
+
+    def guard_deactivate(self):
+        """ Quit the defensive stance. """
+        self.df -= 50
+        self.guard_active = False
 
     def inspect(self, enemy):
         """ Inspect yourself or the enemy. """

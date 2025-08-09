@@ -34,7 +34,12 @@ while running_battlefield:
     print(bc.HEADER + bc.BOLD + "======================================== Next turn! ========================================" + bc.ENDC)
     # MP passive restoring ->
     if player.get_mp() < player.get_mp_max():
-        player.restore_mana(math.ceil(player.get_mp_max()*0.1))
+        if player.is_guard_active():
+            mp_multiplier = 0.2
+        else:
+            mp_multiplier = 0.1
+        player.guard_deactivate()
+        player.restore_mana(math.ceil(player.get_mp_max()*mp_multiplier))
 
     # Short info about player and enemy at the start of every turn ->
     print(bc.HEADER + f"===== {enemy.get_name()}: " + bc.ENDC)
@@ -63,6 +68,10 @@ while running_battlefield:
             player.potion_choose()
         elif choice == "Inspect":
             player.inspect(enemy)
+        elif choice == "Guard":
+            print(bc.FAIL + "========================= Attack time! =========================" + bc.ENDC)
+            player.guard_activate()
+            running_player = False
         elif choice == "Leave":
             print(bc.FAIL + "==================================================" + bc.ENDC)
             print(bc.FAIL + bc.BOLD + "You've left the battlefield!" + bc.ENDC)
