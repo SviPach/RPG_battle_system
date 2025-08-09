@@ -84,19 +84,21 @@ class Person:
             # If dodging is active ->
             if self.dodge_active:
                 self.dodge -= 30
+                self.dodge_active = False
                 self.counterattack_active = True
                 print(f"{bcolors.WARNING}{bcolors.UNDERLINE}{self.name} is about to perform a counterattack!{bcolors.ENDC}")
             return self.hp
+
+        # If dodging was active but did not dodge ->
+        if self.dodge_active:
+            self.dodge -= 30
+            self.dodge_active = False
 
         # Damage to take ->
         dmg_taken = math.ceil(dmg * (100 - self.df)/100)
         self.hp -= dmg_taken
         if self.hp < 0:
             self.hp = 0
-
-        # If dodging was active but did not dodge ->
-        if self.dodge_active:
-            self.dodge -= 30
 
         return self.hp
 

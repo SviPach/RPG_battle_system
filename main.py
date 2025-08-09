@@ -25,7 +25,7 @@ for i in range(3):
 print(bcolors.FAIL + bcolors.BOLD + "AN ENEMY ATTACKS!" + bcolors.ENDC)
 running_battlefield = True
 while running_battlefield:
-    print(bcolors.HEADER + bcolors.BOLD + "================================================================================" + bcolors.ENDC)
+    print(bcolors.HEADER + bcolors.BOLD + "======================================== Next turn! ========================================" + bcolors.ENDC)
 
     # Short info about player and enemy at the start of every turn ->
     print(bcolors.OKBLUE + "=== Enemy: " + bcolors.ENDC)
@@ -34,26 +34,34 @@ while running_battlefield:
     player.info_short()
 
     # Player's turn ->
-    print(bcolors.FAIL + "==================================================" + bcolors.ENDC)
     running_player = True
     while running_player:
         choice = player.choose_action()
         if choice == "Attack":
+            print(bcolors.FAIL + "========================= Attack time! =========================" + bcolors.ENDC)
             player.perform_attack(enemy)
             running_player = False
         elif choice == "Magic":
             spell = player.choose_magic()
+            print(bcolors.FAIL + "========================= Attack time! =========================" + bcolors.ENDC)
             player.perform_attack(enemy, spell)
             running_player = False
         elif choice == "Dodge":
+            print(bcolors.FAIL + "========================= Attack time! =========================" + bcolors.ENDC)
             player.try_dodge()
             running_player = False
         elif choice == "Use potion":
             player.potion_choose()
         elif choice == "Leave":
+            print(bcolors.FAIL + "==================================================" + bcolors.ENDC)
             print(bcolors.FAIL + bcolors.BOLD + "You've left the battlefield!" + bcolors.ENDC)
             print(bcolors.FAIL + "==================================================" + bcolors.ENDC)
+            running_player = False
             running_battlefield = False
+
+    # If player have left the battlefield ->
+    if not running_battlefield:
+        break
 
     # If enemy has been defeated ->
     if enemy.get_hp() == 0:
