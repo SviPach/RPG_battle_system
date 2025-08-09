@@ -7,4 +7,4 @@ import msvcrt
 
 # __all__ = [Person, bcolors, Spell, Potion]
 
-__version__ = "0.3a"
+__version__ = "0.3b"

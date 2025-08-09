@@ -158,8 +158,13 @@ class Person:
             # If player don't wat to choose a potion ->
             print("0 - Cancel.")
             # Choosing the potion ->
-            choice = int(input(f"{bc.UNDERLINE}Your choice:{bc.ENDC} ")) - 1
-            erase_lines(len(self.inventory)+2)
+            try:
+                choice = int(input(f"{bc.UNDERLINE}Your choice:{bc.ENDC} ")) - 1
+                erase_lines(len(self.inventory) + 2)
+            except ValueError:
+                erase_lines(len(self.inventory) + 2)
+                print(f"{bc.FAIL}{bc.UNDERLINE}Please enter the number!{bc.ENDC}")
+                continue
             # If canceled ->
             if choice == -1:
                 print(f"You {bc.OKBLUE}{bc.UNDERLINE}did not choose{bc.ENDC} a potion.")
@@ -195,10 +200,15 @@ class Person:
             for i in range(len(self.actions)):
                 print(f"{i+1}. {self.actions[i]}")
             # Choosing an action ->
-            choice = int(input(f"{bc.UNDERLINE}Your choice:{bc.ENDC} ")) - 1
+            try:
+                choice = int(input(f"{bc.UNDERLINE}Your choice:{bc.ENDC} ")) - 1
+                erase_lines(7)
+            except ValueError:
+                erase_lines(7)
+                print(f"{bc.FAIL}{bc.UNDERLINE}Please enter the number!{bc.ENDC}")
+                continue
             # Checking if there is such a choice ->
             if choice in range(len(self.actions)):
-                erase_lines(7)
                 print(f"You chose {bc.OKBLUE}{bc.UNDERLINE}{self.actions[choice]}{bc.ENDC}.")
                 return self.actions[choice]
             else:
@@ -252,9 +262,13 @@ class Person:
             print(f"0 - Attack with {bc.WARNING}physical damage{bc.ENDC} instead.")
 
             # Player's choice ->
-            choice = int(input(f"{bc.UNDERLINE}Your choice:{bc.ENDC} ")) - 1
-            erase_lines(len(self.magic)+3)
-
+            try:
+                choice = int(input(f"{bc.UNDERLINE}Your choice:{bc.ENDC} ")) - 1
+                erase_lines(len(self.magic)+3)
+            except ValueError:
+                erase_lines(len(self.magic)+3)
+                print(f"{bc.FAIL}{bc.UNDERLINE}Please enter the number!{bc.ENDC}")
+                continue
             # If player chose a physical attack instead of magic ->
             if choice == -1:
                 print(f"You chose {bc.WARNING}{bc.UNDERLINE}Physical attack{bc.ENDC} instead of magic spell.")
