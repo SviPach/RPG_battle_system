@@ -12,7 +12,7 @@ magic = [spell_Fire, spell_Thunder, spell_Ice, spell_Cure]
 
 # Creating player and first enemy ->
 player = Person("Player", 100, 20, 10, 20, magic, 20, 10, 1.4)
-enemy = Person("Enemy", 100, 0, 8, 15, magic, 15, 10, 1.4)
+enemy = Person("Enemy", 100, 0, 8, 15, None, 15, 10, 1.4)
 
 # Creating a health potion ->
 health_potion = Potion("Health potion", "health", "Heals a player by 50HP", 50)
@@ -28,10 +28,8 @@ while running_battlefield:
     print(bcolors.HEADER + bcolors.BOLD + "======================================== Next turn! ========================================" + bcolors.ENDC)
 
     # Short info about player and enemy at the start of every turn ->
-    print(bcolors.OKBLUE + "=== Enemy: " + bcolors.ENDC)
-    enemy.info_short()
-    print(bcolors.OKBLUE + "=== Player: " + bcolors.ENDC)
-    player.info_short()
+    print(enemy.info_short())
+    print(player.info_short())
 
     # Player's turn ->
     running_player = True
@@ -52,6 +50,8 @@ while running_battlefield:
             running_player = False
         elif choice == "Use potion":
             player.potion_choose()
+        elif choice == "Inspect":
+            player.inspect(enemy)
         elif choice == "Leave":
             print(bcolors.FAIL + "==================================================" + bcolors.ENDC)
             print(bcolors.FAIL + bcolors.BOLD + "You've left the battlefield!" + bcolors.ENDC)
@@ -67,7 +67,18 @@ while running_battlefield:
     if enemy.get_hp() == 0:
         print(bcolors.OKGREEN + bcolors.BOLD + "You won!" + bcolors.ENDC)
         print(bcolors.FAIL + "==================================================" + bcolors.ENDC)
-        running_battlefield = False
+
+        print(bcolors.HEADER + bcolors.BOLD + "================================================================================" + bcolors.ENDC)
+        # Creating a new enemy ->
+        print(bcolors.FAIL + bcolors.BOLD + "Next enemy is attacking!" + bcolors.ENDC)
+        enemy = Person("Enemy", enemy.get_hp_max()+5, 0, enemy.get_atk() + 5, enemy.get_df() + 5,
+                       None, enemy.get_dodge() + 5, enemy.get_crit_chance()+5, enemy.get_crit_multiplier()+0.1)
+        enemy.info()
+        print(bcolors.HEADER + bcolors.BOLD + "================================================================================" + bcolors.ENDC)
+        print(f"{bcolors.OKGREEN}You have recovered!{bcolors.ENDC}")
+        player.heal_full()
+        player.restore_mana_full()
+        continue
 
     # Enemy's turn ->
     print(bcolors.FAIL + "==============================" + bcolors.ENDC)
