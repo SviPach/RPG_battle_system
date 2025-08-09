@@ -22,15 +22,20 @@ for i in range(3):
     player.potion_obtain(health_potion)
 for i in range(3):
     player.potion_obtain(mana_potion)
+erase_lines(6)
 
 # Our battlefield ->
 print(bc.FAIL + bc.BOLD + "AN ENEMY ATTACKS!" + bc.ENDC)
+print(bc.UNDERLINE + bc.HEADER + "TO START THE NEXT TURN -> PRESS ANY KEY" + bc.ENDC)
 running_battlefield = True
 while running_battlefield:
+    msvcrt.getch()
     print(bc.HEADER + bc.BOLD + "======================================== Next turn! ========================================" + bc.ENDC)
 
     # Short info about player and enemy at the start of every turn ->
+    print(bc.HEADER + f"===== {enemy.get_name()}: " + bc.ENDC)
     print(enemy.info_short())
+    print(bc.HEADER + f"===== {player.get_name()}: " + bc.ENDC)
     print(player.info_short())
 
     # Player's turn ->
@@ -68,14 +73,15 @@ while running_battlefield:
     # If enemy has been defeated ->
     if enemy.get_hp() == 0:
         print(bc.OKGREEN + bc.BOLD + "You won!" + bc.ENDC)
-        print(bc.FAIL + "==================================================" + bc.ENDC)
-
+        print(bc.FAIL + "================================================================" + bc.ENDC)
+        msvcrt.getch()
         print(bc.HEADER + bc.BOLD + "================================================================================" + bc.ENDC)
         # Creating a new enemy ->
         print(bc.FAIL + bc.BOLD + "Next enemy is attacking!" + bc.ENDC)
         enemy = Person("Enemy", enemy.get_hp_max()+5, 0, enemy.get_atk() + 5, enemy.get_df() + 5,
                        None, enemy.get_dodge() + 5, enemy.get_crit_chance()+5, enemy.get_crit_multiplier()+0.1)
         enemy.info()
+        print(bc.OKBLUE + "-------------------------")
         print(bc.HEADER + bc.BOLD + "================================================================================" + bc.ENDC)
         print(f"{bc.OKGREEN}You have recovered!{bc.ENDC}")
         player.heal_full()
@@ -89,7 +95,7 @@ while running_battlefield:
     # If player has been defeated ->
     if player.get_hp() == 0:
         print(bc.FAIL + bc.BOLD + "You lost!" + bc.ENDC)
-        print(bc.FAIL + "==================================================" + bc.ENDC)
+        print(bc.FAIL + "================================================================" + bc.ENDC)
         running_battlefield = False
     else:
-        print(bc.FAIL + "==================================================" + bc.ENDC)
+        print(bc.FAIL + "================================================================" + bc.ENDC)

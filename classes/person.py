@@ -1,6 +1,6 @@
 import random
 import math
-from classes import bc
+from classes import bc, erase_lines
 
 
 class Person:
@@ -44,7 +44,7 @@ class Person:
         if spell is None:
             dmg = random.randrange(self.atk_low, self.atk_high)
         else:
-            dmg = random.randrange(spell.get_spell_damage()[0], spell.get_spell_damage()[1])
+            dmg = random.randrange(spell.get_damage()[0], spell.get_damage()[1])
 
         # Chance to perform a critical hit ->
         if random.randrange(100) in range(self.crit_chance) or self.counterattack_active is True:
@@ -159,11 +159,14 @@ class Person:
             print("0 - Cancel.")
             # Choosing the potion ->
             choice = int(input(f"{bc.UNDERLINE}Your choice:{bc.ENDC} ")) - 1
+            erase_lines(len(self.inventory)+2)
             # If canceled ->
             if choice == -1:
+                print(f"You {bc.OKBLUE}{bc.UNDERLINE}did not choose{bc.ENDC} a potion.")
                 break
             # Checking if there is such a potion ->
             if choice in range(len(self.inventory)):
+                print(f"You chose {bc.WARNING}{bc.UNDERLINE}{self.inventory[choice].get_name()}{bc.ENDC}.")
                 self.potion_use(self.inventory[choice])
                 break
             else:
@@ -195,6 +198,8 @@ class Person:
             choice = int(input(f"{bc.UNDERLINE}Your choice:{bc.ENDC} ")) - 1
             # Checking if there is such a choice ->
             if choice in range(len(self.actions)):
+                erase_lines(7)
+                print(f"You chose {bc.OKBLUE}{bc.UNDERLINE}{self.actions[choice]}{bc.ENDC}.")
                 return self.actions[choice]
             else:
                 print(f"{bc.FAIL}{bc.UNDERLINE}There is no such an action!{bc.ENDC}")
@@ -238,28 +243,31 @@ class Person:
             print(bc.OKBLUE +  "Choose a spell: \n(dmg, cost)" + bc.ENDC)
             # List of the magic spells ->
             for i in range(len(self.magic)):
-                dmg_low = self.magic[i].get_spell_damage()[0]
-                dmg_high = self.magic[i].get_spell_damage()[1]
-                print(f"{i + 1}. [{bc.WARNING}{self.magic[i].get_spell_name()}{bc.ENDC}]\t "
-                      f"({bc.FAIL}{dmg_low}-{dmg_high}{bc.ENDC}, {bc.OKBLUE}{self.magic[i].get_spell_cost()}{bc.ENDC})")
+                dmg_low = self.magic[i].get_damage()[0]
+                dmg_high = self.magic[i].get_damage()[1]
+                print(f"{i + 1}. [{bc.WARNING}{self.magic[i].get_name()}{bc.ENDC}]\t "
+                      f"({bc.FAIL}{dmg_low}-{dmg_high}{bc.ENDC}, {bc.OKBLUE}{self.magic[i].get_cost()}{bc.ENDC})")
 
             # In case if player doesn't want to attack with magic ->
-            print("0 - Attack with physical damage instead.")
+            print(f"0 - Attack with {bc.WARNING}physical damage{bc.ENDC} instead.")
 
             # Player's choice ->
             choice = int(input(f"{bc.UNDERLINE}Your choice:{bc.ENDC} ")) - 1
+            erase_lines(len(self.magic)+3)
 
             # If player chose a physical attack instead of magic ->
             if choice == -1:
+                print(f"You chose {bc.WARNING}{bc.UNDERLINE}Physical attack{bc.ENDC} instead of magic spell.")
                 return None
 
             # Checking if there is such a choice ->
             if choice in range(len(self.magic)):
                 # If player doesn't have enough MP ->
-                if self.magic[choice].get_spell_cost() > self.mp:
+                if self.magic[choice].get_cost() > self.mp:
                     print(f"{bc.FAIL}{bc.UNDERLINE}Not enough MP!{bc.ENDC}")
                     continue
                 else:
+                    print(f"You chose {bc.WARNING}{bc.UNDERLINE}{self.magic[choice].get_name()}{bc.ENDC}.")
                     return self.magic[choice]
             else:
                 print(bc.FAIL + bc.UNDERLINE + "There is no such a spell!" + bc.ENDC)
@@ -278,14 +286,14 @@ class Person:
         """
         # If attack is performed by magic ->
         if spell is not None:
-            spell_cost = spell.get_spell_cost()
+            spell_cost = spell.get_cost()
             self.reduce_mp(spell_cost)
 
             # If the magic spell has a "Holy" type ->
-            if spell.get_spell_type() == "Holy":
-                hp = spell.get_spell_damage()[2]
+            if spell.get_type() == "Holy":
+                hp = spell.get_damage()[2]
                 # The healing result ->
-                print(f"You've healed yourself by {bc.OKGREEN}{hp}{bc.ENDC}HP with {bc.WARNING}{spell.get_spell_name()}{bc.ENDC}.")
+                print(f"You've healed yourself by {bc.OKGREEN}{hp}{bc.ENDC}HP with {bc.WARNING}{spell.get_name()}{bc.ENDC}.")
                 self.heal(hp)
                 return
             else:
@@ -298,7 +306,7 @@ class Person:
         if spell is None:
             spell_name = "Physical attack"
         else:
-            spell_name = spell.get_spell_name()
+            spell_name = spell.get_name()
         print(f"{bc.OKBLUE}{self.name}{bc.ENDC} attacking for {bc.WARNING}{dmg}{bc.ENDC}HP with {bc.WARNING}{spell_name}{bc.ENDC}.")
 
         # Dealing damage to the enemy and printing out the result ->
@@ -318,14 +326,19 @@ class Person:
         while True:
             print(bc.OKBLUE + "-------------------------")
             print(bc.OKBLUE + "Choose who to inspect: " + bc.ENDC)
-            print(f"1. Yourself\n2. Enemy")
+            print(f"1. Yourself\n2. Enemy\n3. Cancel")
             choice = input(f"{bc.UNDERLINE}Your choice:{bc.ENDC} ")
+            erase_lines(4)
             if choice == '1':
+                print(f"You inspect {bc.OKBLUE}{bc.UNDERLINE}{self.name}{bc.ENDC}.")
                 self.info()
                 break
             elif choice == '2':
+                print(f"You inspect {bc.OKBLUE}{bc.UNDERLINE}{enemy.get_name()}{bc.ENDC}.")
                 enemy.info()
                 break
+            elif choice == '3':
+                print(f"You inspect {bc.OKBLUE}{bc.UNDERLINE}no one{bc.ENDC}.")
             else:
                 print(bc.FAIL + bc.UNDERLINE + "There is no such a choice" + bc.ENDC)
                 continue
@@ -349,7 +362,6 @@ class Person:
 
     def info_short(self):
         """ Short information about the player. """
-        print(bc.HEADER + f"===== {self.get_name()}: " + bc.ENDC)
         info = f""
         if self.health_critical():
             info += f"{bc.FAIL}{self.get_hp()}{bc.ENDC}{bc.OKGREEN}/{self.get_hp_max()}{bc.ENDC}HP, "
