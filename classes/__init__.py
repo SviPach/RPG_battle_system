@@ -1,7 +1,8 @@
-from classes.person import Person, bcolors
+from classes.bcolors import bcolors as bc
+from classes.person import Person
 from classes.magic import Spell
 from classes.potion import Potion
 
 # __all__ = [Person, bcolors, Spell, Potion]
 
-__version__ = "0.2b"
+__version__ = "0.2c"

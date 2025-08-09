@@ -1,16 +1,7 @@
 import random
 import math
+from classes import bc
 
-
-class bcolors:
-    HEADER = '\033[95m'
-    OKBLUE = '\033[94m'
-    OKGREEN = '\033[92m'
-    WARNING = '\033[93m'
-    FAIL = '\033[91m'
-    ENDC = '\033[0m'
-    BOLD = '\033[1m'
-    UNDERLINE = '\033[4m'
 
 class Person:
     def __init__(self, name, hp, mp, atk, df, magic, dodge, crit_chance, crit_multiplier):
@@ -20,7 +11,7 @@ class Person:
         self.hp_critical = hp*0.2       # Critical value of health points.
         self.mp_max = mp                # Maximum value of mana points.
         self.mp = mp                    # Current mana points.
-        self.mp_critical = mp * 0.2                 # Critical value of health points.
+        self.mp_critical = mp * 0.2                 # Critical value of mana points.
         self.atk = atk                              # Default attack value.
         self.atk_low = math.ceil(atk - atk*0.4)     # Weakest physical damage.
         self.atk_high = math.ceil(atk + atk*0.4)    # Strongest physical damage.
@@ -58,7 +49,7 @@ class Person:
         # Chance to perform a critical hit ->
         if random.randrange(100) in range(self.crit_chance) or self.counterattack_active is True:
             dmg = math.ceil(dmg * self.crit_multiplier)
-            print(f"{bcolors.WARNING}{bcolors.UNDERLINE}{self.name} makes a critical hit!{bcolors.ENDC}")
+            print(f"{bc.WARNING}{bc.UNDERLINE}{self.name} makes a critical hit!{bc.ENDC}")
             self.counterattack_active = False
             return dmg
 
@@ -81,13 +72,13 @@ class Person:
         """
         # Chance to dodge the attack ->
         if random.randrange(100) in range(self.dodge):
-            print(f"{bcolors.WARNING}{bcolors.UNDERLINE}{self.name} dodged!{bcolors.ENDC}")
+            print(f"{bc.WARNING}{bc.UNDERLINE}{self.name} dodged!{bc.ENDC}")
             # If dodging is active ->
             if self.dodge_active:
                 self.dodge -= 30
                 self.dodge_active = False
                 self.counterattack_active = True
-                print(f"{bcolors.WARNING}{bcolors.UNDERLINE}{self.name} is about to perform a counterattack!{bcolors.ENDC}")
+                print(f"{bc.WARNING}{bc.UNDERLINE}{self.name} is about to perform a counterattack!{bc.ENDC}")
             return self.hp
 
         # If dodging was active but did not dodge ->
@@ -153,21 +144,21 @@ class Person:
 
     def potion_obtain(self, potion):
         """ Get the potion. """
-        print(f"You have obtained: {bcolors.WARNING}{potion.get_name()}{bcolors.ENDC}.")
+        print(f"You have obtained: {bc.WARNING}{potion.get_name()}{bc.ENDC}.")
         self.inventory.append(potion)
 
     def potion_choose(self):
         """ Choose a potion. """
         while True:
-            print(bcolors.OKBLUE + "-------------------------")
-            print(bcolors.OKBLUE + "Choose the potion to use:" + bcolors.ENDC)
+            print(bc.OKBLUE + "-------------------------")
+            print(bc.OKBLUE + "Choose the potion to use:" + bc.ENDC)
             # List of potions ->
             for i in range(len(self.inventory)):
                 print(f"{i+1}. {self.inventory[i].get_name()} - {self.inventory[i].get_description()}.")
             # If player don't wat to choose a potion ->
             print("0 - Cancel.")
             # Choosing the potion ->
-            choice = int(input(f"{bcolors.UNDERLINE}Your choice:{bcolors.ENDC} ")) - 1
+            choice = int(input(f"{bc.UNDERLINE}Your choice:{bc.ENDC} ")) - 1
             # If canceled ->
             if choice == -1:
                 break
@@ -176,13 +167,13 @@ class Person:
                 self.potion_use(self.inventory[choice])
                 break
             else:
-                print(f"{bcolors.FAIL}{bcolors.UNDERLINE}There is no such a potion!{bcolors.ENDC}")
+                print(f"{bc.FAIL}{bc.UNDERLINE}There is no such a potion!{bc.ENDC}")
 
     def potion_use(self, potion):
         """ Use the potion. """
         if potion.get_type() == "health":
-            print(f"You have healed yourself by {bcolors.OKGREEN}{potion.get_prop()}{bcolors.ENDC}HP "
-                  f"with {bcolors.WARNING}{potion.get_name()}{bcolors.ENDC}.")
+            print(f"You have healed yourself by {bc.OKGREEN}{potion.get_prop()}{bc.ENDC}HP "
+                  f"with {bc.WARNING}{potion.get_name()}{bc.ENDC}.")
             self.heal(potion.get_prop())
             self.inventory.remove(potion)
 
@@ -190,18 +181,18 @@ class Person:
     def choose_action(self):
         """ Chooses an action. """
         while True:
-            print(bcolors.OKBLUE + "-------------------------")
-            print(bcolors.OKBLUE + "Choose an action:" + bcolors.ENDC)
+            print(bc.OKBLUE + "-------------------------")
+            print(bc.OKBLUE + "Choose an action:" + bc.ENDC)
             # List of actions ->
             for i in range(len(self.actions)):
                 print(f"{i+1}. {self.actions[i]}")
             # Choosing an action ->
-            choice = int(input(f"{bcolors.UNDERLINE}Your choice:{bcolors.ENDC} ")) - 1
+            choice = int(input(f"{bc.UNDERLINE}Your choice:{bc.ENDC} ")) - 1
             # Checking if there is such a choice ->
             if choice in range(len(self.actions)):
                 return self.actions[choice]
             else:
-                print(f"{bcolors.FAIL}{bcolors.UNDERLINE}There is no such an action!{bcolors.ENDC}")
+                print(f"{bc.FAIL}{bc.UNDERLINE}There is no such an action!{bc.ENDC}")
 
     def get_name(self):
         """ Get the name of the player. """
@@ -209,37 +200,37 @@ class Person:
 
     def heal(self, hp):
         """ Heals the player. """
-        print(f"{bcolors.UNDERLINE}{bcolors.OKBLUE}{self.name}{bcolors.ENDC}: {bcolors.OKGREEN}+{hp}HP{bcolors.ENDC}")
+        print(f"{bc.UNDERLINE}{bc.OKBLUE}{self.name}{bc.ENDC}: {bc.OKGREEN}+{hp}HP{bc.ENDC}")
         self.hp += hp
         if self.hp > self.hp_max:
             self.hp = self.hp_max
-        print(f"{bcolors.UNDERLINE}{bcolors.OKBLUE}{self.name}{bcolors.ENDC}: {self.info_short()}")
+        print(f"{bc.UNDERLINE}{bc.OKBLUE}{self.name}{bc.ENDC}: {self.info_short()}")
 
     def heal_full(self):
         """ Fully heal the player. """
         hp_gain = self.hp_max - self.hp
-        print(f"{bcolors.UNDERLINE}{bcolors.OKBLUE}{self.name}{bcolors.ENDC}: {bcolors.OKGREEN}+{hp_gain}HP{bcolors.ENDC}")
+        print(f"{bc.UNDERLINE}{bc.OKBLUE}{self.name}{bc.ENDC}: {bc.OKGREEN}+{hp_gain}HP{bc.ENDC}")
         self.hp = self.hp_max
 
     def restore_mana(self, mp):
         """ Restore the mana of the player. """
-        print(f"{bcolors.UNDERLINE}{bcolors.OKBLUE}{self.name}{bcolors.ENDC}: {bcolors.OKBLUE}+{mp}MP{bcolors.ENDC}")
+        print(f"{bc.UNDERLINE}{bc.OKBLUE}{self.name}{bc.ENDC}: {bc.OKBLUE}+{mp}MP{bc.ENDC}")
         self.mp += mp
         if self.mp > self.mp_max:
             self.mp = self.mp_max
-        print(f"{bcolors.UNDERLINE}{bcolors.OKBLUE}{self.name}{bcolors.ENDC}: {self.info_short()}")
+        print(f"{bc.UNDERLINE}{bc.OKBLUE}{self.name}{bc.ENDC}: {self.info_short()}")
 
     def restore_mana_full(self):
         """ Fully restore the mana of the player. """
         mp_gain = self.mp_max - self.mp
-        print(f"{bcolors.UNDERLINE}{bcolors.OKBLUE}{self.name}{bcolors.ENDC}: {bcolors.OKGREEN}+{mp_gain}MP{bcolors.ENDC}")
+        print(f"{bc.UNDERLINE}{bc.OKBLUE}{self.name}{bc.ENDC}: {bc.OKGREEN}+{mp_gain}MP{bc.ENDC}")
         self.mp = self.mp_max
 
     def choose_magic(self):
         """ Chooses a magic spell. """
         while True:
-            print(bcolors.OKBLUE + "-------------------------")
-            print(bcolors.OKBLUE +  "Choose a spell: \n(dmg, cost)" + bcolors.ENDC)
+            print(bc.OKBLUE + "-------------------------")
+            print(bc.OKBLUE +  "Choose a spell: \n(dmg, cost)" + bc.ENDC)
             # List of the magic spells ->
             for i in range(len(self.magic)):
                 dmg_low = self.magic[i].get_spell_damage()[0]
@@ -250,7 +241,7 @@ class Person:
             print("0 - Attack with physical damage instead.")
 
             # Player's choice ->
-            choice = int(input(f"{bcolors.UNDERLINE}Your choice:{bcolors.ENDC} ")) - 1
+            choice = int(input(f"{bc.UNDERLINE}Your choice:{bc.ENDC} ")) - 1
 
             # If player chose a physical attack instead of magic ->
             if choice == -1:
@@ -260,12 +251,12 @@ class Person:
             if choice in range(len(self.magic)):
                 # If player doesn't have enough MP ->
                 if self.magic[choice].get_spell_cost() > self.mp:
-                    print(f"{bcolors.FAIL}{bcolors.UNDERLINE}Not enough MP!{bcolors.ENDC}")
+                    print(f"{bc.FAIL}{bc.UNDERLINE}Not enough MP!{bc.ENDC}")
                     continue
                 else:
                     return self.magic[choice]
             else:
-                print(bcolors.FAIL + bcolors.UNDERLINE + "There is no such a spell!" + bcolors.ENDC)
+                print(bc.FAIL + bc.UNDERLINE + "There is no such a spell!" + bc.ENDC)
                 continue
 
     def perform_attack(self, enemy, spell = None):
@@ -288,7 +279,7 @@ class Person:
             if spell.get_spell_type() == "Holy":
                 hp = spell.get_spell_damage()[2]
                 # The healing result ->
-                print(f"You've healed yourself by {bcolors.OKGREEN}{hp}{bcolors.ENDC}HP with {bcolors.WARNING}{spell.get_spell_name()}{bcolors.ENDC}.")
+                print(f"You've healed yourself by {bc.OKGREEN}{hp}{bc.ENDC}HP with {bc.WARNING}{spell.get_spell_name()}{bc.ENDC}.")
                 self.heal(hp)
                 return
             else:
@@ -302,27 +293,27 @@ class Person:
             spell_name = "Physical attack"
         else:
             spell_name = spell.get_spell_name()
-        print(f"{bcolors.OKBLUE}{self.name}{bcolors.ENDC} attacking for {dmg}HP with {bcolors.WARNING}{spell_name}{bcolors.ENDC}.")
+        print(f"{bc.OKBLUE}{self.name}{bc.ENDC} attacking for {dmg}HP with {bc.WARNING}{spell_name}{bc.ENDC}.")
 
         # Dealing damage to the enemy and printing out the result ->
         enemy_hp_old = enemy.hp
         enemy.take_damage(dmg)
         enemy_hp_new = enemy.hp
-        print(f"--> {bcolors.OKBLUE}{enemy.get_name()}{bcolors.ENDC} took damage: {bcolors.WARNING}-{enemy_hp_old - enemy_hp_new}HP.{bcolors.ENDC}")
+        print(f"--> {bc.OKBLUE}{enemy.get_name()}{bc.ENDC} took damage: {bc.WARNING}-{enemy_hp_old - enemy_hp_new}HP.{bc.ENDC}")
 
     def try_dodge(self):
         """ Try to dodge the next attack. """
         self.dodge += 30
         self.dodge_active = True
-        print(f"{bcolors.OKBLUE}{self.name}{bcolors.ENDC} tries to dodge!")
+        print(f"{bc.OKBLUE}{self.name}{bc.ENDC} tries to dodge!")
 
     def inspect(self, enemy):
         """ Inspect yourself or the enemy. """
         while True:
-            print(bcolors.OKBLUE + "-------------------------")
-            print(bcolors.OKBLUE + "Choose who to inspect: " + bcolors.ENDC)
+            print(bc.OKBLUE + "-------------------------")
+            print(bc.OKBLUE + "Choose who to inspect: " + bc.ENDC)
             print(f"1. Yourself\n2. Enemy")
-            choice = input(f"{bcolors.UNDERLINE}Your choice:{bcolors.ENDC} ")
+            choice = input(f"{bc.UNDERLINE}Your choice:{bc.ENDC} ")
             if choice == '1':
                 self.info()
                 break
@@ -330,37 +321,37 @@ class Person:
                 enemy.info()
                 break
             else:
-                print(bcolors.FAIL + bcolors.UNDERLINE + "There is no such a choice" + bcolors.ENDC)
+                print(bc.FAIL + bc.UNDERLINE + "There is no such a choice" + bc.ENDC)
                 continue
 
     def info(self):
         """ Full information about the player. """
-        print(bcolors.OKBLUE + "-------------------------")
-        print(f"{bcolors.OKBLUE}==============={bcolors.ENDC} Full info about {bcolors.OKBLUE}{self.name}{bcolors.ENDC}:")
-        print(f"{bcolors.OKBLUE}HP{bcolors.ENDC}: {self.hp}/{self.hp_max}")
-        print(f"{bcolors.OKBLUE}MP{bcolors.ENDC}: {self.mp}/{self.mp_max}")
-        print(f"{bcolors.OKBLUE}Atk dmg{bcolors.ENDC}: {self.atk_low}-{self.atk_high}")
-        print(f"{bcolors.OKBLUE}Atk dmg (base){bcolors.ENDC}: {self.atk}")
-        print(f"{bcolors.OKBLUE}Def{bcolors.ENDC}: {self.df}")
-        print(f"{bcolors.OKBLUE}Dodge chance{bcolors.ENDC}: {self.dodge}%")
-        print(f"{bcolors.OKBLUE}Critical hit chance{bcolors.ENDC}: {self.crit_chance}%")
-        print(f"{bcolors.OKBLUE}Critical hit multiplier{bcolors.ENDC}: x{self.crit_multiplier}")
+        print(bc.OKBLUE + "-------------------------")
+        print(f"{bc.OKBLUE}==============={bc.ENDC} Full info about {bc.OKBLUE}{self.name}{bc.ENDC}:")
+        print(f"{bc.OKBLUE}HP{bc.ENDC}: {self.hp}/{self.hp_max}")
+        print(f"{bc.OKBLUE}MP{bc.ENDC}: {self.mp}/{self.mp_max}")
+        print(f"{bc.OKBLUE}Atk dmg{bc.ENDC}: {self.atk_low}-{self.atk_high}")
+        print(f"{bc.OKBLUE}Atk dmg (base){bc.ENDC}: {self.atk}")
+        print(f"{bc.OKBLUE}Def{bc.ENDC}: {self.df}")
+        print(f"{bc.OKBLUE}Dodge chance{bc.ENDC}: {self.dodge}%")
+        print(f"{bc.OKBLUE}Critical hit chance{bc.ENDC}: {self.crit_chance}%")
+        print(f"{bc.OKBLUE}Critical hit multiplier{bc.ENDC}: x{self.crit_multiplier}")
         inventory = []
         for item in self.inventory:
             inventory.append(item.get_name())
-        print(f"{bcolors.OKBLUE}Inventory{bcolors.ENDC}: {inventory}")
+        print(f"{bc.OKBLUE}Inventory{bc.ENDC}: {inventory}")
 
     def info_short(self):
         """ Short information about the player. """
-        print(bcolors.HEADER + f"===== {self.get_name()}: " + bcolors.ENDC)
+        print(bc.HEADER + f"===== {self.get_name()}: " + bc.ENDC)
         info = f""
         if self.health_critical():
-            info += f"{bcolors.FAIL}{self.get_hp()}{bcolors.ENDC}/{self.get_hp_max()}HP, "
+            info += f"{bc.FAIL}{self.get_hp()}{bc.ENDC}/{self.get_hp_max()}HP, "
         else:
             info += f"{self.get_hp()}/{self.get_hp_max()}HP, "
 
         if self.mana_critical():
-            info += f"{bcolors.FAIL}{self.get_mp()}{bcolors.ENDC}/{self.get_mp_max()}MP"
+            info += f"{bc.FAIL}{self.get_mp()}{bc.ENDC}/{self.get_mp_max()}MP"
         else:
             info += f"{self.get_mp()}/{self.get_mp_max()}MP"
         return info
