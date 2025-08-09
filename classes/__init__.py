@@ -5,7 +5,8 @@ from classes.magic import Spell
 from classes.potion import Potion
 import random
 import msvcrt
+import math
 
 # __all__ = [Person, bcolors, Spell, Potion]
 
-__version__ = "0.3c"
+__version__ = "0.3d"

@@ -183,11 +183,13 @@ class Person:
             print(f"You have healed yourself by {bc.OKGREEN}{potion.get_prop()}{bc.ENDC}HP "
                   f"with {bc.WARNING}{potion.get_name()}{bc.ENDC}.")
             self.heal(potion.get_prop())
+            print(f"{bc.UNDERLINE}{bc.OKBLUE}{self.name}{bc.ENDC}: {self.info_short()}")
             self.inventory.remove(potion)
         elif potion.get_type() == "mana":
             print(f"You have restored your MP by {bc.OKBLUE}{potion.get_prop()}{bc.ENDC}MP "
                   f"with {bc.WARNING}{potion.get_name()}{bc.ENDC}.")
             self.restore_mana(potion.get_prop())
+            print(f"{bc.UNDERLINE}{bc.OKBLUE}{self.name}{bc.ENDC}: {self.info_short()}")
             self.inventory.remove(potion)
 
 
@@ -224,7 +226,6 @@ class Person:
         self.hp += hp
         if self.hp > self.hp_max:
             self.hp = self.hp_max
-        print(f"{bc.UNDERLINE}{bc.OKBLUE}{self.name}{bc.ENDC}: {self.info_short()}")
 
     def heal_full(self):
         """ Fully heal the player. """
@@ -238,7 +239,6 @@ class Person:
         self.mp += mp
         if self.mp > self.mp_max:
             self.mp = self.mp_max
-        print(self.info_short())
 
     def restore_mana_full(self):
         """ Fully restore mana of the player. """

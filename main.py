@@ -32,6 +32,9 @@ enemy_dodging = False
 while running_battlefield:
     msvcrt.getch()
     print(bc.HEADER + bc.BOLD + "======================================== Next turn! ========================================" + bc.ENDC)
+    # MP passive restoring ->
+    if player.get_mp() < player.get_mp_max():
+        player.restore_mana(math.ceil(player.get_mp_max()*0.1))
 
     # Short info about player and enemy at the start of every turn ->
     print(bc.HEADER + f"===== {enemy.get_name()}: " + bc.ENDC)
