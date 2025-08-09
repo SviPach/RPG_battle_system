@@ -28,6 +28,7 @@ erase_lines(6)
 print(bc.FAIL + bc.BOLD + "AN ENEMY ATTACKS!" + bc.ENDC)
 print(bc.UNDERLINE + bc.HEADER + "TO START THE NEXT TURN -> PRESS ANY KEY" + bc.ENDC)
 running_battlefield = True
+enemy_dodging = False
 while running_battlefield:
     msvcrt.getch()
     print(bc.HEADER + bc.BOLD + "======================================== Next turn! ========================================" + bc.ENDC)
@@ -88,9 +89,16 @@ while running_battlefield:
         player.restore_mana_full()
         continue
 
-    # Enemy's turn ->
     print(bc.FAIL + "==============================" + bc.ENDC)
-    enemy.perform_attack(player)
+    # Enemy's turn ->
+    if random.randrange(100) in range(20) and not enemy_dodging:
+        # 20% chance that enemy will try to dodge ->
+        enemy.try_dodge()
+        enemy_dodging = True
+    else:
+        # 80% chance that enemy will attack ->
+        enemy.perform_attack(player)
+        enemy_dodging = False
 
     # If player has been defeated ->
     if player.get_hp() == 0:

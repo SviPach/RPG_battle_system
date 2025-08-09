@@ -3,8 +3,9 @@ from classes.line_eraser import erase_lines
 from classes.person import Person
 from classes.magic import Spell
 from classes.potion import Potion
+import random
 import msvcrt
 
 # __all__ = [Person, bcolors, Spell, Potion]
 
-__version__ = "0.3b"
+__version__ = "0.3c"
