@@ -33,7 +33,10 @@ class Person:
         self.guard_active = False                       # If defensive stance is active
         self.inventory = []                             # Inventory of the player.
         # Possible actions ->
-        self.actions = ["Attack", "Magic", "Dodge", "Use potion", "Inspect", "Guard", "Leave"]
+        self.actions = ["Attack", "Magic", "Dodge", "Use potion", "Inspect", "Guard", "Command", "Leave"]
+
+        # For allies ->
+        self.recover_active = False
 
     def generate_damage(self, spell = None):
         """
@@ -386,7 +389,7 @@ class Person:
             for entity in entities:
                 print(f"{i}. {bc.OKBLUE}{entity.get_name()}{bc.ENDC}")
                 i += 1
-            print(f"0. Cancel")
+            print("0. Cancel")
 
             # Player's choice ->
             try:
@@ -407,8 +410,59 @@ class Person:
                 entities[choice].info()
                 break
             else:
-                print(bc.FAIL + bc.UNDERLINE + "There is no such a choice" + bc.ENDC)
+                print(bc.FAIL + bc.UNDERLINE + "There is no such a choice!" + bc.ENDC)
                 continue
+
+    def command(self, player_party):
+        """ Command a member of the player's party. """
+        if len(player_party) > 1:
+            while True:
+                print(bc.OKBLUE + "-------------------------")
+                print(bc.OKBLUE + "Choose who to command: " + bc.ENDC)
+                # List of allies in player's party ->
+                i = 1
+                for person in player_party[1:]:
+                    print(f"{i}. {bc.OKBLUE}{person.get_name()}{bc.ENDC}")
+                    i += 1
+                print("0. Cancel")
+
+                # Player's choice ->
+                try:
+                    choice = int(input(f"{bc.UNDERLINE}Your choice:{bc.ENDC} ")) - 1
+                except ValueError:
+                    erase_lines(len(player_party[:1])+2)
+                    print(f"{bc.FAIL}{bc.UNDERLINE}Please enter the number!{bc.ENDC}")
+                    continue
+
+                erase_lines(len(player_party[:1]) + 2)
+
+                # If player doesn't want to command anybody ->
+                if choice == -1:
+                    print(f"You {bc.OKBLUE}{bc.UNDERLINE}did not command{bc.ENDC} anybody.")
+                    break
+
+                # Check if there is such an option ->
+                if choice in range(len(player_party[1:])):
+                    player_party[choice+1].recover_switch()
+                    break
+                else:
+                    print(bc.FAIL + bc.UNDERLINE + "There is no such a choice!" + bc.ENDC)
+                    continue
+        else:
+            print(bc.FAIL + bc.UNDERLINE + "You're alone in your party!" + bc.ENDC)
+
+    def recover_switch(self):
+        """ Switch the recover state. """
+        if not self.recover_active:
+            print(f"{bc.OKBLUE}{self.name}{bc.ENDC} is now {bc.WARNING}recovering{bc.ENDC}!")
+            self.recover_active = True
+        else:
+            print(f"{bc.OKBLUE}{self.name}{bc.ENDC} is now {bc.WARNING}fighting{bc.ENDC}!")
+            self.recover_active = False
+
+    def is_recover_active(self):
+        """ Gets the recovery state of the npc. """
+        return self.recover_active
 
     def kill_count_increase(self):
         """ Increase the count of kills and exp by 1. """

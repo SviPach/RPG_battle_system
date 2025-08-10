@@ -48,6 +48,8 @@ while running_battlefield:
         if person.get_mp() < person.get_mp_max():
             if person.is_guard_active():
                 mp_multiplier = 0.2
+            elif person.is_recover_active():
+                mp_multiplier = 0.2
             else:
                 mp_multiplier = 0.1
             person.restore_mana(math.ceil(person.get_mp_max()*mp_multiplier))
@@ -67,33 +69,36 @@ while running_battlefield:
     running_player = True
     while running_player:
         choice = player.choose_action()
-        if choice == "Attack":
-            print(bc.FAIL + "========================= Attack time! =========================" + bc.ENDC)
-            player.perform_attack(enemy)
-            running_player = False
-        elif choice == "Magic":
-            spell = player.choose_magic()
-            print(bc.FAIL + "========================= Attack time! =========================" + bc.ENDC)
-            player.perform_attack(enemy, spell)
-            running_player = False
-        elif choice == "Dodge":
-            print(bc.FAIL + "========================= Attack time! =========================" + bc.ENDC)
-            player.try_dodge()
-            running_player = False
-        elif choice == "Use potion":
-            player.potion_choose()
-        elif choice == "Inspect":
-            player.inspect(entities_met)
-        elif choice == "Guard":
-            print(bc.FAIL + "========================= Attack time! =========================" + bc.ENDC)
-            player.guard_activate()
-            running_player = False
-        elif choice == "Leave":
-            print(bc.FAIL + "==================================================" + bc.ENDC)
-            print(bc.FAIL + bc.BOLD + "You've left the battlefield!" + bc.ENDC)
-            print(bc.FAIL + "==================================================" + bc.ENDC)
-            running_player = False
-            running_battlefield = False
+        match choice:
+            case "Attack":
+                print(bc.FAIL + "========================= Attack time! =========================" + bc.ENDC)
+                player.perform_attack(enemy)
+                running_player = False
+            case "Magic":
+                spell = player.choose_magic()
+                print(bc.FAIL + "========================= Attack time! =========================" + bc.ENDC)
+                player.perform_attack(enemy, spell)
+                running_player = False
+            case "Dodge":
+                print(bc.FAIL + "========================= Attack time! =========================" + bc.ENDC)
+                player.try_dodge()
+                running_player = False
+            case "Use potion":
+                player.potion_choose()
+            case "Inspect":
+                player.inspect(entities_met)
+            case "Guard":
+                print(bc.FAIL + "========================= Attack time! =========================" + bc.ENDC)
+                player.guard_activate()
+                running_player = False
+            case "Command":
+                player.command(player_party)
+            case "Leave":
+                print(bc.FAIL + "==================================================" + bc.ENDC)
+                print(bc.FAIL + bc.BOLD + "You've left the battlefield!" + bc.ENDC)
+                print(bc.FAIL + "==================================================" + bc.ENDC)
+                running_player = False
+                running_battlefield = False
 
     # If player have left the battlefield ->
     if not running_battlefield:
@@ -103,6 +108,13 @@ while running_battlefield:
     running_player_party = True
     if len(player_party) > 1:
         for person in player_party[1:]:
+            # If this person is recovering ->
+            if person.is_recover_active():
+                print(bc.FAIL + "==============================" + bc.ENDC)
+                print(f"{bc.OKBLUE}{person.name}{bc.ENDC} is {bc.WARNING}recovering{bc.ENDC}!")
+                continue
+
+            # Carlos the Elf's AI ->
             if person.get_name() == "Carlos the Elf":
                 print(bc.FAIL + "==============================" + bc.ENDC)
                 # Case 1: if Carlos the Elf has enough MP to use magic spells ->
@@ -140,19 +152,27 @@ while running_battlefield:
         entities_met.append(enemy)
         print(bc.OKBLUE + "-------------------------")
         print(bc.HEADER + bc.BOLD + "================================================================================" + bc.ENDC)
+
         msvcrt.getch()
-        # If Carlos the Elf ha snot been found yet ->
+
+        # If Carlos the Elf has not been found yet ->
         if not elf_found:
             # 20% chance to meet Carlos the Elf ->
-            if random.random() < 1:
+            if random.random() < 0.2:
                 print(f"{bc.OKBLUE}{bc.UNDERLINE}You just met{bc.ENDC} {bc.HEADER}{elf.get_name()}{bc.ENDC}!")
                 player_party.append(elf)
                 elf_found = True
                 print(f"{bc.HEADER}{elf.get_name()}{bc.ENDC} can cast {bc.WARNING}Fire{bc.ENDC} and {bc.WARNING}Healing Light{bc.ENDC}.")
                 entities_met.append(elf)
-        # print(f"{bc.OKGREEN}You have recovered!{bc.ENDC}")
-        # player.heal_full()
-        # player.restore_mana_full()
+
+        # 20% chance to find a campfire ->
+        if random.random() < 0.2:
+            print(bc.OKBLUE + "-------------------------")
+            print(f"{bc.HEADER}You found a campfire!{bc.ENDC}")
+            print(f"{bc.OKGREEN}You have recovered!{bc.ENDC}")
+            player.heal_full()
+            player.restore_mana_full()
+            print(bc.OKBLUE + "-------------------------")
         continue
 
     print(bc.FAIL + "==============================" + bc.ENDC)
