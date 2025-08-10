@@ -9,4 +9,4 @@ import math
 
 # __all__ = [Person, bcolors, Spell, Potion]
 
-__version__ = "0.3f"
+__version__ = "0.4a"

@@ -5,25 +5,33 @@ from classes import bc, erase_lines
 
 class Person:
     def __init__(self, name, hp, mp, atk, df, magic, dodge, crit_chance, crit_multiplier):
-        self.name = name                # Name.
-        self.hp_max = hp                # Maximum value of health points.
-        self.hp = hp                    # Current health points.
-        self.hp_critical = hp*0.2       # Critical value of health points.
-        self.mp_max = mp                # Maximum value of mana points.
-        self.mp = mp                    # Current mana points.
-        self.mp_critical = mp * 0.2                 # Critical value of mana points.
-        self.atk = atk                              # Default attack value.
-        self.atk_low = math.ceil(atk - atk*0.4)     # Weakest physical damage.
-        self.atk_high = math.ceil(atk + atk*0.4)    # Strongest physical damage.
-        self.df = df                                # Defence.
-        self.magic = magic                          # List of magic spells.
-        self.dodge = dodge                          # Dodge chance.
-        self.dodge_active = False                   # If dodge action is active.
-        self.crit_chance = crit_chance              # Critical hit chance.
-        self.crit_multiplier = crit_multiplier      # Critical hit damage multiplier.
-        self.counterattack_active = False           # If counterattack is active.
-        self.guard_active = False                   # If defensive stance is active
-        self.inventory = []                         # Inventory of the player.
+        self.name = name                                # Name.
+        self.level = 1                                  # Level.
+        self.kill_count = 0                             # Kill count.
+        self.exp = 0                                    # Experience points.
+        self.exp_needed = self.level                    # Experience points required to level up.
+
+        self.hp_max = hp                                # Maximum value of health points.
+        self.hp = hp                                    # Current health points.
+        self.hp_critical = hp*0.2                       # Critical value of health points.
+
+        self.mp_max = mp                                # Maximum value of mana points.
+        self.mp = mp                                    # Current mana points.
+        self.mp_critical = mp * 0.2                     # Critical value of mana points.
+
+        self.atk = atk                                  # Default attack value.
+        self.atk_low = math.ceil(atk - atk*0.4)         # Weakest physical damage.
+        self.atk_high = math.ceil(atk + atk*0.4)        # Strongest physical damage.
+
+        self.df = df                                    # Defence.
+        self.magic = magic                              # List of magic spells.
+        self.dodge = dodge                              # Dodge chance.
+        self.dodge_active = False                       # If dodge action is active.
+        self.crit_chance = crit_chance                  # Critical hit chance.
+        self.crit_multiplier = crit_multiplier          # Critical hit damage multiplier.
+        self.counterattack_active = False               # If counterattack is active.
+        self.guard_active = False                       # If defensive stance is active
+        self.inventory = []                             # Inventory of the player.
         # Possible actions ->
         self.actions = ["Attack", "Magic", "Dodge", "Use potion", "Inspect", "Guard", "Leave"]
 
@@ -77,6 +85,11 @@ class Person:
                     self.counterattack_active = True
                     print(f"{bc.WARNING}{bc.UNDERLINE}{self.name} is about to perform a counterattack!{bc.ENDC}")
                 return
+
+            # If dodging was active but did not dodge ->
+            if self.dodge_active:
+                self.dodge -= 30
+                self.dodge_active = False
 
             # Damage to take ->
             dmg_taken = math.ceil(dmg * (100 - self.df)/100)
@@ -374,10 +387,108 @@ class Person:
                 print(bc.FAIL + bc.UNDERLINE + "There is no such a choice" + bc.ENDC)
                 continue
 
+    def kill_count_increase(self):
+        """ Increase the count of kills and exp by 1. """
+        self.kill_count += 1
+        self.exp += 1
+        print(f"{bc.UNDERLINE}{bc.OKBLUE}{self.name}{bc.ENDC}: {bc.HEADER}+1EXP{bc.ENDC}")
+
+    def level_up(self):
+        """ Level up the player. """
+        if self.exp == self.exp_needed:
+            print(f"{bc.HEADER}{bc.UNDERLINE}===== LEVEL UP! ====={bc.ENDC}")
+            self.level += 1
+            self.exp = 0
+            self.exp_needed = self.level
+
+            self.heal_full()
+            self.restore_mana_full()
+
+            # List of all possible attributes ->
+            attributes = ["HP", "MP", "Atk", "Df", "Dodge", "Crit_chance", "Crit_mult"]
+            # Choosing 3 random attributes ->
+            attributes_available = []
+            for i in range(3):
+                item = random.choice(attributes)
+                attributes_available.append(item)
+                attributes.remove(item)
+
+            print(f"{bc.HEADER}{bc.UNDERLINE}=== CHOOSE A REWARD:{bc.ENDC}")
+            # Shows the attributes player can upgrade ->
+            i = 1
+            for item in  attributes_available:
+                match item:
+                    case "HP":
+                        print(f"{i}. {bc.OKBLUE}{bc.UNDERLINE}{item}{bc.ENDC}: "
+                              f"Increase your {bc.WARNING}maximum HP{bc.ENDC} by {bc.OKGREEN}10{bc.ENDC}.")
+                    case "MP":
+                        print(f"{i}. {bc.OKBLUE}{bc.UNDERLINE}{item}{bc.ENDC}: "
+                              f"Increase your {bc.WARNING}maximum MP{bc.ENDC} by {bc.OKGREEN}5{bc.ENDC}.")
+                    case "Atk":
+                        print(f"{i}. {bc.OKBLUE}{bc.UNDERLINE}{item}{bc.ENDC}: "
+                              f"Increase your {bc.WARNING}base attack{bc.ENDC} by {bc.OKGREEN}2{bc.ENDC}.")
+                    case "Df":
+                        print(f"{i}. {bc.OKBLUE}{bc.UNDERLINE}{item}{bc.ENDC}: "
+                              f"Increase your {bc.WARNING}defence{bc.ENDC} by {bc.OKGREEN}5{bc.ENDC}.")
+                    case "Dodge":
+                        print(f"{i}. {bc.OKBLUE}{bc.UNDERLINE}{item}{bc.ENDC}: "
+                              f"Increase your {bc.WARNING}dodge chance{bc.ENDC} by {bc.OKGREEN}5%{bc.ENDC}.")
+                    case "Crit_chance":
+                        print(f"{i}. {bc.OKBLUE}{bc.UNDERLINE}{item}{bc.ENDC}: "
+                              f"Increase your {bc.WARNING}critical hit chance{bc.ENDC} by {bc.OKGREEN}4%{bc.ENDC}.")
+                    case "Crit_mult":
+                        print(f"{i}. {bc.OKBLUE}{bc.UNDERLINE}{item}{bc.ENDC}: "
+                              f"Increase your {bc.WARNING}critical hit multiplier{bc.ENDC} by {bc.OKGREEN}0.2{bc.ENDC}.")
+                i += 1
+
+            # Choosing the attribute to upgrade ->
+            while True:
+                try:
+                    choice = int(input(f"{bc.UNDERLINE}Your choice:{bc.ENDC} ")) - 1
+                except ValueError:
+                    print(f"{bc.FAIL}{bc.UNDERLINE}Please enter the number!{bc.ENDC}")
+                    continue
+                if choice in range(len(attributes_available)):
+                    chosen_attribute = attributes_available[choice]
+                    break
+                else:
+                    print(f"{bc.FAIL}{bc.UNDERLINE}There is no such a choice!{bc.ENDC}")
+
+            erase_lines(len(attributes_available)+1)
+            # Upgrading the player, depending on his choice ->
+            match chosen_attribute:
+                case "HP":
+                    print(f"{bc.OKBLUE}{bc.UNDERLINE}You have chosen:{bc.ENDC} {bc.OKGREEN}+10 maximum HP{bc.ENDC}!")
+                    self.hp_max += 10
+                    self.hp = self.hp_max
+                case "MP":
+                    print(f"{bc.OKBLUE}{bc.UNDERLINE}You have chosen:{bc.ENDC} {bc.OKGREEN}+5 maximum MP{bc.ENDC}!")
+                    self.mp_max += 5
+                    self.mp = self.mp_max
+                case "Atk":
+                    print(f"{bc.OKBLUE}{bc.UNDERLINE}You have chosen:{bc.ENDC} {bc.OKGREEN}+2 base attack{bc.ENDC}!")
+                    self.atk += 2
+                    self.atk_low = math.ceil(self.atk - self.atk * 0.4)
+                    self.atk_high = math.ceil(self.atk + self.atk * 0.4)
+                case "Df":
+                    print(f"{bc.OKBLUE}{bc.UNDERLINE}You have chosen:{bc.ENDC} {bc.OKGREEN}+5 defence{bc.ENDC}!")
+                    self.df += 5
+                case "Dodge":
+                    print(f"{bc.OKBLUE}{bc.UNDERLINE}You have chosen:{bc.ENDC} {bc.OKGREEN}+5% dodge chance{bc.ENDC}!")
+                    self.dodge += 5
+                case "Crit_chance":
+                    print(f"{bc.OKBLUE}{bc.UNDERLINE}You have chosen:{bc.ENDC} {bc.OKGREEN}+4% critical hit chance{bc.ENDC}!")
+                    self.crit_chance += 4
+                case "Crit_mult":
+                    print(f"{bc.OKBLUE}{bc.UNDERLINE}You have chosen:{bc.ENDC} {bc.OKGREEN}+0.2 critical hit multiplier{bc.ENDC}!")
+                    self.crit_multiplier += 0.2
+
     def info(self):
         """ Full information about the player. """
         print(bc.OKBLUE + "-------------------------")
         print(f"{bc.OKBLUE}==============={bc.ENDC} Full info about {bc.OKBLUE}{self.name}{bc.ENDC}:")
+        print(f"{bc.OKBLUE}Level{bc.ENDC}: {self.level}")
+        print(f"{bc.OKBLUE}Experience{bc.ENDC}: {self.exp}/{self.exp_needed}")
         print(f"{bc.OKBLUE}HP{bc.ENDC}: {self.hp}/{self.hp_max}")
         print(f"{bc.OKBLUE}MP{bc.ENDC}: {self.mp}/{self.mp_max}")
         print(f"{bc.OKBLUE}Atk dmg{bc.ENDC}: {self.atk_low}-{self.atk_high}")
@@ -390,6 +501,7 @@ class Person:
         for item in self.inventory:
             inventory.append(item.get_name())
         print(f"{bc.OKBLUE}Inventory{bc.ENDC}: {inventory}")
+        print(f"{bc.OKBLUE}Kill count{bc.ENDC}: {self.kill_count}")
 
     def info_short(self):
         """ Short information about the player. """

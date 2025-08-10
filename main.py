@@ -1,9 +1,10 @@
 from classes import *
 
+
 # Creating some magic spells ->
 spell_Fire = Spell("Fire", 8, 16, "Elemental")
 spell_Thunder = Spell("Thunder", 10, 20, "Elemental")
-spell_Ice = Spell("Ice", 5, 10, "Elemental")
+spell_Ice = Spell("Ice", 5, 1000, "Elemental")
 spell_Cure = Spell("Cure", 5, 20, "Holy")
 
 # Adding recently created magic to the list ->
@@ -88,7 +89,10 @@ while running_battlefield:
 
     # If enemy has been defeated ->
     if enemy.get_hp() == 0:
+        print(bc.FAIL + "================================================================" + bc.ENDC)
         print(bc.OKGREEN + bc.BOLD + "You won!" + bc.ENDC)
+        player.kill_count_increase()
+        player.level_up()
         print(bc.FAIL + "================================================================" + bc.ENDC)
         msvcrt.getch()
         print(bc.HEADER + bc.BOLD + "================================================================================" + bc.ENDC)
@@ -99,9 +103,9 @@ while running_battlefield:
         enemy.info()
         print(bc.OKBLUE + "-------------------------")
         print(bc.HEADER + bc.BOLD + "================================================================================" + bc.ENDC)
-        print(f"{bc.OKGREEN}You have recovered!{bc.ENDC}")
-        player.heal_full()
-        player.restore_mana_full()
+        # print(f"{bc.OKGREEN}You have recovered!{bc.ENDC}")
+        # player.heal_full()
+        # player.restore_mana_full()
         continue
 
     print(bc.FAIL + "==============================" + bc.ENDC)
