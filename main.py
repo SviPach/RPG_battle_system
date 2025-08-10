@@ -2,11 +2,11 @@ from classes import *
 
 
 # Creating some magic spells ->
-spell_fire = Spell("Fire", 8, 14, "Elemental")
-spell_thunder = Spell("Thunder", 10, 20, "Elemental")
-spell_kill = Spell("Instant kill", 0, 1000, "Elemental")
-spell_cure = Spell("Cure", 5, 20, "Holy")
-spell_healing_light = Spell("Healing Light", 8, 20, "Holy_support")
+spell_fire = Spell("Fire", 8, 14, "Elemental", f"Cast a fireball dealing {bc.WARNING}14DMG{bc.ENDC}.")
+spell_thunder = Spell("Thunder", 10, 20, "Elemental", f"Cast a thunderbolt dealing {bc.WARNING}20DMG{bc.ENDC}.")
+spell_kill = Spell("Instant kill", 0, 1000, "Elemental", f"God's power - {bc.WARNING}instant kill{bc.ENDC}.")
+spell_cure = Spell("Cure", 5, 20, "Holy", f"Heal yourself by {bc.OKGREEN}20HP{bc.ENDC}")
+spell_healing_light = Spell("Healing Light", 8, 20, "Holy_support", f"Heal your party leader by {bc.OKGREEN}20HP{bc.ENDC}")
 
 # Adding recently created magic to the list ->
 magic = [spell_fire, spell_thunder, spell_kill, spell_cure]
@@ -134,8 +134,8 @@ while running_battlefield:
         # Creating a new enemy ->
         entities_met.remove(enemy)
         print(bc.FAIL + bc.BOLD + "Next enemy is attacking!" + bc.ENDC)
-        enemy = Person("Enemy", enemy.get_hp_max()+5, 0, enemy.get_atk() + 5, enemy.get_df() + 5,
-                       None, enemy.get_dodge() + 5, enemy.get_crit_chance()+5, enemy.get_crit_multiplier()+0.1)
+        enemy = Person("Enemy", enemy.get_hp_max()+5, 0, enemy.get_atk() + 1, enemy.get_df() + 3,
+                       None, enemy.get_dodge() + 4, enemy.get_crit_chance() + 4, enemy.get_crit_multiplier() + 0.1)
         enemy.info()
         entities_met.append(enemy)
         print(bc.OKBLUE + "-------------------------")

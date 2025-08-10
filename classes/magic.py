@@ -2,8 +2,9 @@ import math
 
 
 class Spell:
-    def __init__(self, name, cost, dmg, type):
+    def __init__(self, name, cost, dmg, type, description):
         self.name = name                            # Name.
+        self.description = description              # Description.
         self.cost = cost                            # MP cost.
         self.dmg = dmg                              # If used: amount of hp this spell restores. If not: value to calculate damage.
         self.dmg_low = math.ceil(dmg - dmg*0.1)     # Weakest damage.
@@ -25,3 +26,7 @@ class Spell:
     def get_type(self):
         """ Get the spell's type. '"""
         return self.type
+
+    def get_description(self):
+        """ Get the spell's description. '"""
+        return self.description

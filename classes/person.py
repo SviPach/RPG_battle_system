@@ -272,10 +272,12 @@ class Person:
             print(bc.OKBLUE +  "Choose a spell: \n(dmg, cost)" + bc.ENDC)
             # List of the magic spells ->
             for i in range(len(self.magic)):
-                dmg_low = self.magic[i].get_damage()[0]
-                dmg_high = self.magic[i].get_damage()[1]
-                print(f"{i + 1}. [{bc.WARNING}{self.magic[i].get_name()}{bc.ENDC}]\t "
-                      f"({bc.FAIL}{dmg_low}-{dmg_high}{bc.ENDC}, {bc.OKBLUE}{self.magic[i].get_cost()}{bc.ENDC})")
+                spell = self.magic[i]
+                dmg_low = spell.get_damage()[0]
+                dmg_high = spell.get_damage()[1]
+                print(f"{i + 1}. [{bc.WARNING}{spell.get_name()}{bc.ENDC}]  --  "
+                      f"({bc.FAIL}{dmg_low}-{dmg_high}{bc.ENDC}, {bc.OKBLUE}{spell.get_cost()}{bc.ENDC})  --  "
+                      f"{spell.get_description()}")
 
             # In case if player doesn't want to attack with magic ->
             print(f"0 - Attack with {bc.WARNING}physical damage{bc.ENDC} instead.")
@@ -365,13 +367,13 @@ class Person:
 
     def guard_activate(self):
         """ Enter the defensive stance to reduce incoming damage. """
-        self.df += 50
+        self.df += 40
         self.guard_active = True
         print(f"{bc.OKBLUE}{self.name}{bc.ENDC} enters a {bc.WARNING}defensive state{bc.ENDC}!")
 
     def guard_deactivate(self):
         """ Quit the defensive stance. """
-        self.df -= 50
+        self.df -= 40
         self.guard_active = False
 
     def inspect(self, entities):
@@ -418,6 +420,11 @@ class Person:
         """ Level up the player. """
         if self.exp == self.exp_needed:
             print(f"{bc.HEADER}{bc.UNDERLINE}===== LEVEL UP! ====={bc.ENDC}")
+            # Cleaning before leveling up ->
+            self.guard_active = False
+            self.dodge_active = False
+            self.counterattack_active = False
+
             # Level-up requirements update ->
             self.level += 1
             self.exp = 0
@@ -428,7 +435,22 @@ class Person:
             self.restore_mana_full()
 
             # List of all possible attributes ->
-            attributes = ["HP", "MP", "Atk", "Df", "Dodge", "Crit_chance", "Crit_mult"]
+            attributes = []
+            if self.hp_max < 200:
+                attributes.append("HP")
+            if self.mp_max < 50:
+                attributes.append("MP")
+            if self.atk < 20:
+                attributes.append("Atk")
+            if self.df < 50:
+                attributes.append("Df")
+            if self.dodge < 50:
+                attributes.append("Dodge")
+            if self.crit_chance < 60:
+                attributes.append("Crit_chance")
+            if self.crit_multiplier < 2.0:
+                attributes.append("Crit_mult")
+
             # Choosing 3 random attributes ->
             attributes_available = []
             for i in range(3):
