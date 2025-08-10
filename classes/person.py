@@ -65,35 +65,31 @@ class Person:
         ----------
         dmg : int
             Damage to take by this person.
-
-        Returns
-        -------
-        int
-            HP of this person after the attack.
         """
-        # Chance to dodge the attack ->
-        if random.randrange(100) in range(self.dodge):
-            print(f"{bc.WARNING}{bc.UNDERLINE}{self.name} dodged!{bc.ENDC}")
-            # If dodging is active ->
+        if dmg > 0:
+            # Chance to dodge the attack ->
+            if random.randrange(100) in range(self.dodge):
+                print(f"{bc.WARNING}{bc.UNDERLINE}{self.name} dodged!{bc.ENDC}")
+                # If dodging is active ->
+                if self.dodge_active:
+                    self.dodge -= 30
+                    self.dodge_active = False
+                    self.counterattack_active = True
+                    print(f"{bc.WARNING}{bc.UNDERLINE}{self.name} is about to perform a counterattack!{bc.ENDC}")
+                return
+
+            # Damage to take ->
+            dmg_taken = math.ceil(dmg * (100 - self.df)/100)
+            self.hp -= dmg_taken
+            if self.hp < 0:
+                self.hp = 0
+            # return self.hp
+            return
+        else:
+            # If dodging was active but did not dodge ->
             if self.dodge_active:
                 self.dodge -= 30
                 self.dodge_active = False
-                self.counterattack_active = True
-                print(f"{bc.WARNING}{bc.UNDERLINE}{self.name} is about to perform a counterattack!{bc.ENDC}")
-            return self.hp
-
-        # If dodging was active but did not dodge ->
-        if self.dodge_active:
-            self.dodge -= 30
-            self.dodge_active = False
-
-        # Damage to take ->
-        dmg_taken = math.ceil(dmg * (100 - self.df)/100)
-        self.hp -= dmg_taken
-        if self.hp < 0:
-            self.hp = 0
-
-        return self.hp
 
     def get_hp(self):
         """ Get the player's HP. """
@@ -227,10 +223,12 @@ class Person:
 
     def heal(self, hp):
         """ Heals the player. """
-        print(f"{bc.UNDERLINE}{bc.OKBLUE}{self.name}{bc.ENDC}: {bc.OKGREEN}+{hp}HP{bc.ENDC}")
+        hp_old = self.hp
         self.hp += hp
         if self.hp > self.hp_max:
             self.hp = self.hp_max
+        hp_new = self.hp
+        print(f"{bc.UNDERLINE}{bc.OKBLUE}{self.name}{bc.ENDC}: {bc.OKGREEN}+{hp}HP{bc.ENDC} ({bc.OKGREEN}+{hp_new-hp_old}{bc.ENDC})")
 
     def heal_full(self):
         """ Fully heal the player. """
@@ -240,15 +238,18 @@ class Person:
 
     def restore_mana(self, mp):
         """ Restore mana of the player. """
-        print(f"{bc.UNDERLINE}{bc.OKBLUE}{self.name}{bc.ENDC}: {bc.OKBLUE}+{mp}MP{bc.ENDC}")
+        mp_old = self.mp
         self.mp += mp
         if self.mp > self.mp_max:
             self.mp = self.mp_max
+        mp_new = self.mp
+        print(f"{bc.UNDERLINE}{bc.OKBLUE}{self.name}{bc.ENDC}: {bc.OKBLUE}+{mp}MP{bc.ENDC} ({bc.OKBLUE}+{mp_new-mp_old}{bc.ENDC})")
+
 
     def restore_mana_full(self):
         """ Fully restore mana of the player. """
         mp_gain = self.mp_max - self.mp
-        print(f"{bc.UNDERLINE}{bc.OKBLUE}{self.name}{bc.ENDC}: {bc.OKGREEN}+{mp_gain}MP{bc.ENDC}")
+        print(f"{bc.UNDERLINE}{bc.OKBLUE}{self.name}{bc.ENDC}: {bc.OKBLUE}+{mp_gain}MP{bc.ENDC}")
         self.mp = self.mp_max
 
     def choose_magic(self):

@@ -38,8 +38,11 @@ while running_battlefield:
             mp_multiplier = 0.2
         else:
             mp_multiplier = 0.1
-        player.guard_deactivate()
         player.restore_mana(math.ceil(player.get_mp_max()*mp_multiplier))
+
+    # Player's guard deactivation ->
+    if player.is_guard_active():
+        player.guard_deactivate()
 
     # Short info about player and enemy at the start of every turn ->
     print(bc.HEADER + f"===== {enemy.get_name()}: " + bc.ENDC)
