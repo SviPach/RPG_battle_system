@@ -56,7 +56,7 @@ class Person:
             dmg = random.randrange(spell.get_damage()[0], spell.get_damage()[1])
 
         # Chance to perform a critical hit ->
-        if random.randrange(100) in range(self.crit_chance) or self.counterattack_active is True:
+        if random.random() < self.crit_chance/100 or self.counterattack_active is True:
             dmg = math.ceil(dmg * self.crit_multiplier)
             print(f"{bc.WARNING}{bc.UNDERLINE}{self.name} makes a critical hit!{bc.ENDC}")
             self.counterattack_active = False
@@ -76,7 +76,7 @@ class Person:
         """
         if dmg > 0:
             # Chance to dodge the attack ->
-            if random.randrange(100) in range(self.dodge):
+            if random.random() < self.dodge/100:
                 print(f"{bc.WARNING}{bc.UNDERLINE}{self.name} dodged!{bc.ENDC}")
                 # If dodging is active ->
                 if self.dodge_active:
@@ -306,7 +306,7 @@ class Person:
                 print(bc.FAIL + bc.UNDERLINE + "There is no such a spell!" + bc.ENDC)
                 continue
 
-    def perform_attack(self, enemy, spell = None):
+    def perform_attack(self, enemy, spell = None, party_leader = None):
         """
         Perform the attack by the player.
 
@@ -316,6 +316,8 @@ class Person:
             The enemy to attack.
         spell : Spell
             The spell to perform attack with.
+        party_leader : Person
+            Leader of this player's party.
         """
         # If attack is performed by magic ->
         if spell is not None:
@@ -328,6 +330,13 @@ class Person:
                 # The healing result ->
                 print(f"You've healed yourself by {bc.OKGREEN}{hp}{bc.ENDC}HP with {bc.WARNING}{spell.get_name()}{bc.ENDC}.")
                 self.heal(hp)
+                return
+            elif spell.get_type() == "Holy_support":
+                hp = spell.get_damage()[2]
+                # The healing result ->
+                print(f"{bc.OKBLUE}{self.name}{bc.ENDC} healed {bc.OKBLUE}{party_leader.get_name()}{bc.ENDC} "
+                      f"by {bc.OKGREEN}{hp}{bc.ENDC}HP with {bc.WARNING}{spell.get_name()}{bc.ENDC}.")
+                party_leader.heal(hp)
                 return
             else:
                 dmg = self.generate_damage(spell)
@@ -365,24 +374,36 @@ class Person:
         self.df -= 50
         self.guard_active = False
 
-    def inspect(self, enemy):
+    def inspect(self, entities):
         """ Inspect yourself or the enemy. """
         while True:
             print(bc.OKBLUE + "-------------------------")
             print(bc.OKBLUE + "Choose who to inspect: " + bc.ENDC)
-            print(f"1. Yourself\n2. Enemy\n3. Cancel")
-            choice = input(f"{bc.UNDERLINE}Your choice:{bc.ENDC} ")
-            erase_lines(4)
-            if choice == '1':
-                print(f"You inspect {bc.OKBLUE}{bc.UNDERLINE}{self.name}{bc.ENDC}.")
-                self.info()
+            # List of actions ->
+            i = 1
+            for entity in entities:
+                print(f"{i}. {bc.OKBLUE}{entity.get_name()}{bc.ENDC}")
+                i += 1
+            print(f"0. Cancel")
+
+            # Player's choice ->
+            try:
+                choice = int(input(f"{bc.UNDERLINE}Your choice:{bc.ENDC} ")) - 1
+            except ValueError:
+                print(f"{bc.FAIL}{bc.UNDERLINE}Please enter the number!{bc.ENDC}")
+                continue
+
+            erase_lines(len(entities)+2)
+            # If player doesn't want to inspect anybody ->
+            if choice == -1:
+                print(f"You {bc.OKBLUE}{bc.UNDERLINE}did not inspect{bc.ENDC} anybody.")
                 break
-            elif choice == '2':
-                print(f"You inspect {bc.OKBLUE}{bc.UNDERLINE}{enemy.get_name()}{bc.ENDC}.")
-                enemy.info()
+
+            # Check if there is such an entity to inspect ->
+            if choice in range(len(entities)):
+                print(f"You inspect {bc.OKBLUE}{bc.UNDERLINE}{entities[choice].name}{bc.ENDC}.")
+                entities[choice].info()
                 break
-            elif choice == '3':
-                print(f"You inspect {bc.OKBLUE}{bc.UNDERLINE}no one{bc.ENDC}.")
             else:
                 print(bc.FAIL + bc.UNDERLINE + "There is no such a choice" + bc.ENDC)
                 continue
@@ -397,10 +418,12 @@ class Person:
         """ Level up the player. """
         if self.exp == self.exp_needed:
             print(f"{bc.HEADER}{bc.UNDERLINE}===== LEVEL UP! ====={bc.ENDC}")
+            # Level-up requirements update ->
             self.level += 1
             self.exp = 0
             self.exp_needed = self.level
 
+            # Level-up bonus ->
             self.heal_full()
             self.restore_mana_full()
 
@@ -413,48 +436,53 @@ class Person:
                 attributes_available.append(item)
                 attributes.remove(item)
 
-            print(f"{bc.HEADER}{bc.UNDERLINE}=== CHOOSE A REWARD:{bc.ENDC}")
-            # Shows the attributes player can upgrade ->
-            i = 1
-            for item in  attributes_available:
-                match item:
-                    case "HP":
-                        print(f"{i}. {bc.OKBLUE}{bc.UNDERLINE}{item}{bc.ENDC}: "
-                              f"Increase your {bc.WARNING}maximum HP{bc.ENDC} by {bc.OKGREEN}10{bc.ENDC}.")
-                    case "MP":
-                        print(f"{i}. {bc.OKBLUE}{bc.UNDERLINE}{item}{bc.ENDC}: "
-                              f"Increase your {bc.WARNING}maximum MP{bc.ENDC} by {bc.OKGREEN}5{bc.ENDC}.")
-                    case "Atk":
-                        print(f"{i}. {bc.OKBLUE}{bc.UNDERLINE}{item}{bc.ENDC}: "
-                              f"Increase your {bc.WARNING}base attack{bc.ENDC} by {bc.OKGREEN}2{bc.ENDC}.")
-                    case "Df":
-                        print(f"{i}. {bc.OKBLUE}{bc.UNDERLINE}{item}{bc.ENDC}: "
-                              f"Increase your {bc.WARNING}defence{bc.ENDC} by {bc.OKGREEN}5{bc.ENDC}.")
-                    case "Dodge":
-                        print(f"{i}. {bc.OKBLUE}{bc.UNDERLINE}{item}{bc.ENDC}: "
-                              f"Increase your {bc.WARNING}dodge chance{bc.ENDC} by {bc.OKGREEN}5%{bc.ENDC}.")
-                    case "Crit_chance":
-                        print(f"{i}. {bc.OKBLUE}{bc.UNDERLINE}{item}{bc.ENDC}: "
-                              f"Increase your {bc.WARNING}critical hit chance{bc.ENDC} by {bc.OKGREEN}4%{bc.ENDC}.")
-                    case "Crit_mult":
-                        print(f"{i}. {bc.OKBLUE}{bc.UNDERLINE}{item}{bc.ENDC}: "
-                              f"Increase your {bc.WARNING}critical hit multiplier{bc.ENDC} by {bc.OKGREEN}0.2{bc.ENDC}.")
-                i += 1
-
-            # Choosing the attribute to upgrade ->
             while True:
+                print(f"{bc.HEADER}{bc.UNDERLINE}=== CHOOSE A REWARD:{bc.ENDC}")
+                # Shows the attributes player can upgrade ->
+                i = 1
+                for item in attributes_available:
+                    match item:
+                        case "HP":
+                            print(f"{i}. {bc.OKBLUE}{bc.UNDERLINE}{item}{bc.ENDC}: "
+                                  f"Increase your {bc.WARNING}maximum HP{bc.ENDC} by {bc.OKGREEN}10{bc.ENDC}.")
+                        case "MP":
+                            print(f"{i}. {bc.OKBLUE}{bc.UNDERLINE}{item}{bc.ENDC}: "
+                                  f"Increase your {bc.WARNING}maximum MP{bc.ENDC} by {bc.OKGREEN}5{bc.ENDC}.")
+                        case "Atk":
+                            print(f"{i}. {bc.OKBLUE}{bc.UNDERLINE}{item}{bc.ENDC}: "
+                                  f"Increase your {bc.WARNING}base attack{bc.ENDC} by {bc.OKGREEN}2{bc.ENDC}.")
+                        case "Df":
+                            print(f"{i}. {bc.OKBLUE}{bc.UNDERLINE}{item}{bc.ENDC}: "
+                                  f"Increase your {bc.WARNING}defence{bc.ENDC} by {bc.OKGREEN}5{bc.ENDC}.")
+                        case "Dodge":
+                            print(f"{i}. {bc.OKBLUE}{bc.UNDERLINE}{item}{bc.ENDC}: "
+                                  f"Increase your {bc.WARNING}dodge chance{bc.ENDC} by {bc.OKGREEN}5%{bc.ENDC}.")
+                        case "Crit_chance":
+                            print(f"{i}. {bc.OKBLUE}{bc.UNDERLINE}{item}{bc.ENDC}: "
+                                  f"Increase your {bc.WARNING}critical hit chance{bc.ENDC} by {bc.OKGREEN}4%{bc.ENDC}.")
+                        case "Crit_mult":
+                            print(f"{i}. {bc.OKBLUE}{bc.UNDERLINE}{item}{bc.ENDC}: "
+                                  f"Increase your {bc.WARNING}critical hit multiplier{bc.ENDC} by {bc.OKGREEN}0.2{bc.ENDC}.")
+                    i += 1
+
+                chosen_attribute = None
+                # Choosing the attribute to upgrade ->
                 try:
                     choice = int(input(f"{bc.UNDERLINE}Your choice:{bc.ENDC} ")) - 1
                 except ValueError:
+                    erase_lines(len(attributes_available) + 1)
                     print(f"{bc.FAIL}{bc.UNDERLINE}Please enter the number!{bc.ENDC}")
                     continue
+
+                erase_lines(len(attributes_available) + 1)
+
+                # Check if there is such a choice ->
                 if choice in range(len(attributes_available)):
                     chosen_attribute = attributes_available[choice]
                     break
                 else:
                     print(f"{bc.FAIL}{bc.UNDERLINE}There is no such a choice!{bc.ENDC}")
 
-            erase_lines(len(attributes_available)+1)
             # Upgrading the player, depending on his choice ->
             match chosen_attribute:
                 case "HP":
@@ -487,21 +515,21 @@ class Person:
         """ Full information about the player. """
         print(bc.OKBLUE + "-------------------------")
         print(f"{bc.OKBLUE}==============={bc.ENDC} Full info about {bc.OKBLUE}{self.name}{bc.ENDC}:")
-        print(f"{bc.OKBLUE}Level{bc.ENDC}: {self.level}")
-        print(f"{bc.OKBLUE}Experience{bc.ENDC}: {self.exp}/{self.exp_needed}")
-        print(f"{bc.OKBLUE}HP{bc.ENDC}: {self.hp}/{self.hp_max}")
-        print(f"{bc.OKBLUE}MP{bc.ENDC}: {self.mp}/{self.mp_max}")
-        print(f"{bc.OKBLUE}Atk dmg{bc.ENDC}: {self.atk_low}-{self.atk_high}")
-        print(f"{bc.OKBLUE}Atk dmg (base){bc.ENDC}: {self.atk}")
-        print(f"{bc.OKBLUE}Def{bc.ENDC}: {self.df}")
-        print(f"{bc.OKBLUE}Dodge chance{bc.ENDC}: {self.dodge}%")
-        print(f"{bc.OKBLUE}Critical hit chance{bc.ENDC}: {self.crit_chance}%")
-        print(f"{bc.OKBLUE}Critical hit multiplier{bc.ENDC}: x{self.crit_multiplier}")
+        print(f"\t{bc.OKBLUE}Level{bc.ENDC}: {self.level}")
+        print(f"\t{bc.OKBLUE}Experience{bc.ENDC}: {self.exp}/{self.exp_needed}")
+        print(f"\t{bc.OKBLUE}HP{bc.ENDC}: {self.hp}/{self.hp_max}")
+        print(f"\t{bc.OKBLUE}MP{bc.ENDC}: {self.mp}/{self.mp_max}")
+        print(f"\t{bc.OKBLUE}Atk dmg{bc.ENDC}: {self.atk_low}-{self.atk_high}")
+        print(f"\t{bc.OKBLUE}Atk dmg (base){bc.ENDC}: {self.atk}")
+        print(f"\t{bc.OKBLUE}Def{bc.ENDC}: {self.df}")
+        print(f"\t{bc.OKBLUE}Dodge chance{bc.ENDC}: {self.dodge}%")
+        print(f"\t{bc.OKBLUE}Critical hit chance{bc.ENDC}: {self.crit_chance}%")
+        print(f"\t{bc.OKBLUE}Critical hit multiplier{bc.ENDC}: x{self.crit_multiplier}")
         inventory = []
         for item in self.inventory:
             inventory.append(item.get_name())
-        print(f"{bc.OKBLUE}Inventory{bc.ENDC}: {inventory}")
-        print(f"{bc.OKBLUE}Kill count{bc.ENDC}: {self.kill_count}")
+        print(f"\t{bc.OKBLUE}Inventory{bc.ENDC}: {inventory}")
+        print(f"\t{bc.OKBLUE}Kill count{bc.ENDC}: {self.kill_count}")
 
     def info_short(self):
         """ Short information about the player. """
