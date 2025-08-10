@@ -1,6 +1,6 @@
 import random
 import math
-from classes import bc, erase_lines
+from classes import bc, erase_lines, get_choice
 
 
 class Person:
@@ -166,33 +166,25 @@ class Person:
 
     def potion_choose(self):
         """ Choose a potion. """
-        while True:
-            print(bc.OKBLUE + "-------------------------")
-            print(bc.OKBLUE + "Choose the potion to use:" + bc.ENDC)
-            # List of potions ->
-            for i in range(len(self.inventory)):
-                print(f"{i+1}. {bc.WARNING}{self.inventory[i].get_name()}{bc.ENDC} - {self.inventory[i].get_description()}.")
-            # If player don't wat to choose a potion ->
-            print("0 - Cancel.")
-            # Choosing the potion ->
-            try:
-                choice = int(input(f"{bc.UNDERLINE}Your choice:{bc.ENDC} ")) - 1
-                erase_lines(len(self.inventory) + 2)
-            except ValueError:
-                erase_lines(len(self.inventory) + 2)
-                print(f"{bc.FAIL}{bc.UNDERLINE}Please enter the number!{bc.ENDC}")
-                continue
-            # If canceled ->
-            if choice == -1:
-                print(f"You {bc.OKBLUE}{bc.UNDERLINE}did not choose{bc.ENDC} a potion.")
-                break
-            # Checking if there is such a potion ->
-            if choice in range(len(self.inventory)):
-                print(f"You chose {bc.WARNING}{bc.UNDERLINE}{self.inventory[choice].get_name()}{bc.ENDC}.")
-                self.potion_use(self.inventory[choice])
-                break
-            else:
-                print(f"{bc.FAIL}{bc.UNDERLINE}There is no such a potion!{bc.ENDC}")
+        print(bc.OKBLUE + "-------------------------")
+        print(bc.OKBLUE + "Choose the potion to use:" + bc.ENDC)
+        # List of potions ->
+        for i in range(len(self.inventory)):
+            print(f"{i+1}. {bc.WARNING}{self.inventory[i].get_name()}{bc.ENDC} - {self.inventory[i].get_description()}.")
+
+        # If player don't wat to choose a potion ->
+        print("0 - Cancel.")
+
+        # Choosing the potion ->
+        choice = get_choice(len(self.inventory) + 1, -1, len(self.inventory) - 1)
+
+        # If canceled ->
+        if choice == -1:
+            print(f"You {bc.OKBLUE}{bc.UNDERLINE}did not choose{bc.ENDC} a potion.")
+            return
+
+        print(f"You chose {bc.WARNING}{bc.UNDERLINE}{self.inventory[choice].get_name()}{bc.ENDC}.")
+        self.potion_use(self.inventory[choice])
 
     def potion_use(self, potion):
         """ Use the potion. """
@@ -212,26 +204,17 @@ class Person:
 
     def choose_action(self):
         """ Chooses an action. """
-        while True:
-            print(bc.OKBLUE + "-------------------------")
-            print(bc.OKBLUE + "Choose an action:" + bc.ENDC)
-            # List of actions ->
-            for i in range(len(self.actions)):
-                print(f"{i+1}. {self.actions[i]}")
-            # Choosing an action ->
-            try:
-                choice = int(input(f"{bc.UNDERLINE}Your choice:{bc.ENDC} ")) - 1
-                erase_lines(len(self.actions) + 1)
-            except ValueError:
-                erase_lines(len(self.actions) + 1)
-                print(f"{bc.FAIL}{bc.UNDERLINE}Please enter the number!{bc.ENDC}")
-                continue
-            # Checking if there is such a choice ->
-            if choice in range(len(self.actions)):
-                print(f"You chose {bc.OKBLUE}{bc.UNDERLINE}{self.actions[choice]}{bc.ENDC}.")
-                return self.actions[choice]
-            else:
-                print(f"{bc.FAIL}{bc.UNDERLINE}There is no such an action!{bc.ENDC}")
+        print(bc.OKBLUE + "-------------------------")
+        print(bc.OKBLUE + "Choose an action:" + bc.ENDC)
+        # List of actions ->
+        for i in range(len(self.actions)):
+            print(f"{i+1}. {self.actions[i]}")
+
+        # Choosing an action ->
+        choice = get_choice(len(self.actions), 0, len(self.actions) - 1)
+
+        print(f"You chose {bc.OKBLUE}{bc.UNDERLINE}{self.actions[choice]}{bc.ENDC}.")
+        return self.actions[choice]
 
     def get_name(self):
         """ Get the name of the player. """
@@ -270,46 +253,35 @@ class Person:
 
     def choose_magic(self):
         """ Chooses a magic spell. """
-        while True:
-            print(bc.OKBLUE + "-------------------------")
-            print(bc.OKBLUE +  "Choose a spell: \n(dmg, cost)" + bc.ENDC)
-            # List of the magic spells ->
-            for i in range(len(self.magic)):
-                spell = self.magic[i]
-                dmg_low = spell.get_damage()[0]
-                dmg_high = spell.get_damage()[1]
-                print(f"{i + 1}. [{bc.WARNING}{spell.get_name()}{bc.ENDC}]  --  "
-                      f"({bc.FAIL}{dmg_low}-{dmg_high}{bc.ENDC}, {bc.OKBLUE}{spell.get_cost()}{bc.ENDC})  --  "
-                      f"{spell.get_description()}")
+        print(bc.OKBLUE + "-------------------------")
+        print(bc.OKBLUE +  "Choose a spell: \n(dmg, cost)" + bc.ENDC)
+        # List of the magic spells ->
+        for i in range(len(self.magic)):
+            spell = self.magic[i]
+            dmg_low = spell.get_damage()[0]
+            dmg_high = spell.get_damage()[1]
+            print(f"{i + 1}. [{bc.WARNING}{spell.get_name()}{bc.ENDC}]  --  "
+                  f"({bc.FAIL}{dmg_low}-{dmg_high}{bc.ENDC}, {bc.OKBLUE}{spell.get_cost()}{bc.ENDC})  --  "
+                  f"{spell.get_description()}")
 
-            # In case if player doesn't want to attack with magic ->
-            print(f"0 - Attack with {bc.WARNING}physical damage{bc.ENDC} instead.")
+        # In case if player doesn't want to attack with magic ->
+        print(f"0 - Attack with {bc.WARNING}physical damage{bc.ENDC} instead.")
 
-            # Player's choice ->
-            try:
-                choice = int(input(f"{bc.UNDERLINE}Your choice:{bc.ENDC} ")) - 1
-                erase_lines(len(self.magic)+3)
-            except ValueError:
-                erase_lines(len(self.magic)+3)
-                print(f"{bc.FAIL}{bc.UNDERLINE}Please enter the number!{bc.ENDC}")
-                continue
-            # If player chose a physical attack instead of magic ->
-            if choice == -1:
-                print(f"You chose {bc.WARNING}{bc.UNDERLINE}Physical attack{bc.ENDC} instead of magic spell.")
-                return None
+        # Player's choice ->
+        choice = get_choice(len(self.magic) + 2, -1, len(self.magic) - 1)
 
-            # Checking if there is such a choice ->
-            if choice in range(len(self.magic)):
-                # If player doesn't have enough MP ->
-                if self.magic[choice].get_cost() > self.mp:
-                    print(f"{bc.FAIL}{bc.UNDERLINE}Not enough MP!{bc.ENDC}")
-                    continue
-                else:
-                    print(f"You chose {bc.WARNING}{bc.UNDERLINE}{self.magic[choice].get_name()}{bc.ENDC}.")
-                    return self.magic[choice]
-            else:
-                print(bc.FAIL + bc.UNDERLINE + "There is no such a spell!" + bc.ENDC)
-                continue
+        # If player chose a physical attack instead of magic ->
+        if choice == -1:
+            print(f"You chose {bc.WARNING}{bc.UNDERLINE}Physical attack{bc.ENDC} instead of magic spell.")
+            return None
+
+        # If player doesn't have enough MP ->
+        if self.magic[choice].get_cost() > self.mp:
+            print(f"{bc.FAIL}{bc.UNDERLINE}Not enough MP!{bc.ENDC}")
+            return -1
+        else:
+            print(f"You chose {bc.WARNING}{bc.UNDERLINE}{self.magic[choice].get_name()}{bc.ENDC}.")
+            return self.magic[choice]
 
     def perform_attack(self, enemy, spell = None, party_leader = None):
         """
@@ -381,73 +353,49 @@ class Person:
 
     def inspect(self, entities):
         """ Inspect yourself or the enemy. """
-        while True:
-            print(bc.OKBLUE + "-------------------------")
-            print(bc.OKBLUE + "Choose who to inspect: " + bc.ENDC)
-            # List of actions ->
-            i = 1
-            for entity in entities:
-                print(f"{i}. {bc.OKBLUE}{entity.get_name()}{bc.ENDC}")
-                i += 1
-            print("0. Cancel")
+        print(bc.OKBLUE + "-------------------------")
+        print(bc.OKBLUE + "Choose who to inspect: " + bc.ENDC)
+        # List of actions ->
+        i = 1
+        for entity in entities:
+            print(f"{i}. {bc.OKBLUE}{entity.get_name()}{bc.ENDC}")
+            i += 1
+        print("0. Cancel")
 
-            # Player's choice ->
-            try:
-                choice = int(input(f"{bc.UNDERLINE}Your choice:{bc.ENDC} ")) - 1
-            except ValueError:
-                print(f"{bc.FAIL}{bc.UNDERLINE}Please enter the number!{bc.ENDC}")
-                continue
+        # Player's choice ->
+        choice = get_choice(len(entities) + 1, -1, len(entities)-1)
 
-            erase_lines(len(entities)+2)
-            # If player doesn't want to inspect anybody ->
-            if choice == -1:
-                print(f"You {bc.OKBLUE}{bc.UNDERLINE}did not inspect{bc.ENDC} anybody.")
-                break
+        # If player doesn't want to inspect anybody ->
+        if choice == -1:
+            print(f"You {bc.OKBLUE}{bc.UNDERLINE}did not inspect{bc.ENDC} anybody.")
+            return
 
-            # Check if there is such an entity to inspect ->
-            if choice in range(len(entities)):
-                print(f"You inspect {bc.OKBLUE}{bc.UNDERLINE}{entities[choice].name}{bc.ENDC}.")
-                entities[choice].info()
-                break
-            else:
-                print(bc.FAIL + bc.UNDERLINE + "There is no such a choice!" + bc.ENDC)
-                continue
+        # Check if there is such an entity to inspect ->
+        print(f"You inspect {bc.OKBLUE}{bc.UNDERLINE}{entities[choice].name}{bc.ENDC}.")
+        entities[choice].info()
 
     def command(self, player_party):
         """ Command a member of the player's party. """
         if len(player_party) > 1:
-            while True:
-                print(bc.OKBLUE + "-------------------------")
-                print(bc.OKBLUE + "Choose who to command: " + bc.ENDC)
-                # List of allies in player's party ->
-                i = 1
-                for person in player_party[1:]:
-                    print(f"{i}. {bc.OKBLUE}{person.get_name()}{bc.ENDC}")
-                    i += 1
-                print("0. Cancel")
+            print(bc.OKBLUE + "-------------------------")
+            print(bc.OKBLUE + "Choose who to command: " + bc.ENDC)
+            # List of allies in player's party ->
+            i = 1
+            for person in player_party[1:]:
+                print(f"{i}. {bc.OKBLUE}{person.get_name()}{bc.ENDC}")
+                i += 1
+            print("0. Cancel")
 
-                # Player's choice ->
-                try:
-                    choice = int(input(f"{bc.UNDERLINE}Your choice:{bc.ENDC} ")) - 1
-                except ValueError:
-                    erase_lines(len(player_party[:1])+2)
-                    print(f"{bc.FAIL}{bc.UNDERLINE}Please enter the number!{bc.ENDC}")
-                    continue
+            # Player's choice ->
+            choice = get_choice(len(player_party[:1]) + 1, -1, len(player_party[:1]) - 1)
 
-                erase_lines(len(player_party[:1]) + 2)
+            # If player doesn't want to command anybody ->
+            if choice == -1:
+                print(f"You {bc.OKBLUE}{bc.UNDERLINE}did not command{bc.ENDC} anybody.")
+                return
 
-                # If player doesn't want to command anybody ->
-                if choice == -1:
-                    print(f"You {bc.OKBLUE}{bc.UNDERLINE}did not command{bc.ENDC} anybody.")
-                    break
-
-                # Check if there is such an option ->
-                if choice in range(len(player_party[1:])):
-                    player_party[choice+1].recover_switch()
-                    break
-                else:
-                    print(bc.FAIL + bc.UNDERLINE + "There is no such a choice!" + bc.ENDC)
-                    continue
+            # Check if there is such an option ->
+            player_party[choice+1].recover_switch()
         else:
             print(bc.FAIL + bc.UNDERLINE + "You're alone in your party!" + bc.ENDC)
 
@@ -512,52 +460,40 @@ class Person:
                 attributes_available.append(item)
                 attributes.remove(item)
 
-            while True:
-                print(f"{bc.HEADER}{bc.UNDERLINE}=== CHOOSE A REWARD:{bc.ENDC}")
-                # Shows the attributes player can upgrade ->
-                i = 1
-                for item in attributes_available:
-                    match item:
-                        case "HP":
-                            print(f"{i}. {bc.OKBLUE}{bc.UNDERLINE}{item}{bc.ENDC}: "
-                                  f"Increase your {bc.WARNING}maximum HP{bc.ENDC} by {bc.OKGREEN}10{bc.ENDC}.")
-                        case "MP":
-                            print(f"{i}. {bc.OKBLUE}{bc.UNDERLINE}{item}{bc.ENDC}: "
-                                  f"Increase your {bc.WARNING}maximum MP{bc.ENDC} by {bc.OKGREEN}5{bc.ENDC}.")
-                        case "Atk":
-                            print(f"{i}. {bc.OKBLUE}{bc.UNDERLINE}{item}{bc.ENDC}: "
-                                  f"Increase your {bc.WARNING}base attack{bc.ENDC} by {bc.OKGREEN}2{bc.ENDC}.")
-                        case "Df":
-                            print(f"{i}. {bc.OKBLUE}{bc.UNDERLINE}{item}{bc.ENDC}: "
-                                  f"Increase your {bc.WARNING}defence{bc.ENDC} by {bc.OKGREEN}5{bc.ENDC}.")
-                        case "Dodge":
-                            print(f"{i}. {bc.OKBLUE}{bc.UNDERLINE}{item}{bc.ENDC}: "
-                                  f"Increase your {bc.WARNING}dodge chance{bc.ENDC} by {bc.OKGREEN}5%{bc.ENDC}.")
-                        case "Crit_chance":
-                            print(f"{i}. {bc.OKBLUE}{bc.UNDERLINE}{item}{bc.ENDC}: "
-                                  f"Increase your {bc.WARNING}critical hit chance{bc.ENDC} by {bc.OKGREEN}4%{bc.ENDC}.")
-                        case "Crit_mult":
-                            print(f"{i}. {bc.OKBLUE}{bc.UNDERLINE}{item}{bc.ENDC}: "
-                                  f"Increase your {bc.WARNING}critical hit multiplier{bc.ENDC} by {bc.OKGREEN}0.2{bc.ENDC}.")
-                    i += 1
+            print(f"{bc.HEADER}{bc.UNDERLINE}=== CHOOSE A REWARD:{bc.ENDC}")
+            # Shows the attributes player can upgrade ->
+            i = 1
+            for item in attributes_available:
+                match item:
+                    case "HP":
+                        print(f"{i}. {bc.OKBLUE}{bc.UNDERLINE}{item}{bc.ENDC}: "
+                              f"Increase your {bc.WARNING}maximum HP{bc.ENDC} by {bc.OKGREEN}10{bc.ENDC}.")
+                    case "MP":
+                        print(f"{i}. {bc.OKBLUE}{bc.UNDERLINE}{item}{bc.ENDC}: "
+                              f"Increase your {bc.WARNING}maximum MP{bc.ENDC} by {bc.OKGREEN}5{bc.ENDC}.")
+                    case "Atk":
+                        print(f"{i}. {bc.OKBLUE}{bc.UNDERLINE}{item}{bc.ENDC}: "
+                              f"Increase your {bc.WARNING}base attack{bc.ENDC} by {bc.OKGREEN}2{bc.ENDC}.")
+                    case "Df":
+                        print(f"{i}. {bc.OKBLUE}{bc.UNDERLINE}{item}{bc.ENDC}: "
+                              f"Increase your {bc.WARNING}defence{bc.ENDC} by {bc.OKGREEN}5{bc.ENDC}.")
+                    case "Dodge":
+                        print(f"{i}. {bc.OKBLUE}{bc.UNDERLINE}{item}{bc.ENDC}: "
+                              f"Increase your {bc.WARNING}dodge chance{bc.ENDC} by {bc.OKGREEN}5%{bc.ENDC}.")
+                    case "Crit_chance":
+                        print(f"{i}. {bc.OKBLUE}{bc.UNDERLINE}{item}{bc.ENDC}: "
+                              f"Increase your {bc.WARNING}critical hit chance{bc.ENDC} by {bc.OKGREEN}4%{bc.ENDC}.")
+                    case "Crit_mult":
+                        print(f"{i}. {bc.OKBLUE}{bc.UNDERLINE}{item}{bc.ENDC}: "
+                              f"Increase your {bc.WARNING}critical hit multiplier{bc.ENDC} by {bc.OKGREEN}0.2{bc.ENDC}.")
+                i += 1
 
-                chosen_attribute = None
-                # Choosing the attribute to upgrade ->
-                try:
-                    choice = int(input(f"{bc.UNDERLINE}Your choice:{bc.ENDC} ")) - 1
-                except ValueError:
-                    erase_lines(len(attributes_available) + 1)
-                    print(f"{bc.FAIL}{bc.UNDERLINE}Please enter the number!{bc.ENDC}")
-                    continue
+            chosen_attribute = None
+            # Choosing the attribute to upgrade ->
+            choice = get_choice(len(attributes_available), 0, len(attributes_available) - 1)
 
-                erase_lines(len(attributes_available) + 1)
-
-                # Check if there is such a choice ->
-                if choice in range(len(attributes_available)):
-                    chosen_attribute = attributes_available[choice]
-                    break
-                else:
-                    print(f"{bc.FAIL}{bc.UNDERLINE}There is no such a choice!{bc.ENDC}")
+            # Check if there is such a choice ->
+            chosen_attribute = attributes_available[choice]
 
             # Upgrading the player, depending on his choice ->
             match chosen_attribute:

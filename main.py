@@ -76,6 +76,8 @@ while running_battlefield:
                 running_player = False
             case "Magic":
                 spell = player.choose_magic()
+                if spell == -1:
+                    continue
                 print(bc.FAIL + "========================= Attack time! =========================" + bc.ENDC)
                 player.perform_attack(enemy, spell)
                 running_player = False
