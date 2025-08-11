@@ -1,6 +1,6 @@
 import random
 import math
-from classes import bc, erase_lines, get_choice
+from classes import bc, get_choice
 
 
 class Person:
@@ -35,8 +35,37 @@ class Person:
         # Possible actions ->
         self.actions = ["Attack", "Magic", "Dodge", "Use potion", "Inspect", "Guard", "Command", "Leave"]
 
+        # Equipment ->
+        self.equipment_head = None              # Head armor.
+        self.equipment_torso = None             # Torso armor.
+        self.equipment_legs = None              # Legs armor.
+        self.equipment_feet = None              # Feet armor.
+        self.equipment_weapon = None            # Weapon.
+
         # For allies ->
         self.recover_active = False
+
+        # Attributes' levels ->
+        self.level_hp = 0                           # Current health capacity level.
+        self.level_hp_max = 10                      # Maximum health capacity level.
+
+        self.level_mp = 0                           # Current mana capacity level.
+        self.level_mp_max = 6                       # Maximum mana capacity level.
+
+        self.level_atk = 0                          # Current attack level.
+        self.level_atk_max = 5                      # Maximum attack level.
+
+        self.level_df = 0                           # Current defence level.
+        self.level_df_max = 6                       # Maximum defence level.
+
+        self.level_dodge = 0                        # Current dodge level.
+        self.level_dodge_max = 9                    # Maximum dodge level.
+
+        self.level_crit_chance = 0                  # Current critical hit chance level.
+        self.level_crit_chance_max = 12             # Maximum critical hit chance level.
+
+        self.level_crit_multiplier = 0       # Current critical hit multiplier level.
+        self.level_crit_multiplier_max = 6   # Maximum critical hit multiplier level.
 
     def generate_damage(self, spell = None):
         """
@@ -158,6 +187,42 @@ class Person:
     def is_guard_active(self):
         """ Check if the guard is active. """
         return self.guard_active
+
+    def equipment_obtain(self, equipment):
+        """ Give the player equipment. """
+        # Check slot where to assign this equipment ->
+        slot = equipment.get_slot()
+        match slot:
+            case "head":
+                self.equipment_head = equipment
+            case "torso":
+                self.equipment_torso = equipment
+            case "legs":
+                self.equipment_legs = equipment
+            case "feet":
+                self.equipment_feet = equipment
+            case "weapon":
+                self.equipment_weapon = equipment
+
+        # String for print() function ->
+        output = f"{bc.OKBLUE}{self.name}{bc.ENDC} equipped {bc.WARNING}{equipment.get_name()}{bc.ENDC}: {bc.OKBLUE}+{equipment.get_prop()}"
+
+        # Check the attribute this equipment improves ->
+        prop_type = equipment.get_prop_type()
+        match prop_type:
+            case "atk":
+                self.atk += equipment.get_prop()
+                self.atk_low = math.ceil(self.atk - self.atk * 0.4)
+                self.atk_high = math.ceil(self.atk + self.atk * 0.4)
+                output += f"DMG{bc.ENDC}"
+            case "df":
+                self.df += equipment.get_prop()
+                output += f" defence{bc.ENDC}"
+            case "dodge":
+                self.dodge += equipment.get_prop()
+                output += f"% dodge{bc.ENDC}"
+
+        print(output)
 
     def potion_obtain(self, potion):
         """ Get the potion. """
@@ -438,27 +503,33 @@ class Person:
 
             # List of all possible attributes ->
             attributes = []
-            if self.hp_max < 200:
+            if self.level_hp < self.level_hp_max:
                 attributes.append("HP")
-            if self.mp_max < 50:
+            if self.level_mp < self.level_mp_max:
                 attributes.append("MP")
-            if self.atk < 20:
+            if self.level_atk < self.level_atk_max:
                 attributes.append("Atk")
-            if self.df < 50:
+            if self.level_df < self.level_df_max:
                 attributes.append("Df")
-            if self.dodge < 50:
+            if self.level_dodge < self.level_dodge_max:
                 attributes.append("Dodge")
-            if self.crit_chance < 60:
+            if self.level_crit_chance < self.level_crit_chance_max:
                 attributes.append("Crit_chance")
-            if self.crit_multiplier < 2.0:
+            if self.level_crit_multiplier < self.level_crit_multiplier_max:
                 attributes.append("Crit_mult")
 
-            # Choosing 3 random attributes ->
-            attributes_available = []
-            for i in range(3):
-                item = random.choice(attributes)
-                attributes_available.append(item)
-                attributes.remove(item)
+            if len(attributes) == 0:
+                print(f"{bc.HEADER}{bc.UNDERLINE}ALL THE ATTRIBUTES ARE UPGRADED!{bc.ENDC}")
+                return
+            else:
+                # Choosing 3 random attributes ->
+                attributes_available = []
+                for i in range(3):
+                    item = random.choice(attributes)
+                    attributes_available.append(item)
+                    attributes.remove(item)
+                    if len(attributes) == 0:
+                        break
 
             print(f"{bc.HEADER}{bc.UNDERLINE}=== CHOOSE A REWARD:{bc.ENDC}")
             # Shows the attributes player can upgrade ->
@@ -488,7 +559,6 @@ class Person:
                               f"Increase your {bc.WARNING}critical hit multiplier{bc.ENDC} by {bc.OKGREEN}0.2{bc.ENDC}.")
                 i += 1
 
-            chosen_attribute = None
             # Choosing the attribute to upgrade ->
             choice = get_choice(len(attributes_available), 0, len(attributes_available) - 1)
 
@@ -498,29 +568,29 @@ class Person:
             # Upgrading the player, depending on his choice ->
             match chosen_attribute:
                 case "HP":
-                    print(f"{bc.OKBLUE}{bc.UNDERLINE}You have chosen:{bc.ENDC} {bc.OKGREEN}+10 maximum HP{bc.ENDC}!")
+                    print(f"{bc.OKBLUE}{bc.UNDERLINE}You chose{bc.ENDC}: {bc.OKGREEN}+10 maximum HP{bc.ENDC}!")
                     self.hp_max += 10
                     self.hp = self.hp_max
                 case "MP":
-                    print(f"{bc.OKBLUE}{bc.UNDERLINE}You have chosen:{bc.ENDC} {bc.OKGREEN}+5 maximum MP{bc.ENDC}!")
+                    print(f"{bc.OKBLUE}{bc.UNDERLINE}You chose{bc.ENDC}: {bc.OKGREEN}+5 maximum MP{bc.ENDC}!")
                     self.mp_max += 5
                     self.mp = self.mp_max
                 case "Atk":
-                    print(f"{bc.OKBLUE}{bc.UNDERLINE}You have chosen:{bc.ENDC} {bc.OKGREEN}+2 base attack{bc.ENDC}!")
+                    print(f"{bc.OKBLUE}{bc.UNDERLINE}You chose{bc.ENDC}: {bc.OKGREEN}+2 base attack{bc.ENDC}!")
                     self.atk += 2
                     self.atk_low = math.ceil(self.atk - self.atk * 0.4)
                     self.atk_high = math.ceil(self.atk + self.atk * 0.4)
                 case "Df":
-                    print(f"{bc.OKBLUE}{bc.UNDERLINE}You have chosen:{bc.ENDC} {bc.OKGREEN}+5 defence{bc.ENDC}!")
+                    print(f"{bc.OKBLUE}{bc.UNDERLINE}You chose{bc.ENDC}: {bc.OKGREEN}+5 defence{bc.ENDC}!")
                     self.df += 5
                 case "Dodge":
-                    print(f"{bc.OKBLUE}{bc.UNDERLINE}You have chosen:{bc.ENDC} {bc.OKGREEN}+5% dodge chance{bc.ENDC}!")
+                    print(f"{bc.OKBLUE}{bc.UNDERLINE}You chose{bc.ENDC}: {bc.OKGREEN}+5% dodge chance{bc.ENDC}!")
                     self.dodge += 5
                 case "Crit_chance":
-                    print(f"{bc.OKBLUE}{bc.UNDERLINE}You have chosen:{bc.ENDC} {bc.OKGREEN}+4% critical hit chance{bc.ENDC}!")
+                    print(f"{bc.OKBLUE}{bc.UNDERLINE}You chose{bc.ENDC}: {bc.OKGREEN}+4% critical hit chance{bc.ENDC}!")
                     self.crit_chance += 4
                 case "Crit_mult":
-                    print(f"{bc.OKBLUE}{bc.UNDERLINE}You have chosen:{bc.ENDC} {bc.OKGREEN}+0.2 critical hit multiplier{bc.ENDC}!")
+                    print(f"{bc.OKBLUE}{bc.UNDERLINE}You chose{bc.ENDC}: {bc.OKGREEN}+0.2 critical hit multiplier{bc.ENDC}!")
                     self.crit_multiplier += 0.2
 
     def info(self):

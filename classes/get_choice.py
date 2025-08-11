@@ -33,6 +33,7 @@ def get_choice(amount_of_choices_to_clear, min_choice_possible, max_choice_possi
 
             if not erased:
                 erase_lines(1)
+                erased = True
             else:
                 erase_lines(2)
 
