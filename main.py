@@ -1,36 +1,139 @@
+
+
 from classes import *
 
 
 # Instantiate some magic spells ->
-spell_fire = Spell("Fire", 8, 14, "Elemental", f"Cast a fireball dealing {bc.WARNING}14DMG{bc.ENDC}.")
-spell_thunder = Spell("Thunder", 10, 20, "Elemental", f"Cast a thunderbolt dealing {bc.WARNING}20DMG{bc.ENDC}.")
-spell_kill = Spell("Instant kill", 0, 1000, "Elemental", f"God's power - {bc.WARNING}instant kill{bc.ENDC}.")
-spell_cure = Spell("Cure", 5, 20, "Holy", f"Heal yourself by {bc.OKGREEN}20HP{bc.ENDC}")
-spell_healing_light = Spell("Healing Light", 8, 20, "Holy_support", f"Heal your party leader by {bc.OKGREEN}20HP{bc.ENDC}")
+spell_fire = Spell(
+    name="Fire",
+    cost=8,
+    dmg=14,
+    type="Elemental",
+    description="Cast a fireball dealing {bc.WARNING}14DMG{bc.ENDC}.",
+)
+spell_thunder = Spell(
+    name="Thunder",
+    cost=10,
+    dmg=20,
+    type="Elemental",
+    description=f"Cast a thunderbolt dealing {bc.WARNING}20DMG{bc.ENDC}.",
+)
+spell_kill = Spell(
+    name="Instant kill",
+    cost=0,
+    dmg=1000,
+    type="Elemental",
+    description=f"God's power - {bc.WARNING}instant kill{bc.ENDC}.",
+)
+spell_cure = Spell(
+    name="Cure",
+    cost=5,
+    dmg=20,
+    type="Holy",
+    description=f"Heal yourself by {bc.OKGREEN}20HP{bc.ENDC}",
+)
+spell_healing_light = Spell(
+    name="Healing Light",
+    cost=8,
+    dmg=20,
+    type="Holy_support",
+    description=f"Heal your party leader by {bc.OKGREEN}20HP{bc.ENDC}",
+)
 
 # Adding recently created magic to the list ->
 magic = [spell_fire, spell_thunder, spell_kill, spell_cure]
 magic_elf = [spell_fire, spell_healing_light]
 
 # Instantiate equipment ->
-armor_head_1 = Equipment("Soldier's helmet", "head", 5, "df",
-                         f"Soldier's iron helmet. Additional head armor: {bc.OKBLUE}+5 defence{bc.ENDC}.")
-armor_torso_1 = Equipment("Soldier's chest plate", "torso", 6, "df",
-                          f"Soldier's iron chest plate. Additional torso armor: {bc.OKBLUE}+6 defence{bc.ENDC}.")
-armor_legs_1 = Equipment("Soldier's legs armor", "legs", 4, "df",
-                         f"Soldier's iron legs armor. Additional legs armor: {bc.OKBLUE}+4 defence{bc.ENDC}.")
-armor_feet_1 = Equipment("Work boots", "feet", 8, "dodge",
-                         f"Boots from some worker. Makes it easier to dodge: {bc.OKBLUE}+8% dodge chance{bc.ENDC}.")
-weapon_1 = Equipment("Soldier's sword", "weapon", 6, "atk",
-                         f"Soldier's iron sword. Increases damage: {bc.OKBLUE}+6 attack damage{bc.ENDC}.")
+armor_head_1 = Equipment(
+    name="Soldier's helmet",
+    slot="head",
+    prop=5,
+    prop_type="df",
+    description=f"Soldier's iron helmet. "
+                f"Additional head armor: "
+                f"{bc.OKBLUE}+5 defence{bc.ENDC}.",
+)
+armor_torso_1 = Equipment(
+    name="Soldier's chest plate",
+    slot="torso",
+    prop=6,
+    prop_type="df",
+    description=f"Soldier's iron chest plate. "
+                f"Additional torso armor: "
+                f"{bc.OKBLUE}+6 defence{bc.ENDC}.",
+)
+armor_legs_1 = Equipment(
+    name="Soldier's legs armor",
+    slot="legs",
+    prop=4,
+    prop_type="df",
+    description=f"Soldier's iron legs armor. "
+                f"Additional legs armor: "
+                f"{bc.OKBLUE}+4 defence{bc.ENDC}.",
+)
+armor_feet_1 = Equipment(
+    name="Work boots",
+    slot="feet",
+    prop=8,
+    prop_type="dodge",
+    description=f"Boots from some worker. "
+                f"Makes it easier to dodge: "
+                f"{bc.OKBLUE}+8% dodge chance{bc.ENDC}.",
+)
+weapon_1 = Equipment(
+    name="Soldier's sword",
+    slot="weapon",
+    prop=6,
+    prop_type="atk",
+    description=f"Soldier's iron sword. "
+                f"Increases damage: "
+                f"{bc.OKBLUE}+6 attack damage{bc.ENDC}.",
+)
 
 # Adding equipment to array ->
-equipment_available = [armor_head_1, armor_torso_1, armor_legs_1, armor_feet_1, weapon_1]
+equipment_available = [
+    armor_head_1,
+    armor_torso_1,
+    armor_legs_1,
+    armor_feet_1,
+    weapon_1,
+]
 
 # Instantiate entities ->
-player = Person("Player", 100, 20, 10, 20, magic, 20, 12, 14)
-enemy = Person("Enemy", 100, 0, 8, 15, None, 15, 12, 14)
-elf = Person("Carlos the Elf", 30, 40, 4, 6, magic_elf, 35, 8, 14)
+player = Person(
+    name="Player",
+    hp=100,
+    mp=20,
+    atk=10,
+    df=20,
+    magic=magic,
+    dodge=20,
+    crit_chance=12,
+    crit_multiplier=14,
+)
+enemy = Person(
+    name="Enemy",
+    hp=100,
+    mp=0,
+    atk=8,
+    df=15,
+    magic=None,
+    dodge=15,
+    crit_chance=12,
+    crit_multiplier=14,
+)
+elf = Person(
+    name="Carlos the Elf",
+    hp=30,
+    mp=40,
+    atk=4,
+    df=6,
+    magic=magic_elf,
+    dodge=35,
+    crit_chance=8,
+    crit_multiplier=14,
+)
 elf_found = False
 
 # Player's party ->
@@ -40,8 +143,18 @@ player_party = [player]
 entities_met = [player, enemy]
 
 # Instantiate a health and mana potion ->
-health_potion = Potion("Health potion", "health", f"Heals a player by {bc.OKGREEN}50HP{bc.ENDC}", 50)
-mana_potion = Potion("Mana potion", "mana", f"Restores player's MP by {bc.OKBLUE}20MP{bc.ENDC}", 20)
+health_potion = Potion(
+    name="Health potion",
+    type="health",
+    description=f"Heals a player by {bc.OKGREEN}50HP{bc.ENDC}",
+    prop=50,
+)
+mana_potion = Potion(
+    name="Mana potion",
+    type="mana",
+    description=f"Restores player's MP by {bc.OKBLUE}20MP{bc.ENDC}",
+    prop=20,
+)
 
 # Adding potions to the player's inventory.
 for i in range(3):
@@ -52,9 +165,14 @@ erase_lines(6)
 
 # Our battlefield ->
 print(bc.FAIL + bc.BOLD + "AN ENEMY ATTACKS!" + bc.ENDC)
-print(bc.UNDERLINE + bc.HEADER + "TO START THE NEXT TURN -> PRESS ANY KEY" + bc.ENDC)
+print(
+    bc.UNDERLINE
+    + bc.HEADER
+    + "TO START THE NEXT TURN -> PRESS ANY KEY"
+    + bc.ENDC
+)
 running_battlefield = True
-enemy_dodging = False           # If enemy has it active -> he won't try to dodge again in the next turn
+enemy_dodging = False  # For enemy: to don't dodge after dodge
 new_battle = False
 while running_battlefield:
     if not new_battle:
@@ -63,7 +181,7 @@ while running_battlefield:
         new_battle = False
 
     # Turn start ->
-    print(bc.HEADER + bc.BOLD + "======================================== Next turn! ========================================" + bc.ENDC)
+    print(bc.HEADER + bc.BOLD + "======================================== Next turn! ========================================" + bc.ENDC)  # noqa: E501
 
     # MP passive restoring ->
     for person in player_party:
@@ -74,13 +192,13 @@ while running_battlefield:
                 mp_multiplier = 0.2
             else:
                 mp_multiplier = 0.1
-            person.restore_mana(math.ceil(person.get_mp_max()*mp_multiplier))
+            person.restore_mana(math.ceil(person.get_mp_max() * mp_multiplier))
 
     # Player's guard deactivation ->
     if player.is_guard_active():
         player.guard_deactivate()
 
-    # Short info about player's party and the enemy at the start of every turn ->
+    # Short info about player's party and the enemy at the start of turn ->
     for person in player_party:
         print(bc.HEADER + f"===== {person.get_name()}: " + bc.ENDC)
         print(person.info_short())
@@ -93,18 +211,18 @@ while running_battlefield:
         choice = player.choose_action()
         match choice:
             case "Attack":
-                print(bc.FAIL + "========================= Attack time! =========================" + bc.ENDC)
+                print(bc.FAIL + "========================= Attack time! =========================" + bc.ENDC)  # noqa: E501
                 player.perform_attack(enemy)
                 running_player = False
             case "Magic":
                 spell = player.choose_magic()
                 if spell == -1:
                     continue
-                print(bc.FAIL + "========================= Attack time! =========================" + bc.ENDC)
+                print(bc.FAIL + "========================= Attack time! =========================" + bc.ENDC)  # noqa: E501
                 player.perform_attack(enemy, spell)
                 running_player = False
             case "Dodge":
-                print(bc.FAIL + "========================= Attack time! =========================" + bc.ENDC)
+                print(bc.FAIL + "========================= Attack time! =========================" + bc.ENDC)  # noqa: E501
                 player.try_dodge()
                 running_player = False
             case "Use potion":
@@ -112,15 +230,20 @@ while running_battlefield:
             case "Inspect":
                 player.inspect(entities_met)
             case "Guard":
-                print(bc.FAIL + "========================= Attack time! =========================" + bc.ENDC)
+                print(bc.FAIL + "========================= Attack time! =========================" + bc.ENDC)  # noqa: E501
                 player.guard_activate()
                 running_player = False
             case "Command":
                 player.command(player_party)
             case "Leave":
-                print(bc.FAIL + "==================================================" + bc.ENDC)
-                print(bc.FAIL + bc.BOLD + "You've left the battlefield!" + bc.ENDC)
-                print(bc.FAIL + "==================================================" + bc.ENDC)
+                print(bc.FAIL + "==================================================" + bc.ENDC)  # noqa: E501
+                print(
+                    bc.FAIL
+                    + bc.BOLD
+                    + "You've left the battlefield!"
+                    + bc.ENDC
+                )
+                print(bc.FAIL + "==================================================" + bc.ENDC)  # noqa: E501
                 running_player = False
                 running_battlefield = False
 
@@ -135,49 +258,68 @@ while running_battlefield:
             # If this person is recovering ->
             if person.is_recover_active():
                 print(bc.FAIL + "==============================" + bc.ENDC)
-                print(f"{bc.OKBLUE}{person.name}{bc.ENDC} is {bc.WARNING}recovering{bc.ENDC}!")
+                print(f"{bc.OKBLUE}{person.name}{bc.ENDC} "
+                      f"is {bc.WARNING}recovering{bc.ENDC}!")
                 continue
 
             # Carlos the Elf's AI ->
             if person.get_name() == "Carlos the Elf":
                 print(bc.FAIL + "==============================" + bc.ENDC)
-                # Case 1: if Carlos the Elf has enough MP to use magic spells ->
+                # Case 1: if Carlos has enough MP to use magic ->
                 if person.get_mp() >= 8:
                     # Case 1-1: if player doesn't have full hp ->
                     if player.get_hp() < player.get_hp_max():
                         # Case 1-1-1: 50% chance to cast Fire ->
                         if random.random() < 0.5:
-                            person.perform_attack(enemy, person.magic[0])
+                            person.perform_attack(
+                                enemy,
+                                person.magic[0],
+                            )
                         # Case 1-1-2: 50% chance to cast Healing Light ->
                         else:
-                            person.perform_attack(enemy, person.magic[1], player)
+                            person.perform_attack(
+                                enemy,
+                                person.magic[1],
+                                player)
                     # Case 1-2: if player has full hp ->
                     else:
-                        person.perform_attack(enemy, person.magic[0])
-                # Case 2: if Carlos the Elf doesn't have enough MP to use magic spells ->
+                        person.perform_attack(
+                            enemy,
+                            person.magic[0],
+                        )
+                # Case 2: if Carlos doesn't have enough MP to use magic ->
                 else:
                     person.perform_attack(enemy)
 
     # If enemy has been defeated ->
     if enemy.get_hp() == 0:
-        print(bc.FAIL + "================================================================" + bc.ENDC)
+        print(bc.FAIL + "================================================================" + bc.ENDC)  # noqa: E501
         print(bc.OKGREEN + bc.BOLD + "You won!" + bc.ENDC)
         player.kill_count_increase()
         player.level_up()
-        print(bc.FAIL + "================================================================" + bc.ENDC)
+        print(bc.FAIL + "================================================================" + bc.ENDC)  # noqa: E501
 
         msvcrt.getch()
 
         # Creating a new enemy ->
-        print(bc.HEADER + bc.BOLD + "================================================================================" + bc.ENDC)
+        print(bc.HEADER + bc.BOLD + "================================================================================" + bc.ENDC)  # noqa: E501
         entities_met.remove(enemy)
         print(bc.FAIL + bc.BOLD + "Next enemy is attacking!" + bc.ENDC)
-        enemy = Person("Enemy", enemy.get_hp_max()+5, 0, enemy.get_atk() + 1, enemy.get_df() + 3,
-                       None, enemy.get_dodge() + 4, enemy.get_crit_chance() + 4, enemy.get_crit_multiplier() + 1)
+        enemy = Person(
+            name="Enemy",
+            hp=enemy.get_hp_max() + 5,
+            mp=0,
+            atk=enemy.get_atk() + 1,
+            df=enemy.get_df() + 3,
+            magic=None,
+            dodge=enemy.get_dodge() + 4,
+            crit_chance=enemy.get_crit_chance() + 4,
+            crit_multiplier=enemy.get_crit_multiplier() + 1,
+        )
         enemy.info()
         entities_met.append(enemy)
         print(bc.OKBLUE + "-------------------------" + bc.ENDC)
-        print(bc.HEADER + bc.BOLD + "================================================================================" + bc.ENDC)
+        print(bc.HEADER + bc.BOLD + "================================================================================" + bc.ENDC)  # noqa: E501
 
         msvcrt.getch()
 
@@ -186,7 +328,8 @@ while running_battlefield:
             print(bc.OKBLUE + "-------------------------" + bc.ENDC)
             print(f"{bc.HEADER}You found an equipment chest!{bc.ENDC}")
             equipment = random.choice(equipment_available)
-            print(f"You found: {bc.WARNING}{equipment.get_name()}{bc.ENDC} - {equipment.get_description()}")
+            print(f"You found: {bc.WARNING}{equipment.get_name()}{bc.ENDC} - "
+                  f"{equipment.get_description()}")
             equipment_available.remove(equipment)
             player.equipment_obtain(equipment)
             print(bc.OKBLUE + "-------------------------" + bc.ENDC)
@@ -197,10 +340,13 @@ while running_battlefield:
             # 20% chance to meet Carlos the Elf ->
             if random.random() < 0.2:
                 print(bc.OKBLUE + "-------------------------" + bc.ENDC)
-                print(f"{bc.OKBLUE}{bc.UNDERLINE}You just met{bc.ENDC} {bc.HEADER}{elf.get_name()}{bc.ENDC}!")
+                print(f"{bc.OKBLUE}{bc.UNDERLINE}You just met{bc.ENDC} "
+                      f"{bc.HEADER}{elf.get_name()}{bc.ENDC}!")
                 player_party.append(elf)
                 elf_found = True
-                print(f"{bc.HEADER}{elf.get_name()}{bc.ENDC} can cast {bc.WARNING}Fire{bc.ENDC} and {bc.WARNING}Healing Light{bc.ENDC}.")
+                print(f"{bc.HEADER}{elf.get_name()}{bc.ENDC} can cast "
+                      f"{bc.WARNING}Fire{bc.ENDC} and "
+                      f"{bc.WARNING}Healing Light{bc.ENDC}.")
                 entities_met.append(elf)
                 print(bc.OKBLUE + "-------------------------" + bc.ENDC)
                 msvcrt.getch()
@@ -234,7 +380,7 @@ while running_battlefield:
     # If player has been defeated ->
     if player.get_hp() == 0:
         print(bc.FAIL + bc.BOLD + "You lost!" + bc.ENDC)
-        print(bc.FAIL + "================================================================" + bc.ENDC)
+        print(bc.FAIL + "================================================================" + bc.ENDC)  # noqa: E501
         running_battlefield = False
     else:
-        print(bc.FAIL + "================================================================" + bc.ENDC)
+        print(bc.FAIL + "================================================================" + bc.ENDC)  # noqa: E501

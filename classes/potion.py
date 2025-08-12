@@ -1,9 +1,13 @@
 class Potion:
     def __init__(self, name, type, description, prop):
-        self.name = name                    # Name.
-        self.type = type                    # Type of potion.
-        self.description = description      # Description of potion.
-        self.prop = prop                    # Property value.
+        # Name
+        self.name = name
+        # Type of potion
+        self.type = type
+        # Description of potion
+        self.description = description
+        # Property value
+        self.prop = prop
 
     def get_name(self):
         """ Get the name of the potion. """

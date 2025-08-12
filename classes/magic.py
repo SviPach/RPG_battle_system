@@ -3,23 +3,33 @@ import math
 
 class Spell:
     def __init__(self, name, cost, dmg, type, description):
-        self.name = name                            # Name.
-        self.description = description              # Description.
-        self.cost = cost                            # MP cost.
-        self.dmg = dmg                              # If used: amount of hp this spell restores. If not: value to calculate damage.
-        self.dmg_low = math.ceil(dmg - dmg*0.1)     # Weakest damage.
-        self.dmg_high = math.ceil(dmg + dmg*0.1)    # Strongest damage.
-        self.type = type                            # Type of the spell.
+        # Name
+        self.name = name
+        # Description
+        self.description = description
+        # MP cost
+        self.cost = cost
+        # Type of the spell
+        self.type = type
+
+        # Attack damage
+        # -------------
+        # Base damage. If used: amount of hp this spell restores
+        self.dmg = dmg
+        # Lowest damage
+        self.dmg_low = math.ceil(dmg - dmg * 0.1)
+        # Highest damage
+        self.dmg_high = math.ceil(dmg + dmg * 0.1)
 
     def get_name(self):
         """ Get the spell's name. """
         return self.name
 
-    def get_cost(self, spell = 0):
+    def get_cost(self):
         """ Get the spell's cost. """
         return self.cost
 
-    def get_damage(self, spell = 0):
+    def get_damage(self):
         """ Calculate the spell's damage. """
         return [self.dmg_low, self.dmg_high, self.dmg]
 

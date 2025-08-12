@@ -4,70 +4,120 @@ from classes import bc, get_choice
 
 
 class Person:
-    def __init__(self, name, hp, mp, atk, df, magic, dodge, crit_chance, crit_multiplier):
-        self.name = name                                # Name.
-        self.level = 1                                  # Level.
-        self.kill_count = 0                             # Kill count.
-        self.exp = 0                                    # Experience points.
-        self.exp_needed = self.level                    # Experience points required to level up.
+    def __init__(
+            self,
+            name,
+            hp,
+            mp,
+            atk,
+            df,
+            magic,
+            dodge,
+            crit_chance,
+            crit_multiplier
+    ):
+        # Name
+        self.name = name
+        # Level
+        self.level = 1
+        # Kill count
+        self.kill_count = 0
+        # Experience points
+        self.exp = 0                    # Current
+        self.exp_needed = self.level    # For level-up
 
-        self.hp_max = hp                                # Maximum value of health points.
-        self.hp = hp                                    # Current health points.
-        self.hp_critical = hp*0.2                       # Critical value of health points.
+        # Health points
+        self.hp_max = hp                # Maximum
+        self.hp = hp                    # Current
+        self.hp_critical = hp * 0.2       # Critical value
 
-        self.mp_max = mp                                # Maximum value of mana points.
-        self.mp = mp                                    # Current mana points.
-        self.mp_critical = mp * 0.2                     # Critical value of mana points.
+        # Mana points
+        self.mp_max = mp                # Maximum
+        self.mp = mp                    # Current
+        self.mp_critical = mp * 0.2     # Critical value
 
-        self.atk = atk                                  # Default attack value.
-        self.atk_low = math.ceil(atk - atk*0.4)         # Weakest physical damage.
-        self.atk_high = math.ceil(atk + atk*0.4)        # Strongest physical damage.
+        # Attack damage
+        self.atk = atk                              # Default value
+        self.atk_low = math.ceil(atk - atk * 0.4)   # Smallest
+        self.atk_high = math.ceil(atk + atk * 0.4)  # Highest
 
-        self.df = df                                    # Defence.
-        self.magic = magic                              # List of magic spells.
-        self.dodge = dodge                              # Dodge chance.
-        self.dodge_active = False                       # If dodge action is active.
-        self.crit_chance = crit_chance                  # Critical hit chance.
-        self.crit_multiplier = crit_multiplier          # Critical hit damage multiplier (/10).
-        self.counterattack_active = False               # If counterattack is active.
-        self.guard_active = False                       # If defensive stance is active
-        self.inventory = []                             # Inventory of the player.
-        # Possible actions ->
-        self.actions = ["Attack", "Magic", "Dodge", "Use potion", "Inspect", "Guard", "Command", "Leave"]
+        self.df = df                                # Defence
+        self.dodge = dodge                          # Dodge chance
+        self.magic = magic                          # List of magic spells
 
-        # Equipment ->
-        self.equipment_head = None              # Head armor.
-        self.equipment_torso = None             # Torso armor.
-        self.equipment_legs = None              # Legs armor.
-        self.equipment_feet = None              # Feet armor.
-        self.equipment_weapon = None            # Weapon.
+        # Critical hit
+        self.crit_chance = crit_chance              # Chance
+        self.crit_multiplier = crit_multiplier      # Damage multiplier (/10)
 
-        # For allies ->
+        # Switches for action states
+        # --------------------------
+        self.dodge_active = False           # "Dodge" action
+        self.counterattack_active = False   # "Counterattack" action
+        self.guard_active = False           # "Defensive stance"
+
+        self.inventory = []     # Inventory of the player.
+
+        # Possible actions
+        # ----------------
+        self.actions = [
+            "Attack",
+            "Magic",
+            "Dodge",
+            "Use potion",
+            "Inspect",
+            "Guard",
+            "Command",
+            "Leave"
+        ]
+
+        # Equipment
+        # ---------
+        # Head armor
+        self.equipment_head = None
+        # Torso armor
+        self.equipment_torso = None
+        # Legs armor
+        self.equipment_legs = None
+        # Feet armor
+        self.equipment_feet = None
+        # Weapon
+        self.equipment_weapon = None
+
+        # For allies
+        # ----------
         self.recover_active = False
 
-        # Attributes' levels ->
-        self.level_hp = 0                           # Current health capacity level.
-        self.level_hp_max = 10                      # Maximum health capacity level.
+        # Attributes' levels
+        # ------------------
+        # Health capacity levels
+        self.level_hp = 0           # Current
+        self.level_hp_max = 10      # Maximum
 
-        self.level_mp = 0                           # Current mana capacity level.
-        self.level_mp_max = 6                       # Maximum mana capacity level.
+        # Mana capacity levels
+        self.level_mp = 0           # Current
+        self.level_mp_max = 6       # Maximum
 
-        self.level_atk = 0                          # Current attack level.
-        self.level_atk_max = 5                      # Maximum attack level.
+        # Attack levels
+        self.level_atk = 0          # Current
+        self.level_atk_max = 5      # Maximum
 
-        self.level_df = 0                           # Current defence level.
-        self.level_df_max = 6                       # Maximum defence level.
+        # Defence levels
+        self.level_df = 0           # Current
+        self.level_df_max = 6       # Maximum
 
-        self.level_dodge = 0                        # Current dodge level.
-        self.level_dodge_max = 9                    # Maximum dodge level.
+        # Dodge levels
+        self.level_dodge = 0        # Current
+        self.level_dodge_max = 9    # Maximum
 
-        self.level_crit_chance = 0                  # Current critical hit chance level.
-        self.level_crit_chance_max = 12             # Maximum critical hit chance level.
+        # Critical hit chance levels
+        self.level_crit_chance = 0              # Current
+        self.level_crit_chance_max = 12         # Maximum
 
-        self.level_crit_multiplier = 0              # Current critical hit multiplier level.
-        self.level_crit_multiplier_max = 6          # Maximum critical hit multiplier level.
+        # Critical hit multiplier levels
+        self.level_crit_multiplier = 0          # Current
+        self.level_crit_multiplier_max = 6      # Maximum
 
-    def generate_damage(self, spell = None):
+    def generate_damage(self, spell=None):
         """
         Generate the damage.
 
@@ -85,12 +135,21 @@ class Person:
         if spell is None:
             dmg = random.randrange(self.atk_low, self.atk_high)
         else:
-            dmg = random.randrange(spell.get_damage()[0], spell.get_damage()[1])
+            dmg = random.randrange(
+                start=spell.get_damage()[0],
+                stop=spell.get_damage()[1]
+            )
 
         # Chance to perform a critical hit ->
-        if random.random() < self.crit_chance/100 or self.counterattack_active is True:
-            dmg = math.ceil(dmg * (self.crit_multiplier/10))
-            print(f"{bc.WARNING}{bc.UNDERLINE}{self.name} makes a critical hit!{bc.ENDC}")
+        if (
+                random.random() < self.crit_chance / 100
+                or self.counterattack_active is True
+        ):
+            dmg = math.ceil(dmg * (self.crit_multiplier / 10))
+            print(
+                f"{bc.WARNING}{bc.UNDERLINE}{self.name} "
+                f"makes a critical hit!{bc.ENDC}"
+            )
             self.counterattack_active = False
             return dmg
 
@@ -110,15 +169,20 @@ class Person:
         # If incoming damage is more than 0 ->
         if dmg > 0:
             # Chance to dodge the attack ->
-            if random.random() < self.dodge/100:
-                print(f"{bc.WARNING}{bc.UNDERLINE}{self.name} dodged!{bc.ENDC}")
+            if random.random() < self.dodge / 100:
+                print(
+                    f"{bc.WARNING}{bc.UNDERLINE}{self.name} dodged!{bc.ENDC}"
+                )
 
                 # If dodging is active ->
                 if self.dodge_active:
                     self.dodge -= 30
                     self.dodge_active = False
                     self.counterattack_active = True
-                    print(f"{bc.WARNING}{bc.UNDERLINE}{self.name} is about to perform a counterattack!{bc.ENDC}")
+                    print(
+                        f"{bc.WARNING}{bc.UNDERLINE}{self.name} "
+                        f"is about to perform a counterattack!{bc.ENDC}"
+                    )
                 return
 
             # If dodging was active but did not dodge ->
@@ -127,7 +191,7 @@ class Person:
                 self.dodge_active = False
 
             # Damage to take ->
-            dmg_taken = math.ceil(dmg * (100 - self.df)/100)
+            dmg_taken = math.ceil(dmg * (100 - self.df) / 100)
             self.hp -= dmg_taken
             if self.hp < 0:
                 self.hp = 0
@@ -208,7 +272,11 @@ class Person:
                 self.equipment_weapon = equipment
 
         # String for print() function ->
-        output = f"{bc.OKBLUE}{bc.UNDERLINE}{self.name}{bc.ENDC} equipped {bc.WARNING}{equipment.get_name()}{bc.ENDC}: {bc.OKBLUE}+{equipment.get_prop()}"
+        output = (
+            f"{bc.OKBLUE}{bc.UNDERLINE}{self.name}{bc.ENDC} "
+            f"equipped {bc.WARNING}{equipment.get_name()}{bc.ENDC}: "
+            f"{bc.OKBLUE}+{equipment.get_prop()}"
+        )
 
         # Check the attribute this equipment improves ->
         prop_type = equipment.get_prop_type()
@@ -238,21 +306,35 @@ class Person:
         print(bc.OKBLUE + "Choose the potion to use:" + bc.ENDC)
         # List of potions ->
         for i in range(len(self.inventory)):
-            print(f"{i+1}. {bc.WARNING}{self.inventory[i].get_name()}{bc.ENDC} - {self.inventory[i].get_description()}.")
+            print(
+                f"{i + 1}. {bc.WARNING}{self.inventory[i].get_name()}{bc.ENDC}"
+                f" - {self.inventory[i].get_description()}."
+            )
 
         # If player don't wat to choose a potion ->
         print("0 - Cancel.")
 
         # Choosing the potion ->
-        choice = get_choice(len(self.inventory) + 1, -1, len(self.inventory) - 1)
+        choice = get_choice(
+            amount_of_choices_to_clear=len(self.inventory) + 1,
+            min_choice_possible=-1,
+            max_choice_possible=len(self.inventory) - 1
+        )
 
         # If canceled ->
         if choice == -1:
-            print(f"You {bc.OKBLUE}{bc.UNDERLINE}did not choose{bc.ENDC} a potion.")
+            print(
+                f"You {bc.OKBLUE}{bc.UNDERLINE}"
+                f"did not choose{bc.ENDC} a potion."
+            )
             return
 
         # Potion use ->
-        print(f"You chose {bc.WARNING}{bc.UNDERLINE}{self.inventory[choice].get_name()}{bc.ENDC}.")
+        print(
+            f"You chose "
+            f"{bc.WARNING}{bc.UNDERLINE}"
+            f"{self.inventory[choice].get_name()}{bc.ENDC}."
+        )
         self.potion_use(self.inventory[choice])
 
     def potion_use(self, potion):
@@ -260,23 +342,34 @@ class Person:
         # Check type of the potion ->
         if potion.get_type() == "health":
             # If it's a healing potion ->
-            print(f"You have healed yourself by {bc.OKGREEN}{potion.get_prop()}{bc.ENDC}HP "
-                  f"with {bc.WARNING}{potion.get_name()}{bc.ENDC}.")
+            print(
+                f"You have healed yourself by "
+                f"{bc.OKGREEN}{potion.get_prop()}{bc.ENDC}HP "
+                f"with {bc.WARNING}{potion.get_name()}{bc.ENDC}."
+            )
             self.heal(potion.get_prop())
-            print(f"{bc.UNDERLINE}{bc.OKBLUE}{self.name}{bc.ENDC}: {self.info_short()}")
+            print(
+                f"{bc.UNDERLINE}{bc.OKBLUE}{self.name}{bc.ENDC}: "
+                f"{self.info_short()}"
+            )
 
             # Removing the used potion from player's inventory ->
             self.inventory.remove(potion)
         elif potion.get_type() == "mana":
             # If it's a mana potion ->
-            print(f"You have restored your MP by {bc.OKBLUE}{potion.get_prop()}{bc.ENDC}MP "
-                  f"with {bc.WARNING}{potion.get_name()}{bc.ENDC}.")
+            print(
+                f"You have restored your MP by "
+                f"{bc.OKBLUE}{potion.get_prop()}{bc.ENDC}MP "
+                f"with {bc.WARNING}{potion.get_name()}{bc.ENDC}."
+            )
             self.restore_mana(potion.get_prop())
-            print(f"{bc.UNDERLINE}{bc.OKBLUE}{self.name}{bc.ENDC}: {self.info_short()}")
+            print(
+                f"{bc.UNDERLINE}{bc.OKBLUE}{self.name}{bc.ENDC}: "
+                f"{self.info_short()}"
+            )
 
             # Removing the used potion from player's inventory ->
             self.inventory.remove(potion)
-
 
     def choose_action(self):
         """ Chooses an action. """
@@ -284,12 +377,19 @@ class Person:
         print(bc.OKBLUE + "Choose an action:" + bc.ENDC)
         # List of actions ->
         for i in range(len(self.actions)):
-            print(f"{i+1}. {self.actions[i]}")
+            print(f"{i + 1}. {self.actions[i]}")
 
         # Choosing an action ->
-        choice = get_choice(len(self.actions), 0, len(self.actions) - 1)
+        choice = get_choice(
+            amount_of_choices_to_clear=len(self.actions),
+            min_choice_possible=0,
+            max_choice_possible=len(self.actions) - 1
+        )
 
-        print(f"You chose {bc.OKBLUE}{bc.UNDERLINE}{self.actions[choice]}{bc.ENDC}.")
+        print(
+            f"You chose "
+            f"{bc.OKBLUE}{bc.UNDERLINE}{self.actions[choice]}{bc.ENDC}."
+        )
         return self.actions[choice]
 
     def get_name(self):
@@ -303,12 +403,19 @@ class Person:
         if self.hp > self.hp_max:
             self.hp = self.hp_max
         hp_new = self.hp
-        print(f"{bc.UNDERLINE}{bc.OKBLUE}{self.name}{bc.ENDC}: {bc.OKGREEN}+{hp}HP{bc.ENDC} ({bc.OKGREEN}+{hp_new-hp_old}{bc.ENDC})")
+        print(
+            f"{bc.UNDERLINE}{bc.OKBLUE}{self.name}{bc.ENDC}: "
+            f"{bc.OKGREEN}+{hp}HP{bc.ENDC} "
+            f"({bc.OKGREEN}+{hp_new - hp_old}{bc.ENDC})"
+        )
 
     def heal_full(self):
         """ Fully heal the player. """
         hp_gain = self.hp_max - self.hp
-        print(f"{bc.UNDERLINE}{bc.OKBLUE}{self.name}{bc.ENDC}: {bc.OKGREEN}+{hp_gain}HP{bc.ENDC}")
+        print(
+            f"{bc.UNDERLINE}{bc.OKBLUE}{self.name}{bc.ENDC}: "
+            f"{bc.OKGREEN}+{hp_gain}HP{bc.ENDC}"
+        )
         self.hp = self.hp_max
 
     def restore_mana(self, mp):
@@ -318,26 +425,36 @@ class Person:
         if self.mp > self.mp_max:
             self.mp = self.mp_max
         mp_new = self.mp
-        print(f"{bc.UNDERLINE}{bc.OKBLUE}{self.name}{bc.ENDC}: {bc.OKBLUE}+{mp}MP{bc.ENDC} ({bc.OKBLUE}+{mp_new-mp_old}{bc.ENDC})")
+        print(
+            f"{bc.UNDERLINE}{bc.OKBLUE}{self.name}{bc.ENDC}: "
+            f"{bc.OKBLUE}+{mp}MP{bc.ENDC} "
+            f"({bc.OKBLUE}+{mp_new - mp_old}{bc.ENDC})"
+        )
 
     def restore_mana_full(self):
         """ Fully restore player's mana. """
         mp_gain = self.mp_max - self.mp
-        print(f"{bc.UNDERLINE}{bc.OKBLUE}{self.name}{bc.ENDC}: {bc.OKBLUE}+{mp_gain}MP{bc.ENDC}")
+        print(
+            f"{bc.UNDERLINE}{bc.OKBLUE}{self.name}{bc.ENDC}: "
+            f"{bc.OKBLUE}+{mp_gain}MP{bc.ENDC}"
+        )
         self.mp = self.mp_max
 
     def choose_magic(self):
         """ Chooses a magic spell. """
         print(bc.OKBLUE + "-------------------------" + bc.ENDC)
-        print(bc.OKBLUE +  "Choose a spell: \n(dmg, cost)" + bc.ENDC)
+        print(bc.OKBLUE + "Choose a spell: \n(dmg, cost)" + bc.ENDC)
         # List of the magic spells ->
         for i in range(len(self.magic)):
             spell = self.magic[i]
             dmg_low = spell.get_damage()[0]
             dmg_high = spell.get_damage()[1]
-            print(f"{i + 1}. [{bc.WARNING}{spell.get_name()}{bc.ENDC}]  --  "
-                  f"({bc.FAIL}{dmg_low}-{dmg_high}{bc.ENDC}, {bc.OKBLUE}{spell.get_cost()}{bc.ENDC})  --  "
-                  f"{spell.get_description()}")
+            print(
+                f"{i + 1}. [{bc.WARNING}{spell.get_name()}{bc.ENDC}]  --  "
+                f"({bc.FAIL}{dmg_low}-{dmg_high}{bc.ENDC}, "
+                f"{bc.OKBLUE}{spell.get_cost()}{bc.ENDC})  --  "
+                f"{spell.get_description()}"
+            )
 
         # In case if player doesn't want to attack with magic ->
         print(f"0 - Attack with {bc.WARNING}physical damage{bc.ENDC} instead.")
@@ -347,7 +464,11 @@ class Person:
 
         # If player chose a physical attack instead of magic ->
         if choice == -1:
-            print(f"You chose {bc.WARNING}{bc.UNDERLINE}Physical attack{bc.ENDC} instead of magic spell.")
+            print(
+                f"You chose "
+                f"{bc.WARNING}{bc.UNDERLINE}Physical attack{bc.ENDC} "
+                f"instead of magic spell."
+            )
             return None
 
         # If player doesn't have enough MP ->
@@ -355,10 +476,14 @@ class Person:
             print(f"{bc.FAIL}{bc.UNDERLINE}Not enough MP!{bc.ENDC}")
             return -1
         else:
-            print(f"You chose {bc.WARNING}{bc.UNDERLINE}{self.magic[choice].get_name()}{bc.ENDC}.")
+            print(
+                f"You chose "
+                f"{bc.WARNING}{bc.UNDERLINE}"
+                f"{self.magic[choice].get_name()}{bc.ENDC}."
+            )
             return self.magic[choice]
 
-    def perform_attack(self, enemy, spell = None, party_leader = None):
+    def perform_attack(self, enemy, spell=None, party_leader=None):
         """
         Perform the attack by the player.
 
@@ -380,14 +505,23 @@ class Person:
             if spell.get_type() == "Holy":
                 hp = spell.get_damage()[2]
                 # The healing result ->
-                print(f"You've healed yourself by {bc.OKGREEN}{hp}{bc.ENDC}HP with {bc.WARNING}{spell.get_name()}{bc.ENDC}.")
+                print(
+                    f"You've healed yourself by "
+                    f"{bc.OKGREEN}{hp}{bc.ENDC}HP "
+                    f"with {bc.WARNING}{spell.get_name()}{bc.ENDC}."
+                )
                 self.heal(hp)
                 return
             elif spell.get_type() == "Holy_support":
                 hp = spell.get_damage()[2]
                 # The healing result ->
-                print(f"{bc.UNDERLINE}{bc.OKBLUE}{self.name}{bc.ENDC} healed {bc.UNDERLINE}{bc.OKBLUE}{party_leader.get_name()}{bc.ENDC} "
-                      f"by {bc.OKGREEN}{hp}{bc.ENDC}HP with {bc.WARNING}{spell.get_name()}{bc.ENDC}.")
+                print(
+                    f"{bc.UNDERLINE}{bc.OKBLUE}{self.name}{bc.ENDC} healed "
+                    f"{bc.UNDERLINE}{bc.OKBLUE}"
+                    f"{party_leader.get_name()}{bc.ENDC} "
+                    f"by {bc.OKGREEN}{hp}{bc.ENDC}HP "
+                    f"with {bc.WARNING}{spell.get_name()}{bc.ENDC}."
+                )
                 party_leader.heal(hp)
                 return
             else:
@@ -401,25 +535,39 @@ class Person:
             spell_name = "Physical attack"
         else:
             spell_name = spell.get_name()
-        print(f"{bc.UNDERLINE}{bc.OKBLUE}{self.name}{bc.ENDC} attacking for {bc.WARNING}{dmg}{bc.ENDC}HP with {bc.WARNING}{spell_name}{bc.ENDC}.")
+        print(
+            f"{bc.UNDERLINE}{bc.OKBLUE}{self.name}{bc.ENDC} "
+            f"attacking for {bc.WARNING}{dmg}{bc.ENDC}HP "
+            f"with {bc.WARNING}{spell_name}{bc.ENDC}."
+        )
 
         # Dealing damage to the enemy and printing out the result ->
         enemy_hp_old = enemy.hp
         enemy.take_damage(dmg)
         enemy_hp_new = enemy.hp
-        print(f"--> {bc.UNDERLINE}{bc.OKBLUE}{enemy.get_name()}{bc.ENDC} took damage: {bc.WARNING}-{enemy_hp_old - enemy_hp_new}HP.{bc.ENDC}")
+        print(
+            f"--> {bc.UNDERLINE}{bc.OKBLUE}{enemy.get_name()}{bc.ENDC} "
+            f"took damage: "
+            f"{bc.WARNING}-{enemy_hp_old - enemy_hp_new}HP.{bc.ENDC}"
+        )
 
     def try_dodge(self):
         """ Try to dodge the next attack. """
         self.dodge += 30
         self.dodge_active = True
-        print(f"{bc.UNDERLINE}{bc.OKBLUE}{self.name}{bc.ENDC} tries to {bc.WARNING}dodge{bc.ENDC}!")
+        print(
+            f"{bc.UNDERLINE}{bc.OKBLUE}{self.name}{bc.ENDC} "
+            f"tries to {bc.WARNING}dodge{bc.ENDC}!"
+        )
 
     def guard_activate(self):
         """ Enter the defensive stance to reduce incoming damage. """
         self.df += 40
         self.guard_active = True
-        print(f"{bc.UNDERLINE}{bc.OKBLUE}{self.name}{bc.ENDC} enters a {bc.WARNING}defensive state{bc.ENDC}!")
+        print(
+            f"{bc.UNDERLINE}{bc.OKBLUE}{self.name}{bc.ENDC} "
+            f"enters a {bc.WARNING}defensive state{bc.ENDC}!"
+        )
 
     def guard_deactivate(self):
         """ Quit the defensive stance. """
@@ -433,20 +581,33 @@ class Person:
         # List of actions ->
         i = 1
         for entity in entities:
-            print(f"{i}. {bc.UNDERLINE}{bc.OKBLUE}{entity.get_name()}{bc.ENDC}")
+            print(
+                f"{i}. {bc.UNDERLINE}{bc.OKBLUE}"
+                f"{entity.get_name()}{bc.ENDC}"
+            )
             i += 1
         print("0. Cancel")
 
         # Player's choice ->
-        choice = get_choice(len(entities) + 1, -1, len(entities)-1)
+        choice = get_choice(
+            amount_of_choices_to_clear=len(entities) + 1,
+            min_choice_possible=-1,
+            max_choice_possible=len(entities) - 1
+        )
 
         # If player doesn't want to inspect anybody ->
         if choice == -1:
-            print(f"You {bc.OKBLUE}{bc.UNDERLINE}did not inspect{bc.ENDC} anybody.")
+            print(
+                f"You {bc.OKBLUE}{bc.UNDERLINE}"
+                f"did not inspect{bc.ENDC} anybody."
+            )
             return
 
         # Check if there is such an entity to inspect ->
-        print(f"You inspect {bc.OKBLUE}{bc.UNDERLINE}{entities[choice].name}{bc.ENDC}.")
+        print(
+            f"You inspect {bc.OKBLUE}{bc.UNDERLINE}"
+            f"{entities[choice].name}{bc.ENDC}."
+        )
         entities[choice].info()
 
     def command(self, player_party):
@@ -457,30 +618,44 @@ class Person:
             # List of allies in player's party ->
             i = 1
             for person in player_party[1:]:
-                print(f"{i}. {bc.UNDERLINE}{bc.OKBLUE}{person.get_name()}{bc.ENDC}")
+                print(
+                    f"{i}. {bc.UNDERLINE}{bc.OKBLUE}"
+                    f"{person.get_name()}{bc.ENDC}"
+                )
                 i += 1
             print("0. Cancel")
 
             # Player's choice ->
-            choice = get_choice(len(player_party[:1]) + 1, -1, len(player_party[:1]) - 1)
+            choice = get_choice(
+                amount_of_choices_to_clear=(player_party[:1]) + 1,
+                min_choice_possible=-1,
+                max_choice_possible=len(player_party[:1]) - 1
+            )
 
             # If player doesn't want to command anybody ->
             if choice == -1:
-                print(f"You {bc.OKBLUE}{bc.UNDERLINE}did not command{bc.ENDC} anybody.")
+                print(f"You {bc.OKBLUE}{bc.UNDERLINE}"
+                      f"did not command{bc.ENDC} anybody.")
                 return
 
             # Check if there is such an option ->
-            player_party[choice+1].recover_switch()
+            player_party[choice + 1].recover_switch()
         else:
-            print(bc.FAIL + bc.UNDERLINE + "You're alone in your party!" + bc.ENDC)
+            print(
+                bc.FAIL + bc.UNDERLINE
+                + "You're alone in your party!"
+                + bc.ENDC
+            )
 
     def recover_switch(self):
         """ Switch the recover state. """
         if not self.recover_active:
-            print(f"{bc.UNDERLINE}{bc.OKBLUE}{self.name}{bc.ENDC} is now {bc.WARNING}recovering{bc.ENDC}!")
+            print(f"{bc.UNDERLINE}{bc.OKBLUE}{self.name}{bc.ENDC} "
+                  f"is now {bc.WARNING}recovering{bc.ENDC}!")
             self.recover_active = True
         else:
-            print(f"{bc.UNDERLINE}{bc.OKBLUE}{self.name}{bc.ENDC} is now {bc.WARNING}fighting{bc.ENDC}!")
+            print(f"{bc.UNDERLINE}{bc.OKBLUE}{self.name}{bc.ENDC} "
+                  f"is now {bc.WARNING}fighting{bc.ENDC}!")
             self.recover_active = False
 
     def is_recover_active(self):
@@ -491,7 +666,8 @@ class Person:
         """ Increase the count of kills and exp by 1. """
         self.kill_count += 1
         self.exp += 1
-        print(f"{bc.UNDERLINE}{bc.OKBLUE}{self.name}{bc.ENDC}: {bc.HEADER}+1EXP{bc.ENDC}")
+        print(f"{bc.UNDERLINE}{bc.OKBLUE}{self.name}{bc.ENDC}: "
+              f"{bc.HEADER}+1EXP{bc.ENDC}")
 
     def level_up(self):
         """ Level up the player. """
@@ -530,7 +706,11 @@ class Person:
 
             # If all the attributes have maximum level ->
             if len(attributes) == 0:
-                print(f"{bc.HEADER}{bc.UNDERLINE}ALL THE ATTRIBUTES ARE UPGRADED!{bc.ENDC}")
+                print(
+                    bc.HEADER + bc.UNDERLINE
+                    + "ALL THE ATTRIBUTES ARE UPGRADED!"
+                    + bc.ENDC
+                )
                 return
             else:
                 # Choosing 3 random attributes ->
@@ -548,30 +728,61 @@ class Person:
             for item in attributes_available:
                 match item:
                     case "HP":
-                        print(f"{i}. {bc.OKBLUE}{bc.UNDERLINE}{item}{bc.ENDC}: "
-                              f"Increase your {bc.WARNING}maximum HP{bc.ENDC} by {bc.OKGREEN}10{bc.ENDC}.")
+                        print(
+                            f"{i}. {bc.OKBLUE}{bc.UNDERLINE}{item}{bc.ENDC}: "
+                            f"Increase your "
+                            f"{bc.WARNING}maximum HP{bc.ENDC} "
+                            f"by {bc.OKGREEN}10{bc.ENDC}.")
                     case "MP":
-                        print(f"{i}. {bc.OKBLUE}{bc.UNDERLINE}{item}{bc.ENDC}: "
-                              f"Increase your {bc.WARNING}maximum MP{bc.ENDC} by {bc.OKGREEN}5{bc.ENDC}.")
+                        print(
+                            f"{i}. {bc.OKBLUE}{bc.UNDERLINE}{item}{bc.ENDC}: "
+                            f"Increase your "
+                            f"{bc.WARNING}maximum MP{bc.ENDC} "
+                            f"by {bc.OKGREEN}5{bc.ENDC}."
+                        )
                     case "Atk":
-                        print(f"{i}. {bc.OKBLUE}{bc.UNDERLINE}{item}{bc.ENDC}: "
-                              f"Increase your {bc.WARNING}base attack{bc.ENDC} by {bc.OKGREEN}2{bc.ENDC}.")
+                        print(
+                            f"{i}. {bc.OKBLUE}{bc.UNDERLINE}{item}{bc.ENDC}: "
+                            f"Increase your "
+                            f"{bc.WARNING}base attack{bc.ENDC} "
+                            f"by {bc.OKGREEN}2{bc.ENDC}."
+                        )
                     case "Df":
-                        print(f"{i}. {bc.OKBLUE}{bc.UNDERLINE}{item}{bc.ENDC}: "
-                              f"Increase your {bc.WARNING}defence{bc.ENDC} by {bc.OKGREEN}5{bc.ENDC}.")
+                        print(
+                            f"{i}. {bc.OKBLUE}{bc.UNDERLINE}{item}{bc.ENDC}: "
+                            f"Increase your "
+                            f"{bc.WARNING}defence{bc.ENDC} "
+                            f"by {bc.OKGREEN}5{bc.ENDC}."
+                        )
                     case "Dodge":
-                        print(f"{i}. {bc.OKBLUE}{bc.UNDERLINE}{item}{bc.ENDC}: "
-                              f"Increase your {bc.WARNING}dodge chance{bc.ENDC} by {bc.OKGREEN}5%{bc.ENDC}.")
+                        print(
+                            f"{i}. {bc.OKBLUE}{bc.UNDERLINE}{item}{bc.ENDC}: "
+                            f"Increase your "
+                            f"{bc.WARNING}dodge chance{bc.ENDC} "
+                            f"by {bc.OKGREEN}5%{bc.ENDC}."
+                        )
                     case "Crit_chance":
-                        print(f"{i}. {bc.OKBLUE}{bc.UNDERLINE}{item}{bc.ENDC}: "
-                              f"Increase your {bc.WARNING}critical hit chance{bc.ENDC} by {bc.OKGREEN}4%{bc.ENDC}.")
+                        print(
+                            f"{i}. {bc.OKBLUE}{bc.UNDERLINE}{item}{bc.ENDC}: "
+                            f"Increase your "
+                            f"{bc.WARNING}critical hit chance{bc.ENDC} "
+                            f"by {bc.OKGREEN}4%{bc.ENDC}."
+                        )
                     case "Crit_mult":
-                        print(f"{i}. {bc.OKBLUE}{bc.UNDERLINE}{item}{bc.ENDC}: "
-                              f"Increase your {bc.WARNING}critical hit multiplier{bc.ENDC} by {bc.OKGREEN}0.2{bc.ENDC}.")
+                        print(
+                            f"{i}. {bc.OKBLUE}{bc.UNDERLINE}{item}{bc.ENDC}: "
+                            f"Increase your "
+                            f"{bc.WARNING}critical hit multiplier{bc.ENDC} "
+                            f"by {bc.OKGREEN}0.2{bc.ENDC}."
+                        )
                 i += 1
 
             # Choosing the attribute to upgrade ->
-            choice = get_choice(len(attributes_available), 0, len(attributes_available) - 1)
+            choice = get_choice(
+                amount_of_choices_to_clear=len(attributes_available),
+                min_choice_possible=0,
+                max_choice_possible=len(attributes_available) - 1
+            )
 
             # Check if there is such a choice ->
             chosen_attribute = attributes_available[choice]
@@ -579,61 +790,171 @@ class Person:
             # Upgrading the player, depending on his choice ->
             match chosen_attribute:
                 case "HP":
-                    print(f"{bc.OKBLUE}{bc.UNDERLINE}You chose{bc.ENDC}: {bc.OKGREEN}+10 maximum HP{bc.ENDC}!")
+                    print(
+                        f"{bc.OKBLUE}{bc.UNDERLINE}You chose{bc.ENDC}: "
+                        f"{bc.OKGREEN}+10 maximum HP{bc.ENDC}!"
+                    )
                     self.hp_max += 10
                     self.hp = self.hp_max
                 case "MP":
-                    print(f"{bc.OKBLUE}{bc.UNDERLINE}You chose{bc.ENDC}: {bc.OKGREEN}+5 maximum MP{bc.ENDC}!")
+                    print(
+                        f"{bc.OKBLUE}{bc.UNDERLINE}You chose{bc.ENDC}: "
+                        f"{bc.OKGREEN}+5 maximum MP{bc.ENDC}!"
+                    )
                     self.mp_max += 5
                     self.mp = self.mp_max
                 case "Atk":
-                    print(f"{bc.OKBLUE}{bc.UNDERLINE}You chose{bc.ENDC}: {bc.OKGREEN}+2 base attack{bc.ENDC}!")
+                    print(
+                        f"{bc.OKBLUE}{bc.UNDERLINE}You chose{bc.ENDC}: "
+                        f"{bc.OKGREEN}+2 base attack{bc.ENDC}!"
+                    )
                     self.atk += 2
                     self.atk_low = math.ceil(self.atk - self.atk * 0.4)
                     self.atk_high = math.ceil(self.atk + self.atk * 0.4)
                 case "Df":
-                    print(f"{bc.OKBLUE}{bc.UNDERLINE}You chose{bc.ENDC}: {bc.OKGREEN}+5 defence{bc.ENDC}!")
+                    print(
+                        f"{bc.OKBLUE}{bc.UNDERLINE}You chose{bc.ENDC}: "
+                        f"{bc.OKGREEN}+5 defence{bc.ENDC}!"
+                    )
                     self.df += 5
                 case "Dodge":
-                    print(f"{bc.OKBLUE}{bc.UNDERLINE}You chose{bc.ENDC}: {bc.OKGREEN}+5% dodge chance{bc.ENDC}!")
+                    print(
+                        f"{bc.OKBLUE}{bc.UNDERLINE}You chose{bc.ENDC}: "
+                        f"{bc.OKGREEN}+5% dodge chance{bc.ENDC}!"
+                    )
                     self.dodge += 5
                 case "Crit_chance":
-                    print(f"{bc.OKBLUE}{bc.UNDERLINE}You chose{bc.ENDC}: {bc.OKGREEN}+4% critical hit chance{bc.ENDC}!")
+                    print(
+                        f"{bc.OKBLUE}{bc.UNDERLINE}You chose{bc.ENDC}: "
+                        f"{bc.OKGREEN}+4% critical hit chance{bc.ENDC}!"
+                    )
                     self.crit_chance += 4
                 case "Crit_mult":
-                    print(f"{bc.OKBLUE}{bc.UNDERLINE}You chose{bc.ENDC}: {bc.OKGREEN}+0.2 critical hit multiplier{bc.ENDC}!")
+                    print(
+                        f"{bc.OKBLUE}{bc.UNDERLINE}You chose{bc.ENDC}: "
+                        f"{bc.OKGREEN}+0.2 critical hit multiplier{bc.ENDC}!"
+                    )
                     self.crit_multiplier += 2
 
     def info(self):
         """ Full information about the player. """
         print(bc.OKBLUE + "-------------------------" + bc.ENDC)
-        print(f"{bc.OKBLUE}==============={bc.ENDC} Full info about {bc.UNDERLINE}{bc.OKBLUE}{self.name}{bc.ENDC}:")
-        print(f"\t{bc.OKBLUE}Level{bc.ENDC}: {self.level}")
-        print(f"\t{bc.OKBLUE}Experience{bc.ENDC}: {self.exp}/{self.exp_needed}")
-        print(f"\t{bc.OKBLUE}HP{bc.ENDC}: {self.hp}/{self.hp_max}")
-        print(f"\t{bc.OKBLUE}MP{bc.ENDC}: {self.mp}/{self.mp_max}")
-        print(f"\t{bc.OKBLUE}Atk dmg{bc.ENDC}: {self.atk_low}-{self.atk_high}")
-        print(f"\t{bc.OKBLUE}Atk dmg (base){bc.ENDC}: {self.atk}")
-        print(f"\t{bc.OKBLUE}Def{bc.ENDC}: {self.df}")
-        print(f"\t{bc.OKBLUE}Dodge chance{bc.ENDC}: {self.dodge}%")
-        print(f"\t{bc.OKBLUE}Critical hit chance{bc.ENDC}: {self.crit_chance}%")
-        print(f"\t{bc.OKBLUE}Critical hit multiplier{bc.ENDC}: x{self.crit_multiplier/10}")
+        print(
+            f"{bc.OKBLUE}==============={bc.ENDC}"
+            f" Full info about "
+            f"{bc.UNDERLINE}{bc.OKBLUE}{self.name}{bc.ENDC}:"
+        )
+
+        # Name ->
+        print(
+            f"\t"
+            f"{bc.OKBLUE}Level{bc.ENDC}: {self.level}"
+        )
+
+        # EXP ->
+        print(
+            f"\t"
+            f"{bc.OKBLUE}Experience{bc.ENDC}: {self.exp}/{self.exp_needed}"
+        )
+
+        # HP ->
+        print(
+            f"\t"
+            f"{bc.OKBLUE}HP{bc.ENDC}: {self.hp}/{self.hp_max}"
+        )
+
+        # MP ->
+        print(
+            f"\t"
+            f"{bc.OKBLUE}MP{bc.ENDC}: {self.mp}/{self.mp_max}"
+        )
+
+        # Attack damage ->
+        print(
+            f"\t"
+            f"{bc.OKBLUE}Atk dmg{bc.ENDC}: {self.atk_low}-{self.atk_high}"
+        )
+
+        # Attack damage (base) ->
+        print(
+            f"\t"
+            f"{bc.OKBLUE}Atk dmg (base){bc.ENDC}: "
+            f"{self.atk}"
+        )
+
+        # Defence ->
+        print(
+            f"\t"
+            f"{bc.OKBLUE}Def{bc.ENDC}: "
+            f"{self.df}"
+        )
+
+        # Dodge ->
+        print(
+            f"\t"
+            f"{bc.OKBLUE}Dodge chance{bc.ENDC}: "
+            f"{self.dodge}%"
+        )
+
+        # Critical hit chance ->
+        print(
+            f"\t"
+            f"{bc.OKBLUE}Critical hit chance{bc.ENDC}: "
+            f"{self.crit_chance}%"
+        )
+
+        # Critical hit multiplier ->
+        print(
+            f"\t"
+            f"{bc.OKBLUE}Critical hit multiplier{bc.ENDC}: "
+            f"x{self.crit_multiplier / 10}"
+        )
+
+        # Inventory ->
         inventory = []
         for item in self.inventory:
             inventory.append(item.get_name())
         print(f"\t{bc.OKBLUE}Inventory{bc.ENDC}: {inventory}")
+
+        # Kill count ->
         print(f"\t{bc.OKBLUE}Kill count{bc.ENDC}: {self.kill_count}")
 
     def info_short(self):
         """ Short information about the player. """
-        info = f""
+        # HP ->
+        info = ""
         if self.health_critical():
-            info += f"{bc.FAIL}{self.get_hp()}{bc.ENDC}{bc.OKGREEN}/{self.get_hp_max()}{bc.ENDC}HP, "
+            info += (
+                f"{bc.FAIL}"
+                f"{self.get_hp()}"
+                f"{bc.ENDC}{bc.OKGREEN}"
+                f"/{self.get_hp_max()}"
+                f"{bc.ENDC}"
+                f"HP, "
+            )
         else:
-            info += f"{bc.OKGREEN}{self.get_hp()}/{self.get_hp_max()}{bc.ENDC}HP, "
+            info += (
+                f"{bc.OKGREEN}"
+                f"{self.get_hp()}/{self.get_hp_max()}"
+                f"{bc.ENDC}"
+                f"HP, "
+            )
 
+        # MP ->
         if self.mana_critical():
-            info += f"{bc.FAIL}{self.get_mp()}{bc.ENDC}{bc.OKBLUE}/{self.get_mp_max()}{bc.ENDC}MP"
+            info += (
+                f"{bc.FAIL}"
+                f"{self.get_mp()}"
+                f"{bc.ENDC}{bc.OKBLUE}"
+                f"/{self.get_mp_max()}"
+                f"{bc.ENDC}"
+                f"MP"
+            )
         else:
-            info += f"{bc.OKBLUE}{self.get_mp()}/{self.get_mp_max()}{bc.ENDC}MP"
+            info += (
+                f"{bc.OKBLUE}"
+                f"{self.get_mp()}/{self.get_mp_max()}"
+                f"{bc.ENDC}"
+                f"MP"
+            )
         return info

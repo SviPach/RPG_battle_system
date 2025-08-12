@@ -1,6 +1,11 @@
 from classes import erase_lines, bc
 
-def get_choice(amount_of_choices_to_clear, min_choice_possible, max_choice_possible):
+
+def get_choice(
+        amount_of_choices_to_clear,
+        min_choice_possible,
+        max_choice_possible
+):
     """
     Get the integer permitted choice.
 
@@ -37,7 +42,11 @@ def get_choice(amount_of_choices_to_clear, min_choice_possible, max_choice_possi
             else:
                 erase_lines(2)
 
-            print(bc.FAIL + bc.UNDERLINE + "There is no such a choice!" + bc.ENDC)
+            print(
+                bc.FAIL + bc.UNDERLINE
+                + "There is no such a choice!"
+                + bc.ENDC
+            )
         except ValueError:
             if not erased:
                 erase_lines(1)

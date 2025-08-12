@@ -9,6 +9,7 @@ import random
 import msvcrt
 import math
 
-# __all__ = [Person, bcolors, Spell, Potion]
+__all__ = ["bc", "erase_lines", "get_choice", "Person",
+           "Spell", "Potion", "Equipment", "random", "msvcrt", "math"]
 
-__version__ = "0.6c"
+__version__ = "0.7a"

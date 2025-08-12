@@ -1,10 +1,15 @@
 class Equipment:
     def __init__(self, name, slot, prop, prop_type, description):
-        self.name = name                    # Name.
-        self.slot = slot                    # Slot.
-        self.prop = prop                    # Property value (attribute it improves).
-        self.prop_type = prop_type          # Property type.
-        self.description = description      # Description.
+        # Name
+        self.name = name
+        # Slot
+        self.slot = slot
+        # Property value
+        self.prop = prop
+        # Property type (attribute)
+        self.prop_type = prop_type
+        # Description
+        self.description = description
 
     def get_name(self):
         """ Get equipment's name. """
