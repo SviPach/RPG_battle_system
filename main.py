@@ -28,9 +28,9 @@ weapon_1 = Equipment("Soldier's sword", "weapon", 6, "atk",
 equipment_available = [armor_head_1, armor_torso_1, armor_legs_1, armor_feet_1, weapon_1]
 
 # Instantiate entities ->
-player = Person("Player", 100, 20, 10, 20, magic, 20, 12, 1.4)
-enemy = Person("Enemy", 100, 0, 8, 15, None, 15, 12, 1.4)
-elf = Person("Carlos the Elf", 30, 40, 4, 6, magic_elf, 35, 8, 1.4)
+player = Person("Player", 100, 20, 10, 20, magic, 20, 12, 14)
+enemy = Person("Enemy", 100, 0, 8, 15, None, 15, 12, 14)
+elf = Person("Carlos the Elf", 30, 40, 4, 6, magic_elf, 35, 8, 14)
 elf_found = False
 
 # Player's party ->
@@ -58,8 +58,9 @@ enemy_dodging = False           # If enemy has it active -> he won't try to dodg
 new_battle = False
 while running_battlefield:
     if not new_battle:
-        new_battle = False
         msvcrt.getch()
+    else:
+        new_battle = False
     print(bc.HEADER + bc.BOLD + "======================================== Next turn! ========================================" + bc.ENDC)
     # MP passive restoring ->
     for person in player_party:
@@ -170,43 +171,43 @@ while running_battlefield:
                        None, enemy.get_dodge() + 4, enemy.get_crit_chance() + 4, enemy.get_crit_multiplier() + 0.1)
         enemy.info()
         entities_met.append(enemy)
-        print(bc.OKBLUE + "-------------------------")
+        print(bc.OKBLUE + "-------------------------" + bc.ENDC)
         print(bc.HEADER + bc.BOLD + "================================================================================" + bc.ENDC)
 
         msvcrt.getch()
 
         # 60% chance to find an equipment chest ->
         if random.random() < 0.6 and len(equipment_available) > 0:
-            print(bc.OKBLUE + "-------------------------")
+            print(bc.OKBLUE + "-------------------------" + bc.ENDC)
             print(f"{bc.HEADER}You found an equipment chest!{bc.ENDC}")
             equipment = random.choice(equipment_available)
             print(f"You found: {bc.WARNING}{equipment.get_name()}{bc.ENDC} - {equipment.get_description()}")
             equipment_available.remove(equipment)
             player.equipment_obtain(equipment)
-            print(bc.OKBLUE + "-------------------------")
+            print(bc.OKBLUE + "-------------------------" + bc.ENDC)
             msvcrt.getch()
 
         # If Carlos the Elf has not been found yet ->
         if not elf_found:
             # 20% chance to meet Carlos the Elf ->
             if random.random() < 0.2:
-                print(bc.OKBLUE + "-------------------------")
+                print(bc.OKBLUE + "-------------------------" + bc.ENDC)
                 print(f"{bc.OKBLUE}{bc.UNDERLINE}You just met{bc.ENDC} {bc.HEADER}{elf.get_name()}{bc.ENDC}!")
                 player_party.append(elf)
                 elf_found = True
                 print(f"{bc.HEADER}{elf.get_name()}{bc.ENDC} can cast {bc.WARNING}Fire{bc.ENDC} and {bc.WARNING}Healing Light{bc.ENDC}.")
                 entities_met.append(elf)
-                print(bc.OKBLUE + "-------------------------")
+                print(bc.OKBLUE + "-------------------------" + bc.ENDC)
                 msvcrt.getch()
 
         # 20% chance to find a campfire ->
         if random.random() < 0.2:
-            print(bc.OKBLUE + "-------------------------")
+            print(bc.OKBLUE + "-------------------------" + bc.ENDC)
             print(f"{bc.HEADER}You found a campfire!{bc.ENDC}")
             print(f"{bc.OKGREEN}You have recovered!{bc.ENDC}")
             player.heal_full()
             player.restore_mana_full()
-            print(bc.OKBLUE + "-------------------------")
+            print(bc.OKBLUE + "-------------------------" + bc.ENDC)
             msvcrt.getch()
 
         # Start a new turn ->

@@ -28,7 +28,7 @@ class Person:
         self.dodge = dodge                              # Dodge chance.
         self.dodge_active = False                       # If dodge action is active.
         self.crit_chance = crit_chance                  # Critical hit chance.
-        self.crit_multiplier = crit_multiplier          # Critical hit damage multiplier.
+        self.crit_multiplier = crit_multiplier          # Critical hit damage multiplier (/10).
         self.counterattack_active = False               # If counterattack is active.
         self.guard_active = False                       # If defensive stance is active
         self.inventory = []                             # Inventory of the player.
@@ -64,8 +64,8 @@ class Person:
         self.level_crit_chance = 0                  # Current critical hit chance level.
         self.level_crit_chance_max = 12             # Maximum critical hit chance level.
 
-        self.level_crit_multiplier = 0       # Current critical hit multiplier level.
-        self.level_crit_multiplier_max = 6   # Maximum critical hit multiplier level.
+        self.level_crit_multiplier = 0              # Current critical hit multiplier level.
+        self.level_crit_multiplier_max = 6          # Maximum critical hit multiplier level.
 
     def generate_damage(self, spell = None):
         """
@@ -89,7 +89,7 @@ class Person:
 
         # Chance to perform a critical hit ->
         if random.random() < self.crit_chance/100 or self.counterattack_active is True:
-            dmg = math.ceil(dmg * self.crit_multiplier)
+            dmg = math.ceil(dmg * (self.crit_multiplier/10))
             print(f"{bc.WARNING}{bc.UNDERLINE}{self.name} makes a critical hit!{bc.ENDC}")
             self.counterattack_active = False
             return dmg
@@ -205,7 +205,7 @@ class Person:
                 self.equipment_weapon = equipment
 
         # String for print() function ->
-        output = f"{bc.OKBLUE}{self.name}{bc.ENDC} equipped {bc.WARNING}{equipment.get_name()}{bc.ENDC}: {bc.OKBLUE}+{equipment.get_prop()}"
+        output = f"{bc.OKBLUE}{bc.UNDERLINE}{self.name}{bc.ENDC} equipped {bc.WARNING}{equipment.get_name()}{bc.ENDC}: {bc.OKBLUE}+{equipment.get_prop()}"
 
         # Check the attribute this equipment improves ->
         prop_type = equipment.get_prop_type()
@@ -231,7 +231,7 @@ class Person:
 
     def potion_choose(self):
         """ Choose a potion. """
-        print(bc.OKBLUE + "-------------------------")
+        print(bc.OKBLUE + "-------------------------" + bc.ENDC)
         print(bc.OKBLUE + "Choose the potion to use:" + bc.ENDC)
         # List of potions ->
         for i in range(len(self.inventory)):
@@ -269,7 +269,7 @@ class Person:
 
     def choose_action(self):
         """ Chooses an action. """
-        print(bc.OKBLUE + "-------------------------")
+        print(bc.OKBLUE + "-------------------------" + bc.ENDC)
         print(bc.OKBLUE + "Choose an action:" + bc.ENDC)
         # List of actions ->
         for i in range(len(self.actions)):
@@ -318,7 +318,7 @@ class Person:
 
     def choose_magic(self):
         """ Chooses a magic spell. """
-        print(bc.OKBLUE + "-------------------------")
+        print(bc.OKBLUE + "-------------------------" + bc.ENDC)
         print(bc.OKBLUE +  "Choose a spell: \n(dmg, cost)" + bc.ENDC)
         # List of the magic spells ->
         for i in range(len(self.magic)):
@@ -376,7 +376,7 @@ class Person:
             elif spell.get_type() == "Holy_support":
                 hp = spell.get_damage()[2]
                 # The healing result ->
-                print(f"{bc.OKBLUE}{self.name}{bc.ENDC} healed {bc.OKBLUE}{party_leader.get_name()}{bc.ENDC} "
+                print(f"{bc.UNDERLINE}{bc.OKBLUE}{self.name}{bc.ENDC} healed {bc.UNDERLINE}{bc.OKBLUE}{party_leader.get_name()}{bc.ENDC} "
                       f"by {bc.OKGREEN}{hp}{bc.ENDC}HP with {bc.WARNING}{spell.get_name()}{bc.ENDC}.")
                 party_leader.heal(hp)
                 return
@@ -391,25 +391,25 @@ class Person:
             spell_name = "Physical attack"
         else:
             spell_name = spell.get_name()
-        print(f"{bc.OKBLUE}{self.name}{bc.ENDC} attacking for {bc.WARNING}{dmg}{bc.ENDC}HP with {bc.WARNING}{spell_name}{bc.ENDC}.")
+        print(f"{bc.UNDERLINE}{bc.OKBLUE}{self.name}{bc.ENDC} attacking for {bc.WARNING}{dmg}{bc.ENDC}HP with {bc.WARNING}{spell_name}{bc.ENDC}.")
 
         # Dealing damage to the enemy and printing out the result ->
         enemy_hp_old = enemy.hp
         enemy.take_damage(dmg)
         enemy_hp_new = enemy.hp
-        print(f"--> {bc.OKBLUE}{enemy.get_name()}{bc.ENDC} took damage: {bc.WARNING}-{enemy_hp_old - enemy_hp_new}HP.{bc.ENDC}")
+        print(f"--> {bc.UNDERLINE}{bc.OKBLUE}{enemy.get_name()}{bc.ENDC} took damage: {bc.WARNING}-{enemy_hp_old - enemy_hp_new}HP.{bc.ENDC}")
 
     def try_dodge(self):
         """ Try to dodge the next attack. """
         self.dodge += 30
         self.dodge_active = True
-        print(f"{bc.OKBLUE}{self.name}{bc.ENDC} tries to {bc.WARNING}dodge{bc.ENDC}!")
+        print(f"{bc.UNDERLINE}{bc.OKBLUE}{self.name}{bc.ENDC} tries to {bc.WARNING}dodge{bc.ENDC}!")
 
     def guard_activate(self):
         """ Enter the defensive stance to reduce incoming damage. """
         self.df += 40
         self.guard_active = True
-        print(f"{bc.OKBLUE}{self.name}{bc.ENDC} enters a {bc.WARNING}defensive state{bc.ENDC}!")
+        print(f"{bc.UNDERLINE}{bc.OKBLUE}{self.name}{bc.ENDC} enters a {bc.WARNING}defensive state{bc.ENDC}!")
 
     def guard_deactivate(self):
         """ Quit the defensive stance. """
@@ -418,12 +418,12 @@ class Person:
 
     def inspect(self, entities):
         """ Inspect yourself or the enemy. """
-        print(bc.OKBLUE + "-------------------------")
+        print(bc.OKBLUE + "-------------------------" + bc.ENDC)
         print(bc.OKBLUE + "Choose who to inspect: " + bc.ENDC)
         # List of actions ->
         i = 1
         for entity in entities:
-            print(f"{i}. {bc.OKBLUE}{entity.get_name()}{bc.ENDC}")
+            print(f"{i}. {bc.UNDERLINE}{bc.OKBLUE}{entity.get_name()}{bc.ENDC}")
             i += 1
         print("0. Cancel")
 
@@ -442,12 +442,12 @@ class Person:
     def command(self, player_party):
         """ Command a member of the player's party. """
         if len(player_party) > 1:
-            print(bc.OKBLUE + "-------------------------")
+            print(bc.OKBLUE + "-------------------------" + bc.ENDC)
             print(bc.OKBLUE + "Choose who to command: " + bc.ENDC)
             # List of allies in player's party ->
             i = 1
             for person in player_party[1:]:
-                print(f"{i}. {bc.OKBLUE}{person.get_name()}{bc.ENDC}")
+                print(f"{i}. {bc.UNDERLINE}{bc.OKBLUE}{person.get_name()}{bc.ENDC}")
                 i += 1
             print("0. Cancel")
 
@@ -467,10 +467,10 @@ class Person:
     def recover_switch(self):
         """ Switch the recover state. """
         if not self.recover_active:
-            print(f"{bc.OKBLUE}{self.name}{bc.ENDC} is now {bc.WARNING}recovering{bc.ENDC}!")
+            print(f"{bc.UNDERLINE}{bc.OKBLUE}{self.name}{bc.ENDC} is now {bc.WARNING}recovering{bc.ENDC}!")
             self.recover_active = True
         else:
-            print(f"{bc.OKBLUE}{self.name}{bc.ENDC} is now {bc.WARNING}fighting{bc.ENDC}!")
+            print(f"{bc.UNDERLINE}{bc.OKBLUE}{self.name}{bc.ENDC} is now {bc.WARNING}fighting{bc.ENDC}!")
             self.recover_active = False
 
     def is_recover_active(self):
@@ -591,12 +591,12 @@ class Person:
                     self.crit_chance += 4
                 case "Crit_mult":
                     print(f"{bc.OKBLUE}{bc.UNDERLINE}You chose{bc.ENDC}: {bc.OKGREEN}+0.2 critical hit multiplier{bc.ENDC}!")
-                    self.crit_multiplier += 0.2
+                    self.crit_multiplier += 2
 
     def info(self):
         """ Full information about the player. """
-        print(bc.OKBLUE + "-------------------------")
-        print(f"{bc.OKBLUE}==============={bc.ENDC} Full info about {bc.OKBLUE}{self.name}{bc.ENDC}:")
+        print(bc.OKBLUE + "-------------------------" + bc.ENDC)
+        print(f"{bc.OKBLUE}==============={bc.ENDC} Full info about {bc.UNDERLINE}{bc.OKBLUE}{self.name}{bc.ENDC}:")
         print(f"\t{bc.OKBLUE}Level{bc.ENDC}: {self.level}")
         print(f"\t{bc.OKBLUE}Experience{bc.ENDC}: {self.exp}/{self.exp_needed}")
         print(f"\t{bc.OKBLUE}HP{bc.ENDC}: {self.hp}/{self.hp_max}")
@@ -606,7 +606,7 @@ class Person:
         print(f"\t{bc.OKBLUE}Def{bc.ENDC}: {self.df}")
         print(f"\t{bc.OKBLUE}Dodge chance{bc.ENDC}: {self.dodge}%")
         print(f"\t{bc.OKBLUE}Critical hit chance{bc.ENDC}: {self.crit_chance}%")
-        print(f"\t{bc.OKBLUE}Critical hit multiplier{bc.ENDC}: x{self.crit_multiplier}")
+        print(f"\t{bc.OKBLUE}Critical hit multiplier{bc.ENDC}: x{self.crit_multiplier/10}")
         inventory = []
         for item in self.inventory:
             inventory.append(item.get_name())
