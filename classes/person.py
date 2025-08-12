@@ -30,7 +30,7 @@ class Person:
         # Health points
         self.hp_max = hp                # Maximum
         self.hp = hp                    # Current
-        self.hp_critical = hp * 0.2       # Critical value
+        self.hp_critical = hp * 0.2     # Critical value
 
         # Mana points
         self.mp_max = mp                # Maximum
@@ -86,7 +86,8 @@ class Person:
 
         # For allies
         # ----------
-        self.recover_active = False
+        self.recover_active = False     # If ally is recovering
+        self.knocked_active = False     # If ally is knocked
 
         # Attributes' levels
         # ------------------
@@ -534,7 +535,8 @@ class Person:
             spell_name = spell.get_name()
         print(
             f"{bc.UNDERLINE}{bc.OKBLUE}{self.name}{bc.ENDC} "
-            f"attacking for {bc.WARNING}{dmg}{bc.ENDC}HP "
+            f"attacking {bc.UNDERLINE}{bc.OKBLUE}{enemy.get_name()}{bc.ENDC} "
+            f"for {bc.WARNING}{dmg}{bc.ENDC}HP "
             f"with {bc.WARNING}{spell_name}{bc.ENDC}."
         )
 
@@ -657,9 +659,24 @@ class Person:
             print(bc.OKBLUE + "-------------------------" + bc.ENDC)
             self.recover_active = False
 
+    def knocked_switch(self):
+        """ Switch the knocked state. """
+        if not self.knocked_active:
+            print(f"{bc.UNDERLINE}{bc.OKBLUE}{self.name}{bc.ENDC} "
+                  f"is {bc.FAIL}knocked{bc.ENDC}!")
+            self.knocked_active = True
+        else:
+            print(f"{bc.UNDERLINE}{bc.OKBLUE}{self.name}{bc.ENDC} "
+                  f"is now {bc.WARNING}fighting{bc.ENDC}!")
+            self.knocked_active = False
+
     def is_recover_active(self):
-        """ Gets the recovery state of the npc. """
+        """ Get the recovery state of the npc. """
         return self.recover_active
+
+    def is_knocked_active(self):
+        """ Get the knocked state of the npc. """
+        return self.knocked_active
 
     def kill_count_increase(self):
         """ Increase the count of kills and exp by 1. """

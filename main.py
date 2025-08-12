@@ -192,7 +192,12 @@ while running_battlefield:
                 mp_multiplier = 0.2
             else:
                 mp_multiplier = 0.1
-            person.restore_mana(math.ceil(person.get_mp_max() * mp_multiplier))
+            person.restore_mana(round(person.get_mp_max() * mp_multiplier))
+
+    # HP passive restoring ->
+    for person in player_party:
+        if person.is_knocked_active():
+            person.heal(round(person.get_hp_max() * 0.1))
 
     # Player's guard deactivation ->
     if player.is_guard_active():
@@ -251,9 +256,18 @@ while running_battlefield:
         break
 
     # Player's party members' turn ->
-    running_player_party = True
     if len(player_party) > 1:
         for person in player_party[1:]:
+            # If person is knocked ->
+            if person.is_knocked_active():
+                print(bc.FAIL + "==============================" + bc.ENDC)
+                if person.get_hp() == person.get_hp_max():
+                    person.knocked_switch()
+                    continue
+                print(f"{bc.UNDERLINE}{bc.OKBLUE}{person.name}{bc.ENDC} "
+                      f"is {bc.FAIL}knocked{bc.ENDC}!")
+                continue
+
             # If this person is recovering ->
             if person.is_recover_active():
                 print(bc.FAIL + "==============================" + bc.ENDC)
@@ -355,8 +369,9 @@ while running_battlefield:
             print(bc.OKBLUE + "-------------------------" + bc.ENDC)
             print(f"{bc.HEADER}You found a campfire!{bc.ENDC}")
             print(f"{bc.OKGREEN}You have recovered!{bc.ENDC}")
-            player.heal_full()
-            player.restore_mana_full()
+            for person in player_party:
+                person.heal_full()
+                person.restore_mana_full()
             print(bc.OKBLUE + "-------------------------" + bc.ENDC)
             msvcrt.getch()
 
@@ -372,9 +387,20 @@ while running_battlefield:
         enemy.try_dodge()
         enemy_dodging = True
     else:
-        # 80% chance that enemy will attack ->
-        enemy.perform_attack(player)
         enemy_dodging = False
+        # 80% chance that enemy will attack ->
+        while True:
+            target = random.choice(player_party)
+            if not target.is_knocked_active():
+                enemy.perform_attack(target)
+                break
+
+    for person in player_party[1:]:
+        if person.get_hp() == 0:
+            # If ally's HP is 0 ->
+            if person.get_hp() == 0:
+                person.knocked_switch()
+                continue
 
     # If player has been defeated ->
     if player.get_hp() == 0:
