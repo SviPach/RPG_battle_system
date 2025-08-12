@@ -12,4 +12,4 @@ import math
 __all__ = ["bc", "erase_lines", "get_choice", "Person",
            "Spell", "Potion", "Equipment", "random", "msvcrt", "math"]
 
-__version__ = "0.7g"
+__version__ = "0.7h"

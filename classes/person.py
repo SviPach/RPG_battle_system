@@ -1,4 +1,6 @@
-import random, math, msvcrt
+import random
+import math
+import msvcrt
 from classes import bc, get_choice
 
 
@@ -722,7 +724,10 @@ class Person:
                     if len(attributes) == 0:
                         break
 
-            print(f"{bc.HEADER}{bc.UNDERLINE}======== CHOOSE A REWARD:{bc.ENDC}")
+            print(
+                f"{bc.HEADER}{bc.UNDERLINE}"
+                f"======== CHOOSE A REWARD:{bc.ENDC}"
+            )
             # Show the attributes player can upgrade ->
             i = 1
             for item in attributes_available:
@@ -956,13 +961,17 @@ class Person:
             block = self.hp_max / 25
             amount = math.floor(self.hp / block)
             if self.health_critical():
+                info += bc.FAIL
                 for i in range(amount):
-                    info += f"{bc.FAIL}█{bc.ENDC}"
+                    info += '█'
                     amount_drawn += 1
+                info += bc.ENDC
             else:
+                info += bc.OKGREEN
                 for i in range(amount):
-                    info += f"{bc.OKGREEN}█{bc.ENDC}"
+                    info += '█'
                     amount_drawn += 1
+                info += bc.ENDC
 
         while amount_drawn != 25:
             info += ' '
@@ -976,13 +985,17 @@ class Person:
             block = self.mp_max / 20
             amount = math.floor(self.mp / block)
             if self.mana_critical():
+                info += bc.FAIL
                 for i in range(amount):
-                    info += f"{bc.FAIL}█{bc.ENDC}"
+                    info += '█'
                     amount_drawn += 1
+                info += bc.ENDC
             else:
+                info += bc.OKBLUE
                 for i in range(amount):
-                    info += f"{bc.OKBLUE}█{bc.ENDC}"
+                    info += '█'
                     amount_drawn += 1
+                info += bc.ENDC
 
         while amount_drawn != 20:
             info += ' '
