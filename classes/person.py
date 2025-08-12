@@ -1,5 +1,4 @@
-import random
-import math
+import random, math, msvcrt
 from classes import bc, get_choice
 
 
@@ -348,10 +347,8 @@ class Person:
                 f"with {bc.WARNING}{potion.get_name()}{bc.ENDC}."
             )
             self.heal(potion.get_prop())
-            print(
-                f"{bc.UNDERLINE}{bc.OKBLUE}{self.name}{bc.ENDC}: "
-                f"{self.info_short()}"
-            )
+            print(bc.OKBLUE + "-------------------------" + bc.ENDC)
+            msvcrt.getch()
 
             # Removing the used potion from player's inventory ->
             self.inventory.remove(potion)
@@ -363,10 +360,8 @@ class Person:
                 f"with {bc.WARNING}{potion.get_name()}{bc.ENDC}."
             )
             self.restore_mana(potion.get_prop())
-            print(
-                f"{bc.UNDERLINE}{bc.OKBLUE}{self.name}{bc.ENDC}: "
-                f"{self.info_short()}"
-            )
+            print(bc.OKBLUE + "-------------------------" + bc.ENDC)
+            msvcrt.getch()
 
             # Removing the used potion from player's inventory ->
             self.inventory.remove(potion)
@@ -627,7 +622,7 @@ class Person:
 
             # Player's choice ->
             choice = get_choice(
-                amount_of_choices_to_clear=(player_party[:1]) + 1,
+                amount_of_choices_to_clear=len(player_party[:1]) + 1,
                 min_choice_possible=-1,
                 max_choice_possible=len(player_party[:1]) - 1
             )
@@ -652,10 +647,12 @@ class Person:
         if not self.recover_active:
             print(f"{bc.UNDERLINE}{bc.OKBLUE}{self.name}{bc.ENDC} "
                   f"is now {bc.WARNING}recovering{bc.ENDC}!")
+            print(bc.OKBLUE + "-------------------------" + bc.ENDC)
             self.recover_active = True
         else:
             print(f"{bc.UNDERLINE}{bc.OKBLUE}{self.name}{bc.ENDC} "
                   f"is now {bc.WARNING}fighting{bc.ENDC}!")
+            print(bc.OKBLUE + "-------------------------" + bc.ENDC)
             self.recover_active = False
 
     def is_recover_active(self):
@@ -672,7 +669,10 @@ class Person:
     def level_up(self):
         """ Level up the player. """
         if self.exp == self.exp_needed:
-            print(f"{bc.HEADER}{bc.UNDERLINE}===== LEVEL UP! ====={bc.ENDC}")
+            print(
+                f"{bc.HEADER}{bc.UNDERLINE}"
+                f"=============== LEVEL UP! ==============={bc.ENDC}"
+            )
             # Cleaning before leveling up ->
             self.guard_active = False
             self.dodge_active = False
@@ -722,7 +722,7 @@ class Person:
                     if len(attributes) == 0:
                         break
 
-            print(f"{bc.HEADER}{bc.UNDERLINE}=== CHOOSE A REWARD:{bc.ENDC}")
+            print(f"{bc.HEADER}{bc.UNDERLINE}======== CHOOSE A REWARD:{bc.ENDC}")
             # Show the attributes player can upgrade ->
             i = 1
             for item in attributes_available:
@@ -932,4 +932,53 @@ class Person:
                 f"{bc.ENDC}"
                 f"MP"
             )
+        return info
+
+    def info_graphic(self):
+        """ Get the graphic representation of the player's HP and MP. """
+        info = f"{bc.UNDERLINE}{bc.HEADER}{self.name}{bc.ENDC}:"
+
+        # HP ->
+        if len(self.name) < 14:
+            info += '\t'
+        info += f"\t{bc.OKGREEN}|{bc.ENDC}"
+        amount_drawn = 0
+        if self.hp_max > 0:
+            block = self.hp_max / 25
+            amount = math.floor(self.hp / block)
+            if self.health_critical():
+                for i in range(amount):
+                    info += f"{bc.FAIL}█{bc.ENDC}"
+                    amount_drawn += 1
+            else:
+                for i in range(amount):
+                    info += f"{bc.OKGREEN}█{bc.ENDC}"
+                    amount_drawn += 1
+
+        while amount_drawn != 25:
+            info += ' '
+            amount_drawn += 1
+
+        info += f"{bc.OKGREEN}|{bc.ENDC}   {bc.OKBLUE}|{bc.ENDC}"
+
+        # MP ->
+        amount_drawn = 0
+        if self.mp_max > 0:
+            block = self.mp_max / 20
+            amount = math.floor(self.mp / block)
+            if self.mana_critical():
+                for i in range(amount):
+                    info += f"{bc.FAIL}█{bc.ENDC}"
+                    amount_drawn += 1
+            else:
+                for i in range(amount):
+                    info += f"{bc.OKBLUE}█{bc.ENDC}"
+                    amount_drawn += 1
+
+        while amount_drawn != 20:
+            info += ' '
+            amount_drawn += 1
+
+        info += f"{bc.OKBLUE}|{bc.ENDC}\t{self.info_short()}"
+
         return info

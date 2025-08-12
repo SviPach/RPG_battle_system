@@ -199,15 +199,20 @@ while running_battlefield:
         player.guard_deactivate()
 
     # Short info about player's party and the enemy at the start of turn ->
-    for person in player_party:
-        print(bc.HEADER + f"===== {person.get_name()}: " + bc.ENDC)
-        print(person.info_short())
-    print(bc.HEADER + f"===== {enemy.get_name()}: " + bc.ENDC)
-    print(enemy.info_short())
+    # for person in player_party:
+    #     print(bc.HEADER + f"===== {person.get_name()}: " + bc.ENDC)
+    #     print(person.info_short())
+    # print(bc.HEADER + f"===== {enemy.get_name()}: " + bc.ENDC)
+    # print(enemy.info_short())
 
     # Player's turn ->
     running_player = True
     while running_player:
+        print("NAME                 HP                        MP         ")
+        for person in player_party:
+            print(person.info_graphic())
+        print(enemy.info_graphic())
+
         choice = player.choose_action()
         match choice:
             case "Attack":
