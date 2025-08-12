@@ -32,7 +32,6 @@ Run the main game file:
 ## 📂 Project Structure
   ```bash
   .
-  ├── main.py              # Entry point
   ├── classes/             # Game logic and modules
       ├── __init__.py      # __init__ for the project
       ├── bcolors          # Console colors
@@ -42,8 +41,10 @@ Run the main game file:
       ├── magic.py         # Magic class
       ├── person.py        # Person class
       └── potion.py        # Potion class
-  ├── requirements.txt     # Dependencies
-  └── README.md
+  ├── .flake8              # flake8 config
+  ├── README.md
+  ├── main.py              # Entry point
+  └── requirements.txt     # Dependencies
   ```
 ## 🛠 Technologies
 - Python 3.11+
