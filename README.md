@@ -42,6 +42,7 @@ Run the main game file:
       ├── person.py        # Person class
       └── potion.py        # Potion class
   ├── .flake8              # flake8 config
+  ├── LICENCE              # Licence
   ├── README.md
   ├── main.py              # Entry point
   └── requirements.txt     # Dependencies
