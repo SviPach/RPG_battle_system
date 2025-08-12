@@ -796,6 +796,7 @@ class Person:
                     )
                     self.hp_max += 10
                     self.hp = self.hp_max
+                    self.level_hp += 1
                 case "MP":
                     print(
                         f"{bc.OKBLUE}{bc.UNDERLINE}You chose{bc.ENDC}: "
@@ -803,6 +804,7 @@ class Person:
                     )
                     self.mp_max += 5
                     self.mp = self.mp_max
+                    self.level_mp += 1
                 case "Atk":
                     print(
                         f"{bc.OKBLUE}{bc.UNDERLINE}You chose{bc.ENDC}: "
@@ -811,30 +813,35 @@ class Person:
                     self.atk += 2
                     self.atk_low = math.ceil(self.atk - self.atk * 0.4)
                     self.atk_high = math.ceil(self.atk + self.atk * 0.4)
+                    self.level_atk += 1
                 case "Df":
                     print(
                         f"{bc.OKBLUE}{bc.UNDERLINE}You chose{bc.ENDC}: "
                         f"{bc.OKGREEN}+5 defence{bc.ENDC}!"
                     )
                     self.df += 5
+                    self.level_df += 1
                 case "Dodge":
                     print(
                         f"{bc.OKBLUE}{bc.UNDERLINE}You chose{bc.ENDC}: "
                         f"{bc.OKGREEN}+5% dodge chance{bc.ENDC}!"
                     )
                     self.dodge += 5
+                    self.level_dodge += 1
                 case "Crit_chance":
                     print(
                         f"{bc.OKBLUE}{bc.UNDERLINE}You chose{bc.ENDC}: "
                         f"{bc.OKGREEN}+4% critical hit chance{bc.ENDC}!"
                     )
                     self.crit_chance += 4
+                    self.level_crit_chance += 1
                 case "Crit_mult":
                     print(
                         f"{bc.OKBLUE}{bc.UNDERLINE}You chose{bc.ENDC}: "
                         f"{bc.OKGREEN}+0.2 critical hit multiplier{bc.ENDC}!"
                     )
                     self.crit_multiplier += 2
+                    self.level_crit_multiplier += 1
 
     def info(self):
         """ Full information about the player. """
@@ -846,69 +853,37 @@ class Person:
         )
 
         # Name ->
-        print(
-            f"\t"
-            f"{bc.OKBLUE}Level{bc.ENDC}: {self.level}"
-        )
+        print(f"\t{bc.OKBLUE}Level{bc.ENDC}: {self.level}")
 
         # EXP ->
-        print(
-            f"\t"
-            f"{bc.OKBLUE}Experience{bc.ENDC}: {self.exp}/{self.exp_needed}"
-        )
+        print(f"\t{bc.OKBLUE}Experience{bc.ENDC}: "
+              f"{self.exp}/{self.exp_needed}")
 
         # HP ->
-        print(
-            f"\t"
-            f"{bc.OKBLUE}HP{bc.ENDC}: {self.hp}/{self.hp_max}"
-        )
+        print(f"\t{bc.OKBLUE}HP{bc.ENDC}: {self.hp}/{self.hp_max}")
 
         # MP ->
-        print(
-            f"\t"
-            f"{bc.OKBLUE}MP{bc.ENDC}: {self.mp}/{self.mp_max}"
-        )
+        print(f"\t{bc.OKBLUE}MP{bc.ENDC}: {self.mp}/{self.mp_max}")
 
         # Attack damage ->
-        print(
-            f"\t"
-            f"{bc.OKBLUE}Atk dmg{bc.ENDC}: {self.atk_low}-{self.atk_high}"
-        )
+        print(f"\t{bc.OKBLUE}Atk dmg{bc.ENDC}: {self.atk_low}-{self.atk_high}")
 
         # Attack damage (base) ->
-        print(
-            f"\t"
-            f"{bc.OKBLUE}Atk dmg (base){bc.ENDC}: "
-            f"{self.atk}"
-        )
+        print(f"\t{bc.OKBLUE}Atk dmg (base){bc.ENDC}: {self.atk}")
 
         # Defence ->
-        print(
-            f"\t"
-            f"{bc.OKBLUE}Def{bc.ENDC}: "
-            f"{self.df}"
-        )
+        print(f"\t{bc.OKBLUE}Def{bc.ENDC}: {self.df}")
 
         # Dodge ->
-        print(
-            f"\t"
-            f"{bc.OKBLUE}Dodge chance{bc.ENDC}: "
-            f"{self.dodge}%"
-        )
+        print(f"\t{bc.OKBLUE}Dodge chance{bc.ENDC}: {self.dodge}%")
 
         # Critical hit chance ->
-        print(
-            f"\t"
-            f"{bc.OKBLUE}Critical hit chance{bc.ENDC}: "
-            f"{self.crit_chance}%"
-        )
+        print(f"\t{bc.OKBLUE}Critical hit chance{bc.ENDC}: "
+              f"{self.crit_chance}%")
 
         # Critical hit multiplier ->
-        print(
-            f"\t"
-            f"{bc.OKBLUE}Critical hit multiplier{bc.ENDC}: "
-            f"x{self.crit_multiplier / 10}"
-        )
+        print(f"\t{bc.OKBLUE}Critical hit multiplier{bc.ENDC}: "
+              f"x{self.crit_multiplier / 10}")
 
         # Inventory ->
         inventory = []
