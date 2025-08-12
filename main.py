@@ -61,7 +61,10 @@ while running_battlefield:
         msvcrt.getch()
     else:
         new_battle = False
+
+    # Turn start ->
     print(bc.HEADER + bc.BOLD + "======================================== Next turn! ========================================" + bc.ENDC)
+
     # MP passive restoring ->
     for person in player_party:
         if person.get_mp() < person.get_mp_max():
@@ -77,7 +80,7 @@ while running_battlefield:
     if player.is_guard_active():
         player.guard_deactivate()
 
-    # Short info about player and enemy at the start of every turn ->
+    # Short info about player's party and the enemy at the start of every turn ->
     for person in player_party:
         print(bc.HEADER + f"===== {person.get_name()}: " + bc.ENDC)
         print(person.info_short())
@@ -162,13 +165,15 @@ while running_battlefield:
         player.kill_count_increase()
         player.level_up()
         print(bc.FAIL + "================================================================" + bc.ENDC)
+
         msvcrt.getch()
-        print(bc.HEADER + bc.BOLD + "================================================================================" + bc.ENDC)
+
         # Creating a new enemy ->
+        print(bc.HEADER + bc.BOLD + "================================================================================" + bc.ENDC)
         entities_met.remove(enemy)
         print(bc.FAIL + bc.BOLD + "Next enemy is attacking!" + bc.ENDC)
         enemy = Person("Enemy", enemy.get_hp_max()+5, 0, enemy.get_atk() + 1, enemy.get_df() + 3,
-                       None, enemy.get_dodge() + 4, enemy.get_crit_chance() + 4, enemy.get_crit_multiplier() + 0.1)
+                       None, enemy.get_dodge() + 4, enemy.get_crit_chance() + 4, enemy.get_crit_multiplier() + 1)
         enemy.info()
         entities_met.append(enemy)
         print(bc.OKBLUE + "-------------------------" + bc.ENDC)

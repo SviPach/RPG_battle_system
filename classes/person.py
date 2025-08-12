@@ -94,6 +94,7 @@ class Person:
             self.counterattack_active = False
             return dmg
 
+        # Deactivate a counterattack and return damage to deal ->
         self.counterattack_active = False
         return dmg
 
@@ -106,10 +107,12 @@ class Person:
         dmg : int
             Damage to take by this person.
         """
+        # If incoming damage is more than 0 ->
         if dmg > 0:
             # Chance to dodge the attack ->
             if random.random() < self.dodge/100:
                 print(f"{bc.WARNING}{bc.UNDERLINE}{self.name} dodged!{bc.ENDC}")
+
                 # If dodging is active ->
                 if self.dodge_active:
                     self.dodge -= 30
@@ -128,7 +131,7 @@ class Person:
             self.hp -= dmg_taken
             if self.hp < 0:
                 self.hp = 0
-            # return self.hp
+
             return
         else:
             # If dodging was active but did not dodge ->
@@ -248,22 +251,30 @@ class Person:
             print(f"You {bc.OKBLUE}{bc.UNDERLINE}did not choose{bc.ENDC} a potion.")
             return
 
+        # Potion use ->
         print(f"You chose {bc.WARNING}{bc.UNDERLINE}{self.inventory[choice].get_name()}{bc.ENDC}.")
         self.potion_use(self.inventory[choice])
 
     def potion_use(self, potion):
         """ Use the potion. """
+        # Check type of the potion ->
         if potion.get_type() == "health":
+            # If it's a healing potion ->
             print(f"You have healed yourself by {bc.OKGREEN}{potion.get_prop()}{bc.ENDC}HP "
                   f"with {bc.WARNING}{potion.get_name()}{bc.ENDC}.")
             self.heal(potion.get_prop())
             print(f"{bc.UNDERLINE}{bc.OKBLUE}{self.name}{bc.ENDC}: {self.info_short()}")
+
+            # Removing the used potion from player's inventory ->
             self.inventory.remove(potion)
         elif potion.get_type() == "mana":
+            # If it's a mana potion ->
             print(f"You have restored your MP by {bc.OKBLUE}{potion.get_prop()}{bc.ENDC}MP "
                   f"with {bc.WARNING}{potion.get_name()}{bc.ENDC}.")
             self.restore_mana(potion.get_prop())
             print(f"{bc.UNDERLINE}{bc.OKBLUE}{self.name}{bc.ENDC}: {self.info_short()}")
+
+            # Removing the used potion from player's inventory ->
             self.inventory.remove(potion)
 
 
@@ -286,7 +297,7 @@ class Person:
         return self.name
 
     def heal(self, hp):
-        """ Heals the player. """
+        """ Heal the player. """
         hp_old = self.hp
         self.hp += hp
         if self.hp > self.hp_max:
@@ -301,7 +312,7 @@ class Person:
         self.hp = self.hp_max
 
     def restore_mana(self, mp):
-        """ Restore mana of the player. """
+        """ Restore player's mana. """
         mp_old = self.mp
         self.mp += mp
         if self.mp > self.mp_max:
@@ -309,9 +320,8 @@ class Person:
         mp_new = self.mp
         print(f"{bc.UNDERLINE}{bc.OKBLUE}{self.name}{bc.ENDC}: {bc.OKBLUE}+{mp}MP{bc.ENDC} ({bc.OKBLUE}+{mp_new-mp_old}{bc.ENDC})")
 
-
     def restore_mana_full(self):
-        """ Fully restore mana of the player. """
+        """ Fully restore player's mana. """
         mp_gain = self.mp_max - self.mp
         print(f"{bc.UNDERLINE}{bc.OKBLUE}{self.name}{bc.ENDC}: {bc.OKBLUE}+{mp_gain}MP{bc.ENDC}")
         self.mp = self.mp_max
@@ -518,6 +528,7 @@ class Person:
             if self.level_crit_multiplier < self.level_crit_multiplier_max:
                 attributes.append("Crit_mult")
 
+            # If all the attributes have maximum level ->
             if len(attributes) == 0:
                 print(f"{bc.HEADER}{bc.UNDERLINE}ALL THE ATTRIBUTES ARE UPGRADED!{bc.ENDC}")
                 return
@@ -532,7 +543,7 @@ class Person:
                         break
 
             print(f"{bc.HEADER}{bc.UNDERLINE}=== CHOOSE A REWARD:{bc.ENDC}")
-            # Shows the attributes player can upgrade ->
+            # Show the attributes player can upgrade ->
             i = 1
             for item in attributes_available:
                 match item:
