@@ -9,7 +9,7 @@ spell_fire = Spell(
     cost=8,
     dmg=14,
     type="Elemental",
-    description="Cast a fireball dealing {bc.WARNING}14DMG{bc.ENDC}.",
+    description=f"Cast a fireball dealing {bc.WARNING}14DMG{bc.ENDC}.",
 )
 spell_thunder = Spell(
     name="Thunder",
@@ -244,6 +244,7 @@ while running_battlefield:
                     + bc.ENDC
                 )
                 print(bc.FAIL + "==================================================" + bc.ENDC)  # noqa: E501
+                msvcrt.getch()
                 running_player = False
                 running_battlefield = False
 
@@ -381,6 +382,7 @@ while running_battlefield:
     if player.get_hp() == 0:
         print(bc.FAIL + bc.BOLD + "You lost!" + bc.ENDC)
         print(bc.FAIL + "================================================================" + bc.ENDC)  # noqa: E501
+        msvcrt.getch()
         running_battlefield = False
     else:
         print(bc.FAIL + "================================================================" + bc.ENDC)  # noqa: E501
