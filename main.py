@@ -198,13 +198,6 @@ while running_battlefield:
     if player.is_guard_active():
         player.guard_deactivate()
 
-    # Short info about player's party and the enemy at the start of turn ->
-    # for person in player_party:
-    #     print(bc.HEADER + f"===== {person.get_name()}: " + bc.ENDC)
-    #     print(person.info_short())
-    # print(bc.HEADER + f"===== {enemy.get_name()}: " + bc.ENDC)
-    # print(enemy.info_short())
-
     # Player's turn ->
     running_player = True
     while running_player:

@@ -936,7 +936,16 @@ class Person:
 
     def info_graphic(self):
         """ Get the graphic representation of the player's HP and MP. """
+        # HP and MP lines ->
         info = f"{bc.UNDERLINE}{bc.HEADER}{self.name}{bc.ENDC}:"
+
+        # Interface line ->
+        interface_line = (
+            f"                 "
+            f"{bc.OKGREEN}_________________________{bc.ENDC}"
+            f"     "
+            f"{bc.OKBLUE}____________________{bc.ENDC}"
+        )
 
         # HP ->
         if len(self.name) < 14:
@@ -980,5 +989,6 @@ class Person:
             amount_drawn += 1
 
         info += f"{bc.OKBLUE}|{bc.ENDC}\t{self.info_short()}"
+        interface_line += '\n' + info
 
-        return info
+        return interface_line
