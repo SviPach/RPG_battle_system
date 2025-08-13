@@ -580,8 +580,8 @@ class Person:
                     hp = spell.get_damage()[2]
                     # The healing result ->
                     print(
-                        f"{bc.UNDERLINE}{bc.OKBLUE}{self.name}{bc.ENDC} healed "
-                        f"{bc.UNDERLINE}{bc.OKBLUE}"
+                        f"{bc.UNDERLINE}{bc.OKBLUE}{self.name}{bc.ENDC} healed"
+                        f" {bc.UNDERLINE}{bc.OKBLUE}"
                         f"{party_leader.get_name()}{bc.ENDC} "
                         f"by {bc.OKGREEN}{hp}{bc.ENDC}HP "
                         f"with {bc.WARNING}{spell.get_name()}{bc.ENDC}."
@@ -718,7 +718,7 @@ class Person:
                 + bc.ENDC
             )
 
-    def recover_switch(self):
+    def recover_switch(self, switch_by_knock=False):
         """ Switch the recover state. """
         if not self.recover_active:
             print(f"{bc.UNDERLINE}{bc.OKBLUE}{self.name}{bc.ENDC} "
@@ -726,8 +726,9 @@ class Person:
             print(bc.OKBLUE + "-------------------------" + bc.ENDC)
             self.recover_active = True
         else:
-            print(f"{bc.UNDERLINE}{bc.OKBLUE}{self.name}{bc.ENDC} "
-                  f"is now {bc.WARNING}fighting{bc.ENDC}!")
+            if not switch_by_knock:
+                print(f"{bc.UNDERLINE}{bc.OKBLUE}{self.name}{bc.ENDC} "
+                      f"is now {bc.WARNING}fighting{bc.ENDC}!")
             print(bc.OKBLUE + "-------------------------" + bc.ENDC)
             self.recover_active = False
 
@@ -759,11 +760,11 @@ class Person:
         self.frozen_active = True
 
     def is_recover_active(self):
-        """ Get the recovery state of the npc. """
+        """ Get the recovery state of the NPC. """
         return self.recover_active
 
     def is_knocked_active(self):
-        """ Get the knocked state of the npc. """
+        """ Get the knocked state of the NPC. """
         return self.knocked_active
 
     def is_burning_active(self):

@@ -57,7 +57,13 @@ spell_healing_light = Spell(
 )
 
 # Adding recently created magic to the list ->
-magic = [spell_fireball, spell_thunderbolt, spell_ice_storm, spell_kill, spell_cure]
+magic = [
+    spell_fireball,
+    spell_thunderbolt,
+    spell_ice_storm,
+    spell_kill,
+    spell_cure,
+]
 magic_elf = [spell_fireball, spell_healing_light]
 
 # Instantiate equipment ->
@@ -212,6 +218,8 @@ while running_battlefield:
 
     # HP passive restoring ->
     for person in player_party:
+        if person.is_recover_active():
+            person.heal(round(person.get_hp_max() * 0.05))
         if person.is_knocked_active():
             person.heal(round(person.get_hp_max() * 0.1))
 
@@ -274,26 +282,24 @@ while running_battlefield:
     # Player's party members' turn ->
     if len(player_party) > 1:
         for person in player_party[1:]:
+            print(bc.FAIL + "==============================" + bc.ENDC)
             # If person is knocked ->
             if person.is_knocked_active():
-                print(bc.FAIL + "==============================" + bc.ENDC)
                 if person.get_hp() == person.get_hp_max():
                     person.knocked_switch()
+                else:
+                    print(f"{bc.UNDERLINE}{bc.OKBLUE}{person.name}{bc.ENDC} "
+                          f"is {bc.FAIL}knocked{bc.ENDC}!")
                     continue
-                print(f"{bc.UNDERLINE}{bc.OKBLUE}{person.name}{bc.ENDC} "
-                      f"is {bc.FAIL}knocked{bc.ENDC}!")
-                continue
 
             # If this person is recovering ->
             if person.is_recover_active():
-                print(bc.FAIL + "==============================" + bc.ENDC)
                 print(f"{bc.OKBLUE}{person.name}{bc.ENDC} "
                       f"is {bc.WARNING}recovering{bc.ENDC}!")
                 continue
 
             # Carlos the Elf's AI ->
             if person.get_name() == "Carlos the Elf":
-                print(bc.FAIL + "==============================" + bc.ENDC)
                 # Case 1: if Carlos has enough MP to use magic ->
                 if person.get_mp() >= 8:
                     # Case 1-1: if player doesn't have full hp ->
@@ -359,8 +365,8 @@ while running_battlefield:
             # 40% chance to get equipment from chest ->
             if random.random() < 0.4:
                 equipment = random.choice(equipment_available)
-                print(f"You found: {bc.WARNING}{equipment.get_name()}{bc.ENDC} - "
-                      f"{equipment.get_description()}")
+                print(f"You found: {bc.WARNING}{equipment.get_name()}{bc.ENDC}"
+                      f" - {equipment.get_description()}")
                 equipment_available.remove(equipment)
                 player.equipment_obtain(equipment)
             else:
@@ -424,6 +430,8 @@ while running_battlefield:
             # If ally's HP is 0 ->
             if person.get_hp() == 0:
                 person.knocked_switch()
+                if person.is_recover_active():
+                    person.recover_switch(switch_by_knock=True)
                 continue
 
     # If player has been defeated ->
