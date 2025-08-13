@@ -230,7 +230,7 @@ while running_battlefield:
     # Player's turn ->
     running_player = True
     while running_player:
-        print("NAME                 HP                        MP         ")
+        print("NAME                         HP                         MP")
         for person in player_party:
             print(person.info_graphic())
         print(enemy.info_graphic())
