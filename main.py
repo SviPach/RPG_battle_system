@@ -4,45 +4,61 @@ from classes import *
 
 
 # Instantiate some magic spells ->
-spell_fire = Spell(
-    name="Fire",
-    cost=8,
-    dmg=14,
-    type="Elemental",
-    description=f"Cast a fireball dealing {bc.WARNING}14DMG{bc.ENDC}.",
+spell_fireball = Spell(
+    name="Fireball",
+    cost=7,
+    dmg=12,
+    prop_optional=2,
+    type="fire",
+    description=f"Cast a fireball dealing {bc.WARNING}12DMG{bc.ENDC}. "
+                f"Enemy takes {bc.WARNING}2DMG{bc.ENDC} in the next 3 turns.",
 )
-spell_thunder = Spell(
-    name="Thunder",
+spell_thunderbolt = Spell(
+    name="Thunderbolt",
     cost=10,
-    dmg=20,
-    type="Elemental",
-    description=f"Cast a thunderbolt dealing {bc.WARNING}20DMG{bc.ENDC}.",
+    dmg=18,
+    prop_optional=0,
+    type="thunder",
+    description=f"Cast a thunderbolt dealing {bc.WARNING}18DMG{bc.ENDC}.",
+)
+spell_ice_storm = Spell(
+    name="Ice Storm",
+    cost=14,
+    dmg=4,
+    prop_optional=2,
+    type="ice",
+    description=f"Cast an ice storm dealing {bc.WARNING}4DMG{bc.ENDC}. "
+                f"Freeze the enemy for {bc.WARNING}2 turns{bc.ENDC}",
 )
 spell_kill = Spell(
     name="Instant kill",
     cost=0,
     dmg=1000,
-    type="Elemental",
-    description=f"God's power - {bc.WARNING}instant kill{bc.ENDC}.",
+    prop_optional=0,
+    type="thunder",
+    description=f"God's power - {bc.WARNING}instant kill{bc.ENDC}. "
+                f"(for testing purposes)",
 )
 spell_cure = Spell(
     name="Cure",
     cost=5,
     dmg=20,
-    type="Holy",
+    prop_optional=0,
+    type="holy",
     description=f"Heal yourself by {bc.OKGREEN}20HP{bc.ENDC}",
 )
 spell_healing_light = Spell(
     name="Healing Light",
     cost=8,
     dmg=20,
-    type="Holy_support",
+    prop_optional=0,
+    type="holy_support",
     description=f"Heal your party leader by {bc.OKGREEN}20HP{bc.ENDC}",
 )
 
 # Adding recently created magic to the list ->
-magic = [spell_fire, spell_thunder, spell_kill, spell_cure]
-magic_elf = [spell_fire, spell_healing_light]
+magic = [spell_fireball, spell_thunderbolt, spell_ice_storm, spell_kill, spell_cure]
+magic_elf = [spell_fireball, spell_healing_light]
 
 # Instantiate equipment ->
 armor_head_1 = Equipment(
@@ -340,11 +356,16 @@ while running_battlefield:
         if random.random() < 0.6 and len(equipment_available) > 0:
             print(bc.OKBLUE + "-------------------------" + bc.ENDC)
             print(f"{bc.HEADER}You found an equipment chest!{bc.ENDC}")
-            equipment = random.choice(equipment_available)
-            print(f"You found: {bc.WARNING}{equipment.get_name()}{bc.ENDC} - "
-                  f"{equipment.get_description()}")
-            equipment_available.remove(equipment)
-            player.equipment_obtain(equipment)
+            # 40% chance to get equipment from chest ->
+            if random.random() < 0.4:
+                equipment = random.choice(equipment_available)
+                print(f"You found: {bc.WARNING}{equipment.get_name()}{bc.ENDC} - "
+                      f"{equipment.get_description()}")
+                equipment_available.remove(equipment)
+                player.equipment_obtain(equipment)
+            else:
+                potion = random.choice([health_potion, mana_potion])
+                player.potion_obtain(potion)
             print(bc.OKBLUE + "-------------------------" + bc.ENDC)
             msvcrt.getch()
 
@@ -382,18 +403,21 @@ while running_battlefield:
     print(bc.FAIL + "==============================" + bc.ENDC)
 
     # Enemy's turn ->
-    if random.random() < 0.2 and not enemy_dodging:
-        # 20% chance that enemy will try to dodge ->
-        enemy.try_dodge()
-        enemy_dodging = True
-    else:
-        enemy_dodging = False
-        # 80% chance that enemy will attack ->
-        while True:
-            target = random.choice(player_party)
-            if not target.is_knocked_active():
-                enemy.perform_attack(target)
-                break
+    enemy.burn()
+    enemy.defrost()
+    if not enemy.is_frozen_active():
+        if random.random() < 0.2 and not enemy_dodging:
+            # 20% chance that enemy will try to dodge ->
+            enemy.try_dodge()
+            enemy_dodging = True
+        else:
+            enemy_dodging = False
+            # 80% chance that enemy will attack ->
+            while True:
+                target = random.choice(player_party)
+                if not target.is_knocked_active():
+                    enemy.perform_attack(target)
+                    break
 
     for person in player_party[1:]:
         if person.get_hp() == 0:

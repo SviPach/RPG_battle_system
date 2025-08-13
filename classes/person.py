@@ -56,7 +56,15 @@ class Person:
         self.counterattack_active = False   # "Counterattack" action
         self.guard_active = False           # "Defensive stance"
 
-        self.inventory = []     # Inventory of the player.
+        # Statuses
+        # --------
+        self.burning_active = False     # Player is burning
+        self.burning_turns = 0          # How many turns player will burn
+        self.burning_dmg = 0            # Damage from burning
+        self.frozen_active = False      # Player is frozen
+        self.frozen_turns = 0           # How many turns player will be frozen
+
+        self.inventory = []     # Inventory of the player
 
         # Possible actions
         # ----------------
@@ -170,6 +178,15 @@ class Person:
         """
         # If incoming damage is more than 0 ->
         if dmg > 0:
+            # If player is burning ->
+            if self.burning_active:
+                # Damage to take ->
+                self.hp -= dmg
+                if self.hp < 0:
+                    self.hp = 0
+
+                return
+
             # Chance to dodge the attack ->
             if random.random() < self.dodge / 100:
                 print(
@@ -329,6 +346,7 @@ class Person:
                 f"You {bc.OKBLUE}{bc.UNDERLINE}"
                 f"did not choose{bc.ENDC} a potion."
             )
+            print(bc.OKBLUE + "-------------------------" + bc.ENDC)
             return
 
         # Potion use ->
@@ -421,6 +439,7 @@ class Person:
             f"You chose "
             f"{bc.OKBLUE}{bc.UNDERLINE}{self.actions[choice]}{bc.ENDC}."
         )
+        print(bc.OKBLUE + "-------------------------" + bc.ENDC)
         return self.actions[choice]
 
     def get_name(self):
@@ -500,6 +519,7 @@ class Person:
                 f"{bc.WARNING}{bc.UNDERLINE}Physical attack{bc.ENDC} "
                 f"instead of magic spell."
             )
+            print(bc.OKBLUE + "-------------------------" + bc.ENDC)
             return None
 
         # If player doesn't have enough MP ->
@@ -512,6 +532,7 @@ class Person:
                 f"{bc.WARNING}{bc.UNDERLINE}"
                 f"{self.magic[choice].get_name()}{bc.ENDC}."
             )
+            print(bc.OKBLUE + "-------------------------" + bc.ENDC)
             return self.magic[choice]
 
     def perform_attack(self, enemy, spell=None, party_leader=None):
@@ -527,36 +548,46 @@ class Person:
         party_leader : Person
             Leader of this player's party.
         """
+        dmg = 0
+        ready_to_ignite = False
+        ready_to_freeze = False
         # If attack is performed by magic ->
         if spell is not None:
             spell_cost = spell.get_cost()
             self.reduce_mp(spell_cost)
 
-            # If the magic spell has a "Holy" type ->
-            if spell.get_type() == "Holy":
-                hp = spell.get_damage()[2]
-                # The healing result ->
-                print(
-                    f"You've healed yourself by "
-                    f"{bc.OKGREEN}{hp}{bc.ENDC}HP "
-                    f"with {bc.WARNING}{spell.get_name()}{bc.ENDC}."
-                )
-                self.heal(hp)
-                return
-            elif spell.get_type() == "Holy_support":
-                hp = spell.get_damage()[2]
-                # The healing result ->
-                print(
-                    f"{bc.UNDERLINE}{bc.OKBLUE}{self.name}{bc.ENDC} healed "
-                    f"{bc.UNDERLINE}{bc.OKBLUE}"
-                    f"{party_leader.get_name()}{bc.ENDC} "
-                    f"by {bc.OKGREEN}{hp}{bc.ENDC}HP "
-                    f"with {bc.WARNING}{spell.get_name()}{bc.ENDC}."
-                )
-                party_leader.heal(hp)
-                return
-            else:
-                dmg = self.generate_damage(spell)
+            magic_type = spell.get_type()
+            match magic_type:
+                case "thunder":
+                    dmg = self.generate_damage(spell)
+                case "fire":
+                    dmg = self.generate_damage(spell)
+                    ready_to_ignite = True
+                case "ice":
+                    dmg = self.generate_damage(spell)
+                    ready_to_freeze = True
+                case "holy":
+                    hp = spell.get_damage()[2]
+                    # The healing result ->
+                    print(
+                        f"You've healed yourself by "
+                        f"{bc.OKGREEN}{hp}{bc.ENDC}HP "
+                        f"with {bc.WARNING}{spell.get_name()}{bc.ENDC}."
+                    )
+                    self.heal(hp)
+                    return
+                case "holy_support":
+                    hp = spell.get_damage()[2]
+                    # The healing result ->
+                    print(
+                        f"{bc.UNDERLINE}{bc.OKBLUE}{self.name}{bc.ENDC} healed "
+                        f"{bc.UNDERLINE}{bc.OKBLUE}"
+                        f"{party_leader.get_name()}{bc.ENDC} "
+                        f"by {bc.OKGREEN}{hp}{bc.ENDC}HP "
+                        f"with {bc.WARNING}{spell.get_name()}{bc.ENDC}."
+                    )
+                    party_leader.heal(hp)
+                    return
         # If attack is performed by physical attack ->
         else:
             dmg = self.generate_damage()
@@ -577,11 +608,17 @@ class Person:
         enemy_hp_old = enemy.hp
         enemy.take_damage(dmg)
         enemy_hp_new = enemy.hp
+        hp_diff = enemy_hp_old - enemy_hp_new
         print(
             f"--> {bc.UNDERLINE}{bc.OKBLUE}{enemy.get_name()}{bc.ENDC} "
             f"took damage: "
-            f"{bc.WARNING}-{enemy_hp_old - enemy_hp_new}HP.{bc.ENDC}"
+            f"{bc.WARNING}-{hp_diff}HP.{bc.ENDC}"
         )
+        if hp_diff > 0:
+            if ready_to_ignite:
+                enemy.ignite(spell.get_prop_optional())
+            elif ready_to_freeze:
+                enemy.freeze(spell.get_prop_optional())
 
     def try_dodge(self):
         """ Try to dodge the next attack. """
@@ -705,6 +742,22 @@ class Person:
                   f"is now {bc.WARNING}fighting{bc.ENDC}!")
             self.knocked_active = False
 
+    def ignite(self, dmg):
+        """ Ignite the player. """
+        print(f"{bc.UNDERLINE}{bc.OKBLUE}{self.name}{bc.ENDC} "
+              f"is {bc.FAIL}burning{bc.ENDC}!")
+        self.burning_active = True
+        self.burning_turns = 3
+        self.burning_dmg = dmg
+
+    def freeze(self, turns):
+        """ Freeze the player. """
+        print(f"{bc.UNDERLINE}{bc.OKBLUE}{self.name}{bc.ENDC} "
+              f"is {bc.FAIL}frozen{bc.ENDC} "
+              f"for {bc.WARNING}{turns}{bc.ENDC} turns!")
+        self.frozen_turns = turns
+        self.frozen_active = True
+
     def is_recover_active(self):
         """ Get the recovery state of the npc. """
         return self.recover_active
@@ -712,6 +765,51 @@ class Person:
     def is_knocked_active(self):
         """ Get the knocked state of the npc. """
         return self.knocked_active
+
+    def is_burning_active(self):
+        """ Get the burning state. """
+        return self.burning_active
+
+    def is_frozen_active(self):
+        """ Get the frozen state. """
+        return self.frozen_active
+
+    def burn(self):
+        """ Burn the player. """
+        if self.burning_active:
+            if self.burning_turns == 0:
+                print(f"{bc.UNDERLINE}{bc.OKBLUE}{self.name}{bc.ENDC} "
+                      f"{bc.WARNING}stopped burning{bc.ENDC}!")
+                self.burning_active = False
+                self.burning_dmg = 0
+                return
+
+            self.take_damage(self.burning_dmg)
+            self.burning_turns -= 1
+            print(
+                f"{bc.UNDERLINE}{bc.OKBLUE}{self.name}{bc.ENDC} "
+                f"{bc.FAIL}burnt{bc.ENDC} for "
+                f"{bc.FAIL}{self.burning_dmg}DMG{bc.ENDC}! "
+                f"({self.burning_turns} turns left)"
+            )
+
+    def defrost(self):
+        """ Defrost the player. """
+        if self.frozen_active:
+            if self.frozen_turns == 0:
+                print(
+                    f"{bc.UNDERLINE}{bc.OKBLUE}{self.name}{bc.ENDC} "
+                    f"has been {bc.WARNING}defrosted{bc.ENDC}! "
+                )
+                self.frozen_active = False
+                return
+
+            self.frozen_turns -= 1
+            print(
+                f"{bc.UNDERLINE}{bc.OKBLUE}{self.name}{bc.ENDC} "
+                f"is {bc.FAIL}frozen{bc.ENDC}! "
+                f"({self.frozen_turns} turns left)"
+            )
 
     def kill_count_increase(self):
         """ Increase the count of kills and exp by 1. """

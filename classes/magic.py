@@ -2,7 +2,7 @@ import math
 
 
 class Spell:
-    def __init__(self, name, cost, dmg, type, description):
+    def __init__(self, name, cost, dmg, prop_optional, type, description):
         # Name
         self.name = name
         # Description
@@ -20,6 +20,9 @@ class Spell:
         self.dmg_low = math.ceil(dmg - dmg * 0.1)
         # Highest damage
         self.dmg_high = math.ceil(dmg + dmg * 0.1)
+
+        # Optional property
+        self.prop_optional = prop_optional
 
     def get_name(self):
         """ Get the spell's name. """
@@ -40,3 +43,7 @@ class Spell:
     def get_description(self):
         """ Get the spell's description. '"""
         return self.description
+
+    def get_prop_optional(self):
+        """ Get the spell's optional property. '"""
+        return self.prop_optional
