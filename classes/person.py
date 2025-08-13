@@ -302,7 +302,7 @@ class Person:
         print(f"You have obtained: {bc.WARNING}{potion.get_name()}{bc.ENDC}.")
         self.inventory.append(potion)
 
-    def potion_choose(self):
+    def potion_choose(self, player_party):
         """ Choose a potion. """
         print(bc.OKBLUE + "-------------------------" + bc.ENDC)
         print(bc.OKBLUE + "Choose the potion to use:" + bc.ENDC)
@@ -337,19 +337,51 @@ class Person:
             f"{bc.WARNING}{bc.UNDERLINE}"
             f"{self.inventory[choice].get_name()}{bc.ENDC}."
         )
-        self.potion_use(self.inventory[choice])
+        print(bc.OKBLUE + "-------------------------" + bc.ENDC)
 
-    def potion_use(self, potion):
+        # Choosing who to use this potion on ->
+        print(bc.OKBLUE + "-------------------------" + bc.ENDC)
+        print(bc.OKBLUE + "Choose who to use potion on:" + bc.ENDC)
+        # List of members in player's party ->
+        i = 1
+        for person in player_party:
+            print(
+                f"{i}. {bc.UNDERLINE}{bc.OKBLUE}{person.get_name()}{bc.ENDC}"
+            )
+            i += 1
+
+        # If player don't wat to use a potion anymore ->
+        print("0 - Cancel.")
+
+        target = get_choice(
+            amount_of_choices_to_clear=len(player_party) + 1,
+            min_choice_possible=-1,
+            max_choice_possible=len(player_party) - 1
+        )
+
+        if target == -1:
+            print(
+                f"You {bc.OKBLUE}{bc.UNDERLINE}"
+                f"did not use{bc.ENDC} a potion."
+            )
+            print(bc.OKBLUE + "-------------------------" + bc.ENDC)
+            return
+
+        # Using a potion ->
+        self.potion_use(self.inventory[choice], player_party[target])
+
+    def potion_use(self, potion, target):
         """ Use the potion. """
         # Check type of the potion ->
         if potion.get_type() == "health":
             # If it's a healing potion ->
             print(
-                f"You have healed yourself by "
+                f"You have healed "
+                f"{bc.UNDERLINE}{bc.OKBLUE}{target.get_name()}{bc.ENDC} by "
                 f"{bc.OKGREEN}{potion.get_prop()}{bc.ENDC}HP "
                 f"with {bc.WARNING}{potion.get_name()}{bc.ENDC}."
             )
-            self.heal(potion.get_prop())
+            target.heal(potion.get_prop())
             print(bc.OKBLUE + "-------------------------" + bc.ENDC)
             msvcrt.getch()
 
@@ -358,11 +390,12 @@ class Person:
         elif potion.get_type() == "mana":
             # If it's a mana potion ->
             print(
-                f"You have restored your MP by "
-                f"{bc.OKBLUE}{potion.get_prop()}{bc.ENDC}MP "
+                f"You have restored "
+                f"{bc.UNDERLINE}{bc.OKBLUE}{target.get_name()}{bc.ENDC}'s "
+                f"MP by {bc.OKBLUE}{potion.get_prop()}{bc.ENDC}MP "
                 f"with {bc.WARNING}{potion.get_name()}{bc.ENDC}."
             )
-            self.restore_mana(potion.get_prop())
+            target.restore_mana(potion.get_prop())
             print(bc.OKBLUE + "-------------------------" + bc.ENDC)
             msvcrt.getch()
 
@@ -600,6 +633,7 @@ class Person:
                 f"You {bc.OKBLUE}{bc.UNDERLINE}"
                 f"did not inspect{bc.ENDC} anybody."
             )
+            print(bc.OKBLUE + "-------------------------" + bc.ENDC)
             return
 
         # Check if there is such an entity to inspect ->
@@ -608,6 +642,7 @@ class Person:
             f"{entities[choice].name}{bc.ENDC}."
         )
         entities[choice].info()
+        print(bc.OKBLUE + "-------------------------" + bc.ENDC)
 
     def command(self, player_party):
         """ Command a member of the player's party. """

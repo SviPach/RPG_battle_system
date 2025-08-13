@@ -229,7 +229,7 @@ while running_battlefield:
                 player.try_dodge()
                 running_player = False
             case "Use potion":
-                player.potion_choose()
+                player.potion_choose(player_party)
             case "Inspect":
                 player.inspect(entities_met)
             case "Guard":
