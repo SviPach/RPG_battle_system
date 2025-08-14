@@ -1,5 +1,7 @@
 # 🎮 RPG Battle System
 
+Author: Sviatoslav Balema
+
 A simple Python-based text RPG battle system with turn-based combat.
 
 This project is a basic working prototype with limited variability. It includes a small variability of enemies, items, and other game elements. The main purpose is to showcase fundamental functionality and serve as a foundation for further development.
