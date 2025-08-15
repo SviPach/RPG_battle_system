@@ -155,8 +155,25 @@ elf = Person(
     dodge=35,
     crit_chance=8,
     crit_multiplier=14,
+    description=f"{bc.HEADER}Carlos the Elf{bc.ENDC} can cast "
+                f"{bc.WARNING}Fire{bc.ENDC} and "
+                f"{bc.WARNING}Healing Light{bc.ENDC}.",
 )
-elf_found = False
+grok = Person(
+    name="Grok the Orc",
+    hp=200,
+    mp=0,
+    atk=15,
+    df=32,
+    magic=None,
+    dodge=6,
+    crit_chance=14,
+    crit_multiplier=13,
+    description=f"{bc.HEADER}Grok the Orc{bc.ENDC} is a "
+                f"{bc.WARNING}massive{bc.ENDC} wall of muscle "
+                f"with a {bc.WARNING}heavy{bc.ENDC} hand.",
+)
+allies_available = [elf, grok]
 
 # Player's party ->
 player_party = [player]
@@ -298,32 +315,37 @@ while running_battlefield:
                       f"is {bc.WARNING}recovering{bc.ENDC}!")
                 continue
 
-            # Carlos the Elf's AI ->
-            if person.get_name() == "Carlos the Elf":
-                # Case 1: if Carlos has enough MP to use magic ->
-                if person.get_mp() >= 8:
-                    # Case 1-1: if player doesn't have full hp ->
-                    if player.get_hp() < player.get_hp_max():
-                        # Case 1-1-1: 50% chance to cast Fire ->
-                        if random.random() < 0.5:
+            # Allies' AI ->
+            name = person.get_name()
+            match name:
+                case "Carlos the Elf":
+                    # Case 1: if Carlos has enough MP to use magic ->
+                    if person.get_mp() >= 8:
+                        # Case 1-1: if player doesn't have full hp ->
+                        if player.get_hp() < player.get_hp_max():
+                            # Case 1-1-1: 50% chance to cast Fire ->
+                            if random.random() < 0.5:
+                                person.perform_attack(
+                                    enemy,
+                                    person.magic[0],
+                                )
+                            # Case 1-1-2: 50% chance to cast Healing Light ->
+                            else:
+                                person.perform_attack(
+                                    enemy,
+                                    person.magic[1],
+                                    player)
+                        # Case 1-2: if player has full hp ->
+                        else:
                             person.perform_attack(
                                 enemy,
                                 person.magic[0],
                             )
-                        # Case 1-1-2: 50% chance to cast Healing Light ->
-                        else:
-                            person.perform_attack(
-                                enemy,
-                                person.magic[1],
-                                player)
-                    # Case 1-2: if player has full hp ->
+                    # Case 2: if Carlos doesn't have enough MP to use magic ->
                     else:
-                        person.perform_attack(
-                            enemy,
-                            person.magic[0],
-                        )
-                # Case 2: if Carlos doesn't have enough MP to use magic ->
-                else:
+                        person.perform_attack(enemy)
+                case "Grok the Orc":
+                    # Case 1: just attack ->
                     person.perform_attack(enemy)
 
     # If enemy has been defeated ->
@@ -375,21 +397,18 @@ while running_battlefield:
             print(bc.OKBLUE + "-------------------------" + bc.ENDC)
             msvcrt.getch()
 
-        # If Carlos the Elf has not been found yet ->
-        if not elf_found:
-            # 20% chance to meet Carlos the Elf ->
-            if random.random() < 0.2:
-                print(bc.OKBLUE + "-------------------------" + bc.ENDC)
-                print(f"{bc.OKBLUE}{bc.UNDERLINE}You just met{bc.ENDC} "
-                      f"{bc.HEADER}{elf.get_name()}{bc.ENDC}!")
-                player_party.append(elf)
-                elf_found = True
-                print(f"{bc.HEADER}{elf.get_name()}{bc.ENDC} can cast "
-                      f"{bc.WARNING}Fire{bc.ENDC} and "
-                      f"{bc.WARNING}Healing Light{bc.ENDC}.")
-                entities_met.append(elf)
-                print(bc.OKBLUE + "-------------------------" + bc.ENDC)
-                msvcrt.getch()
+        # 30% chance to find new ally
+        if random.random() < 0.3 and len(allies_available) > 0:
+            new_ally = random.choice(allies_available)
+            allies_available.remove(new_ally)
+            print(bc.OKBLUE + "-------------------------" + bc.ENDC)
+            print(f"{bc.OKBLUE}{bc.UNDERLINE}You just met{bc.ENDC} "
+                  f"{bc.HEADER}{new_ally.get_name()}{bc.ENDC}!")
+            player_party.append(new_ally)
+            print(new_ally.get_description())
+            entities_met.append(new_ally)
+            print(bc.OKBLUE + "-------------------------" + bc.ENDC)
+            msvcrt.getch()
 
         # 20% chance to find a campfire ->
         if random.random() < 0.2:

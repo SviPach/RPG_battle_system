@@ -15,7 +15,8 @@ class Person:
             magic,
             dodge,
             crit_chance,
-            crit_multiplier
+            crit_multiplier,
+            description=None,
     ):
         # Name
         self.name = name
@@ -95,7 +96,8 @@ class Person:
         # For allies
         # ----------
         self.recover_active = False     # If ally is recovering
-        self.knocked_active = False     # If ally is knocked
+        self.knocked_active = False     # If ally is knocked out
+        self.description = description  # Description of what ally can do
 
         # Attributes' levels
         # ------------------
@@ -265,6 +267,10 @@ class Person:
     def get_crit_multiplier(self):
         """ Get the player's critical multiplier. """
         return self.crit_multiplier
+
+    def get_description(self):
+        """ Get the player's description. """
+        return self.description
 
     def reduce_mp(self, cost):
         """ Reduce player's MP. """
@@ -1104,7 +1110,7 @@ class Person:
         )
 
         # HP ->
-        if len(self.name) < 14:
+        if len(self.name) < 12:
             info += '\t'
         info += f"\t{bc.OKGREEN}|{bc.ENDC}"
         amount_drawn = 0
