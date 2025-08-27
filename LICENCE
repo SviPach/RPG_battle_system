@@ -4,17 +4,23 @@ Copyright (c) 2025 Sviatoslav Balema
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to use,
-copy, modify, merge, publish, and distribute the Software for personal,
-educational, or research purposes only, subject to the following conditions:
+copy, modify, merge, publish, and distribute the Software for strictly
+non-commercial purposes such as personal study, education, or academic research,
+subject to the following conditions:
 
 1. Commercial use of this Software, in whole or in part, is strictly prohibited.
    “Commercial use” means any use that is intended for or directed toward
-   commercial advantage or monetary compensation.
+   commercial advantage, client work, employment, or monetary compensation.
 
-2. The above copyright notice and this permission notice shall be included in
+2. Portfolio and Employment Restriction:
+   The Software may not be used, in original or modified form, in portfolios,
+   resumes, CVs, job applications, interviews, or any employment-related materials,
+   except by the copyright holder (Sviatoslav Balema).
+
+3. The above copyright notice and this permission notice shall be included in
    all copies or substantial portions of the Software.
 
-3. Any modified versions of the Software must also be licensed under this same
+4. Any modified versions of the Software must also be licensed under this same
    NonCommercial Software License Agreement.
 
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
